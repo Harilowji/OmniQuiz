@@ -84,8 +84,8 @@
             container.innerHTML = `
                 <div id="empty-quiz-welcome" style="text-align: center; padding: 50px 20px; opacity: 0.85;">
                     <div style="font-size: 2.5em; margin-bottom: 10px;">🎓</div>
-                    <h3 style="margin-bottom: 6px; font-weight: 700;">Chào mừng bạn đến với OmniQuiz!</h3>
-                    <p style="font-size: 0.95em; opacity: 0.8;">Vui lòng tải lên file đề thi của bạn ở khung phía trên, hoặc chọn một đề mẫu đa môn học để bắt đầu ôn luyện.</p>
+                    <h3 style="margin-bottom: 6px; font-weight: 700;">${t('welcomeTitle')}</h3>
+                    <p style="font-size: 0.95em; opacity: 0.8;">${t('welcomeSubtitle')}</p>
                 </div>
             `;
         }
@@ -96,6 +96,10 @@
     }
 
     function bindGlobalEvents() {
+        // Prevent default browser file drop behavior across entire window
+        window.addEventListener('dragover', (e) => e.preventDefault());
+        window.addEventListener('drop', (e) => e.preventDefault());
+
         // Theme selector
         document.getElementById('theme-selector')?.addEventListener('change', (e) => {
             const theme = e.target.value;
@@ -114,8 +118,15 @@
             refreshUI();
         });
 
-        // Mode selector
+        // Mode selector (locked while exam is in progress to maintain test integrity)
         document.getElementById('mode-selector')?.addEventListener('change', (e) => {
+            if (isExamActiveUnsubmitted()) {
+                alert(QuizEngine.state.currentLang === 'vi'
+                    ? 'Bạn đang trong quá trình làm bài thi! Không thể đổi chế độ thi.\nVui lòng hoàn thành bài làm trước.'
+                    : 'You are currently taking an exam! Mode change is locked.\nPlease finish your exam first.');
+                e.target.value = QuizEngine.state.currentMode;
+                return;
+            }
             const mode = e.target.value;
             QuizEngine.state.currentMode = mode;
             StorageManager.savePreference('mode', mode);
@@ -296,6 +307,12 @@
                 }
             });
         }
+
+        // Wire dropzone click to open file picker
+        document.getElementById('dropzone-area')?.addEventListener('click', (e) => {
+            if (e.target.closest('label') || e.target.id === 'file-input') return;
+            document.getElementById('file-input')?.click();
+        });
 
         // Wire file input
         document.getElementById('file-input')?.addEventListener('change', (e) => {

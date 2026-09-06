@@ -176,17 +176,31 @@ const QuizEngine = (() => {
             state.incorrectQData.forEach(item => {
                 const q = item.q;
                 const correctTexts = q.answers.map(idx => q.options[idx]).join(' | ');
+                const safeQ = (typeof QuestionParser !== 'undefined' && QuestionParser.formatMathText) ? QuestionParser.formatMathText(q.q) : q.q;
+                const safeAns = (typeof QuestionParser !== 'undefined' && QuestionParser.formatMathText) ? QuestionParser.formatMathText(correctTexts) : correctTexts;
+                const imgData = (state.customImages && state.customImages[item.qIndex]) || q.image || null;
+                const imgHtml = imgData ? `<div style="text-align:center; margin:10px 0;"><img src="${imgData}" style="max-width:100%; max-height:220px; border-radius:6px; border:1px solid #cbd5e1; object-fit:contain;"></div>` : '';
+                
+                let expHtml = '';
+                if (q.explanation && q.explanation.trim().length > 0) {
+                    const safeExp = (typeof QuestionParser !== 'undefined' && QuestionParser.formatMathText) ? QuestionParser.formatMathText(q.explanation) : q.explanation;
+                    expHtml = `
+                        <div style="color:#334155; font-size:13px; background:#e2e8f0; padding:8px 12px; border-radius:4px; margin-top:6px;">
+                            <strong>${t('explanation')}</strong> ${safeExp}
+                        </div>
+                    `;
+                }
+
                 html += `
                     <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #cbd5e1; border-radius: 6px; page-break-inside: avoid; background:#f8fafc;">
                         <div style="font-weight:bold; font-size:14px; margin-bottom:8px; color:#0f172a;">
-                            Question ${item.qIndex + 1}: ${q.q}
+                            ${t('questionLabel') || 'Câu'} ${item.qIndex + 1}: ${safeQ}
                         </div>
+                        ${imgHtml}
                         <div style="color:#15803d; font-size:13px; margin-bottom:6px;">
-                            <strong>${t('correctAnswer')}</strong> ${correctTexts}
+                            <strong>${t('correctAnswer')}</strong> ${safeAns}
                         </div>
-                        <div style="color:#334155; font-size:13px; background:#e2e8f0; padding:8px 12px; border-radius:4px; margin-top:6px;">
-                            <strong>${t('explanation')}</strong> ${q.explanation}
-                        </div>
+                        ${expHtml}
                     </div>
                 `;
             });
@@ -199,7 +213,7 @@ const QuizEngine = (() => {
 
         const opt = {
             margin: 10,
-            filename: 'Math_Quiz_Performance_Report.pdf',
+            filename: 'OmniQuiz_Performance_Report.pdf',
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }

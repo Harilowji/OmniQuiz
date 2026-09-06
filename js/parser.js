@@ -67,29 +67,84 @@ const QuestionParser = (() => {
      * Safely format math, chemistry, code blocks, and images: auto-wrap LaTeX/mhchem,
      * render code snippets and diagrams, and protect math expressions from browser DOM tag swallowing.
      */
+    /**
+     * Helper to safely escape HTML special characters inside code blocks and text.
+     */
+    function escapeHtml(str) {
+        if (!str || typeof str !== 'string') return '';
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    /**
+     * Safely format math, chemistry, code blocks, and images:
+     * 1. Protect code blocks, inline code, and images with unique placeholders
+     * 2. Auto-wrap LaTeX and Chemistry in the remaining narrative text
+     * 3. Shield comparison operators (<, >) from DOM tag swallowing
+     * 4. Restore code blocks with syntax styling, clipboard copy button, and escaped entities
+     */
     function formatMathText(text) {
         if (!text || typeof text !== 'string') return '';
 
-        // 1. Convert markdown images ![alt](url/base64)
-        let processed = text.replace(/!\[(.*?)\]\((.*?)\)/g, (match, alt, src) => {
-            return `<div class="quiz-image-wrap" style="text-align: center; margin: 12px 0;"><img src="${src}" alt="${alt}" class="quiz-img" style="max-width: 100%; max-height: 400px; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.15); border: 1.5px solid var(--option-border, #cbd5e1);"><br><span style="font-size: 0.85em; opacity: 0.8; font-style: italic;">${alt}</span></div>`;
+        const codeBlocks = [];
+        const inlineCodes = [];
+        const images = [];
+
+        // 1. Extract & protect fenced code blocks ```lang ... ```
+        let processed = text.replace(/```([a-zA-Z0-9_\-]*)\s*([\s\S]*?)```/g, (match, lang, code) => {
+            const idx = codeBlocks.length;
+            codeBlocks.push({ lang: lang ? lang.trim() : '', code: code.trim() });
+            return `%%%CODE_BLOCK_${idx}%%%`;
         });
 
-        // 2. Convert markdown code blocks ```lang\ncode\n```
-        processed = processed.replace(/```([a-zA-Z0-9_\-]*)\s*([\s\S]*?)```/g, (match, lang, code) => {
-            const cleanCode = code.trim();
-            const langLabel = lang ? `<span class="code-lang-tag">${lang}</span>` : '<span class="code-lang-tag">CODE</span>';
-            return `<div class="quiz-code-block-wrap"><div class="quiz-code-header">${langLabel}<button type="button" class="btn-copy-code" data-code="${encodeURIComponent(cleanCode)}">📋 Chép mã</button></div><pre class="quiz-code-block"><code>${cleanCode}</code></pre></div>`;
+        // 2. Extract & protect inline code `code`
+        processed = processed.replace(/`([^`\r\n]+)`/g, (match, code) => {
+            const idx = inlineCodes.length;
+            inlineCodes.push(code);
+            return `%%%INLINE_CODE_${idx}%%%`;
         });
 
-        // 3. Convert inline code `code`
-        processed = processed.replace(/`([^`]+)`/g, '<code style="background: rgba(0,0,0,0.08); padding: 2px 6px; border-radius: 4px; font-family: Consolas, monospace; font-size: 0.9em;">$1</code>');
+        // 3. Extract & protect markdown images ![alt](src)
+        processed = processed.replace(/!\[(.*?)\]\((.*?)\)/g, (match, alt, src) => {
+            const idx = images.length;
+            images.push({ alt, src });
+            return `%%%QUIZ_IMG_${idx}%%%`;
+        });
 
-        // 4. Auto-wrap math & chemistry outside HTML tags
-        const wrapped = autoWrapMath(processed);
+        // 4. Auto-wrap math & chemistry outside code blocks and images
+        processed = autoWrapMath(processed);
 
-        // 5. Only escape '<' when it is NOT part of an allowed HTML tag (img, div, span, pre, code, br, b, strong, em, p)
-        return wrapped.replace(/<(?!(?:\/?(?:img|div|span|pre|code|br|b|strong|em|p)\b))/gi, '&lt;');
+        // 5. Shield relational '<' from HTML parsing (e.g. $0 < x < 5$)
+        processed = processed.replace(/<(?!(?:\/?(?:span|div|b|strong|em|p|br|table|tr|td|th)\b))/gi, '&lt;');
+
+        // 6. Restore markdown images
+        processed = processed.replace(/%%%QUIZ_IMG_(\d+)%%%/g, (match, idx) => {
+            const item = images[parseInt(idx, 10)];
+            if (!item) return '';
+            return `<div class="quiz-image-wrap" style="text-align: center; margin: 12px 0;"><img src="${item.src}" alt="${escapeHtml(item.alt)}" class="quiz-img"><br><span style="font-size: 0.85em; opacity: 0.8; font-style: italic;">${escapeHtml(item.alt)}</span></div>`;
+        });
+
+        // 7. Restore inline code
+        processed = processed.replace(/%%%INLINE_CODE_(\d+)%%%/g, (match, idx) => {
+            const code = inlineCodes[parseInt(idx, 10)];
+            if (code === undefined) return '';
+            return `<code class="quiz-inline-code">${escapeHtml(code)}</code>`;
+        });
+
+        // 8. Restore fenced code blocks with clean syntax wrapper and functional copy button
+        processed = processed.replace(/%%%CODE_BLOCK_(\d+)%%%/g, (match, idx) => {
+            const item = codeBlocks[parseInt(idx, 10)];
+            if (!item) return '';
+            const langLabel = item.lang ? `<span class="code-lang-tag">${escapeHtml(item.lang)}</span>` : '<span class="code-lang-tag">CODE</span>';
+            const escapedCode = escapeHtml(item.code);
+            const encodedCode = encodeURIComponent(item.code);
+            return `<div class="quiz-code-block-wrap"><div class="quiz-code-header">${langLabel}<button type="button" class="btn-copy-code" data-code="${encodedCode}">📋 Chép mã</button></div><pre class="quiz-code-block"><code>${escapedCode}</code></pre></div>`;
+        });
+
+        return processed;
     }
 
     /**

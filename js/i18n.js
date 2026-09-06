@@ -4,11 +4,15 @@
  */
 const I18N = {
     vi: {
-        appTitle: "OmniQuiz - Nền tảng thi trắc nghiệm",
-        uploadTitle: "Kéo thả file đề thi hoặc tải lên từ máy tính",
-        uploadPrompt: "Hỗ trợ định dạng <strong>.docx (Word)</strong>, <strong>.pdf</strong> và <strong>.txt</strong> (Toán, Lý, Hóa, Ngoại ngữ, KHXH...)",
-        btnBrowse: "Chọn file từ máy (.docx, .pdf, .txt)",
-        btnSample: "Nạp đề thi mẫu (50 câu)",
+        appTitle: "Nền tảng thi trắc nghiệm đa môn học",
+        uploadTitle: "Khởi tạo đề thi hoặc Khám phá kho đề tuyển chọn",
+        uploadPrompt: "Hỗ trợ tải trực tiếp file <strong>.PDF</strong> (Tự động cắt ảnh/code), <strong>.DOCX (Word)</strong> và <strong>.TXT</strong>",
+        dropzoneTitle: "Tải lên file đề thi",
+        dropzoneHint: "Kéo thả file vào đây hoặc bấm nút duyệt file từ thiết bị",
+        btnBrowse: "Chọn file từ thiết bị",
+        btnSample: "Bắt đầu làm bài",
+        curatedTitle: "Kho đề thi mẫu chuẩn",
+        curatedSubtitle: "Chọn nhanh môn học để bắt đầu ôn luyện ngay",
         lblAnswered: "Đã làm:",
         lblCorrect: "Đúng:",
         lblIncorrect: "Sai:",
@@ -24,6 +28,7 @@ const I18N = {
         legFlagged: "Đánh dấu 🚩",
         btnSubmitAside: "Nộp bài & Chấm điểm",
         btnShuffle: "🔀 Đảo đề",
+        tooltipShuffle: "Đảo ngẫu nhiên câu hỏi và các đáp án",
         btnReset: "🔄 Làm mới",
         btnChangeExam: "📂 Đổi đề thi",
         confirmChangeExam: "Bạn có chắc muốn thoát bài làm hiện tại để tải lên đề thi khác không?",
@@ -55,14 +60,40 @@ const I18N = {
         prevQuestion: "Câu trước",
         nextQuestion: "Câu sau",
         questionLabel: "Câu",
-        mobileFab: "Bản đồ"
+        mobileFab: "Bản đồ",
+        modePractice: "🎯 Luyện tập (Practice)",
+        modeExam: "⏱️ Thi thử (Exam)",
+        welcomeTitle: "Chào mừng bạn đến với OmniQuiz!",
+        welcomeSubtitle: "Vui lòng tải lên file đề thi của bạn ở khung phía trên, hoặc chọn một đề mẫu đa môn học để bắt đầu ôn luyện.",
+        subjects: {
+            informatics_10: "💻 Tin học - Lập trình & CNTT (10 câu)",
+            chem_40_pdf: "🧪 Hóa học - 40 câu trắc nghiệm (Trích xuất từ file PDF)",
+            math_50: "📐 Toán học - Đề thi thử THPT (50 câu)",
+            physics_12: "⚡ Vật lý 12 - Dao động cơ học (5 câu)",
+            chem_12: "🧪 Hóa học 12 - Este & Lipit (5 câu)",
+            english_thpt: "🇬🇧 Tiếng Anh THPT - Ngữ pháp (5 câu)",
+            social_12: "🌏 KHXH - Lịch sử & Địa lý (5 câu)",
+            sat_math: "🎓 Digital SAT Math CBT (English)",
+            quick_5: "⚡ Đề kiểm tra nhanh (5 câu)"
+        },
+        pills: {
+            informatics_10: "💻 Tin học",
+            chem_40_pdf: "🧪 Hóa học",
+            math_50: "📐 Toán học",
+            physics_12: "⚡ Vật lý",
+            sat_math: "🎓 SAT Math"
+        }
     },
     en: {
-        appTitle: "OmniQuiz - Multi-Subject CBT Platform",
-        uploadTitle: "Drag & drop quiz file or browse from computer",
-        uploadPrompt: "Supports <strong>.docx (Word)</strong>, <strong>.pdf</strong> and <strong>.txt</strong> (Math, Science, Languages, SAT...)",
-        btnBrowse: "Browse file (.docx, .pdf, .txt)",
-        btnSample: "Load Demo Exam (50 Questions)",
+        appTitle: "Universal Multi-Subject CBT Platform",
+        uploadTitle: "Create an Exam or Explore Curated Question Banks",
+        uploadPrompt: "Directly import <strong>.PDF</strong> (Auto-crop diagrams/code), <strong>.DOCX (Word)</strong>, and <strong>.TXT</strong>",
+        dropzoneTitle: "Upload Exam File",
+        dropzoneHint: "Drag & drop your exam file here or browse from device",
+        btnBrowse: "Browse file from device",
+        btnSample: "Start Selected Exam",
+        curatedTitle: "Curated Question Banks",
+        curatedSubtitle: "Quickly select a subject to start practicing immediately",
         lblAnswered: "Answered:",
         lblCorrect: "Correct:",
         lblIncorrect: "Incorrect:",
@@ -78,6 +109,7 @@ const I18N = {
         legFlagged: "Flagged 🚩",
         btnSubmitAside: "Submit & Grade Quiz",
         btnShuffle: "🔀 Shuffle",
+        tooltipShuffle: "Shuffle questions and answer choices",
         btnReset: "🔄 Start Fresh",
         btnChangeExam: "📂 Change Exam",
         confirmChangeExam: "Are you sure you want to exit the current exam to choose another one?",
@@ -109,7 +141,29 @@ const I18N = {
         prevQuestion: "Previous",
         nextQuestion: "Next",
         questionLabel: "Question",
-        mobileFab: "Map"
+        mobileFab: "Map",
+        modePractice: "🎯 Practice Mode",
+        modeExam: "⏱️ Exam Mode",
+        welcomeTitle: "Welcome to OmniQuiz!",
+        welcomeSubtitle: "Please upload your exam file in the area above, or choose a curated multi-subject test to begin practicing.",
+        subjects: {
+            informatics_10: "💻 Computer Science - Programming & IT (10 questions)",
+            chem_40_pdf: "🧪 Chemistry - 40 Questions (Extracted from PDF)",
+            math_50: "📐 Mathematics - High School Mock Exam (50 questions)",
+            physics_12: "⚡ Physics 12 - Harmonic Oscillation (5 questions)",
+            chem_12: "🧪 Chemistry 12 - Esters & Lipids (5 questions)",
+            english_thpt: "🇬🇧 High School English - Grammar & Reading (5 questions)",
+            social_12: "🌏 Social Sciences - History & Geography (5 questions)",
+            sat_math: "🎓 Digital SAT Math CBT (English)",
+            quick_5: "⚡ Quick Check Exam (5 questions)"
+        },
+        pills: {
+            informatics_10: "💻 Informatics",
+            chem_40_pdf: "🧪 Chemistry",
+            math_50: "📐 Mathematics",
+            physics_12: "⚡ Physics",
+            sat_math: "🎓 SAT Math"
+        }
     }
 };
 
@@ -136,7 +190,6 @@ function updateUILanguage(lang) {
         'txt-btn-change-exam': trans.btnChangeExam,
         'lbl-answered': trans.lblAnswered,
         'finish-btn': trans.btnSubmit,
-        'txt-palette-title': trans.paletteTitle,
         'txt-btn-submit-aside': trans.btnSubmitAside,
         'btn-shuffle': trans.btnShuffle,
         'btn-reset': trans.btnReset,
@@ -162,6 +215,68 @@ function updateUILanguage(lang) {
         }
     }
 
+    // Palette title with icon
+    const palTitle = document.getElementById('txt-palette-title');
+    if (palTitle) {
+        palTitle.innerHTML = `<span>📋</span> <span>${trans.paletteTitle}</span>`;
+    }
+
+    // Dropzone labels
+    const dropTitle = document.querySelector('.dropzone-title');
+    if (dropTitle) dropTitle.innerText = trans.dropzoneTitle;
+    const dropHint = document.querySelector('.dropzone-hint');
+    if (dropHint) dropHint.innerText = trans.dropzoneHint;
+
+    // Curated header labels
+    const curTitle = document.querySelector('.curated-title');
+    if (curTitle) curTitle.innerText = trans.curatedTitle;
+    const curSub = document.querySelector('.curated-subtitle');
+    if (curSub) curSub.innerText = trans.curatedSubtitle;
+
+    // Tooltip for shuffle button
+    const btnShuffle = document.getElementById('btn-shuffle');
+    if (btnShuffle && trans.tooltipShuffle) {
+        btnShuffle.title = trans.tooltipShuffle;
+    }
+
+    // Update Mode Selector options
+    const modeSelect = document.getElementById('mode-selector');
+    if (modeSelect) {
+        const optPractice = modeSelect.querySelector('option[value="practice"]');
+        if (optPractice) optPractice.innerText = trans.modePractice;
+        const optExam = modeSelect.querySelector('option[value="exam"]');
+        if (optExam) optExam.innerText = trans.modeExam;
+    }
+
+    // Update Subject Select options
+    const sampleSelect = document.getElementById('sample-subject-select');
+    if (sampleSelect && trans.subjects) {
+        for (const [key, label] of Object.entries(trans.subjects)) {
+            const opt = sampleSelect.querySelector(`option[value="${key}"]`);
+            if (opt) opt.innerText = label;
+        }
+    }
+
+    // Update Subject Quick Pills
+    if (trans.pills) {
+        document.querySelectorAll('.subj-pill').forEach(pill => {
+            const subj = pill.getAttribute('data-subj');
+            if (subj && trans.pills[subj]) {
+                pill.innerText = trans.pills[subj];
+            }
+        });
+    }
+
+    // Update Empty Welcome message if currently visible
+    const emptyWelcome = document.getElementById('empty-quiz-welcome');
+    if (emptyWelcome) {
+        const h3 = emptyWelcome.querySelector('h3');
+        const p = emptyWelcome.querySelector('p');
+        if (h3) h3.innerText = trans.welcomeTitle;
+        if (p) p.innerText = trans.welcomeSubtitle;
+    }
+
+    // Stats bar labels
     const lblCorrect = document.getElementById('lbl-correct');
     if (lblCorrect && lblCorrect.childNodes[0]) {
         lblCorrect.childNodes[0].nodeValue = trans.lblCorrect + ' ';

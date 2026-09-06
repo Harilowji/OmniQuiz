@@ -169,7 +169,7 @@
 .progress-track {
     width: 100%;
     height: 8px;
-    background: rgba(0, 0, 0, 0.06);
+    background: rgba(125, 125, 125, 0.18);
     border-radius: 99px;
     overflow: hidden;
     margin-bottom: 12px;
@@ -476,7 +476,7 @@
 }
 .filter-chip:hover {
     color: var(--primary-color);
-    background: rgba(255, 255, 255, 0.5);
+    background: var(--option-hover-bg);
 }
 .filter-chip.active {
     background: var(--card-bg);
@@ -623,6 +623,9 @@
 }
 
 @media (max-width: 960px) {
+    .palette-sidebar:not(.mobile-drawer) {
+        display: none !important;
+    }
     .floating-palette-fab {
         display: inline-flex;
         align-items: center;
@@ -641,11 +644,6 @@
         box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.35);
         animation: slideUpDrawer 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
-}
-.legend-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
 }
 
 /* SUMMARY MODAL */
@@ -773,6 +771,7 @@
     border-radius: 18px;
     padding: 26px 20px;
     text-align: center;
+    cursor: pointer;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
     flex-direction: column;
@@ -1170,4 +1169,127 @@
     font-weight: 600;
     color: var(--text-color);
     display: inline-block;
+}
+
+/* MATHJAX RESPONSIVE OVERFLOW CONTAINMENT */
+mjx-container {
+    color: inherit !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    vertical-align: middle !important;
+}
+mjx-container > svg {
+    max-width: 100% !important;
+}
+
+/* INLINE CODE STYLING */
+.quiz-inline-code {
+    background: rgba(0, 0, 0, 0.06);
+    padding: 2px 7px;
+    border-radius: 6px;
+    font-family: 'Consolas', 'Fira Code', 'Courier New', monospace;
+    font-size: 0.9em;
+    border: 1px solid var(--option-border);
+    word-break: break-word;
+}
+body.theme-cyberpunk .quiz-inline-code,
+body.theme-emerald .quiz-inline-code {
+    background: rgba(255, 255, 255, 0.08);
+    color: #38bdf8;
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* PROGRESS RING SVG STROKE ADAPTIVE */
+.progress-ring-circle-bg {
+    stroke: rgba(125, 125, 125, 0.2) !important;
+}
+
+/* PRO MOBILE & TABLET RESPONSIVE TUNING */
+@media (max-width: 640px) {
+    body {
+        padding: 12px 10px 75px 10px;
+    }
+    .top-navbar {
+        padding: 12px 14px;
+        border-radius: 16px;
+        margin-bottom: 18px;
+    }
+    .brand-name {
+        font-size: 1.22em;
+    }
+    .brand-logo-img {
+        width: 38px;
+        height: 38px;
+    }
+    .brand-tagline {
+        font-size: 0.74em;
+    }
+    .controls-group {
+        width: 100%;
+        gap: 8px;
+        justify-content: space-between;
+    }
+    .controls-group .pill-select-wrap {
+        flex: 1 1 calc(50% - 4px);
+    }
+    .controls-group .pill-select-wrap select {
+        width: 100%;
+        padding: 7px 24px 7px 10px;
+        font-size: 0.82em;
+    }
+    .controls-group .btn-action {
+        flex: 1 1 calc(50% - 4px);
+        justify-content: center;
+        padding: 7px 10px;
+        font-size: 0.84em;
+    }
+    .question-block {
+        padding: 20px 16px;
+        border-radius: 16px;
+        scroll-margin-top: 135px;
+    }
+    .question-title {
+        font-size: 1.1em;
+        line-height: 1.45;
+    }
+    .option {
+        padding: 12px 14px;
+        font-size: 0.95em;
+        gap: 10px;
+        border-radius: 12px;
+    }
+    .option-indicator {
+        width: 26px;
+        height: 26px;
+        font-size: 12px;
+    }
+    .sticky-stats-bar {
+        top: 8px;
+        padding: 10px 14px;
+        border-radius: 14px;
+        margin-bottom: 18px;
+    }
+    .stats-content {
+        font-size: 0.86em;
+    }
+    .timer-badge {
+        padding: 4px 12px;
+        font-size: 0.9em;
+    }
+    .upload-studio-card {
+        padding: 20px 14px;
+        border-radius: 18px;
+    }
+    .studio-title {
+        font-size: 1.25em;
+    }
+    .modal-content {
+        padding: 25px 18px;
+    }
+    .score-circle {
+        width: 96px;
+        height: 96px;
+        font-size: 1.65em;
+    }
 }

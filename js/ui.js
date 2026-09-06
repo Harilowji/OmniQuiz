@@ -539,20 +539,42 @@ const UIManager = (() => {
                 const copyBtn = e.target.closest('.btn-copy-code');
                 if (copyBtn) {
                     const code = decodeURIComponent(copyBtn.dataset.code || '');
+                    const onCopySuccess = () => {
+                        const origText = copyBtn.innerText;
+                        copyBtn.innerText = '✓ Đã chép!';
+                        copyBtn.classList.add('copied');
+                        setTimeout(() => {
+                            copyBtn.innerText = origText;
+                            copyBtn.classList.remove('copied');
+                        }, 1500);
+                    };
+
                     if (navigator.clipboard && navigator.clipboard.writeText) {
-                        navigator.clipboard.writeText(code).then(() => {
-                            const origText = copyBtn.innerText;
-                            copyBtn.innerText = '✓ Đã chép!';
-                            copyBtn.classList.add('copied');
-                            setTimeout(() => {
-                                copyBtn.innerText = origText;
-                                copyBtn.classList.remove('copied');
-                            }, 1500);
-                        }).catch(() => {});
+                        navigator.clipboard.writeText(code).then(onCopySuccess).catch(() => {
+                            fallbackCopy(code, onCopySuccess);
+                        });
+                    } else {
+                        fallbackCopy(code, onCopySuccess);
                     }
                     return;
                 }
             });
+        }
+
+        function fallbackCopy(text, onSuccess) {
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.focus();
+                ta.select();
+                const successful = document.execCommand('copy');
+                document.body.removeChild(ta);
+                if (successful && typeof onSuccess === 'function') onSuccess();
+            } catch (e) {}
         }
 
         // Quick clipboard paste listener (Ctrl+V for cropped diagrams/code)
