@@ -96,16 +96,45 @@ const QuizEngine = (() => {
         return correct;
     }
 
+    function shuffleQuestionOptions(q) {
+        if (!q || !Array.isArray(q.options) || q.options.length <= 1) return;
+
+        // Never shuffle options if any choice refers to other letters (e.g. "Cả A và B đều đúng", "All of the above")
+        const hasRelativeOption = q.options.some(opt => {
+            if (!opt || typeof opt !== 'string') return false;
+            return /(?:cả|ca)\s+[a-d]|(?:tất\s+cả|tat\s+ca)(?:\s+(?:các|cac))?\s*(?:đáp|dap)\s*án|all\s+of\s+the\s+above|both\s+[a-d]|neither\s+[a-d]|none\s+of\s+the\s+above|(?:đáp|dap)\s*án\s+khác/i.test(opt);
+        });
+        if (hasRelativeOption) return;
+
+        // Pair option text with correctness
+        const indexedOpts = q.options.map((text, idx) => ({
+            text,
+            isCorrect: q.answers.includes(idx)
+        }));
+
+        // Fisher-Yates shuffle on options
+        for (let i = indexedOpts.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [indexedOpts[i], indexedOpts[j]] = [indexedOpts[j], indexedOpts[i]];
+        }
+
+        q.options = indexedOpts.map(o => o.text);
+        q.answers = [];
+        indexedOpts.forEach((o, idx) => {
+            if (o.isCorrect) q.answers.push(idx);
+        });
+    }
+
     function shuffle() {
         if (state.isSubmitted) return;
 
-        // Pair each question with its custom image so they never get disconnected
+        // 1. Shuffle question order and maintain strict question-image pairing
         const paired = state.questions.map((q, idx) => ({
             question: q,
             image: (state.customImages && state.customImages[idx]) || q.image || null
         }));
 
-        // Fisher-Yates shuffle
+        // Fisher-Yates shuffle on questions
         for (let i = paired.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [paired[i], paired[j]] = [paired[j], paired[i]];
@@ -119,9 +148,11 @@ const QuizEngine = (() => {
                 state.customImages[idx] = p.image;
                 p.question.image = p.image;
             }
+            // 2. Also randomize options within each question safely
+            shuffleQuestionOptions(p.question);
         });
 
-        // Reset answers
+        // Reset answers and flags for a fresh randomized test
         state.userAnswers = {};
         state.flaggedQuestions.clear();
         state.incorrectQData = [];
@@ -148,6 +179,7 @@ const QuizEngine = (() => {
 
         const unattempted = state.questions.length - answered;
         const score100 = state.questions.length > 0 ? Math.round((correct / state.questions.length) * 100) : 0;
+        const score10 = state.questions.length > 0 ? ((correct / state.questions.length) * 10).toFixed(2) : '0.00';
 
         return {
             total: state.questions.length,
@@ -155,7 +187,8 @@ const QuizEngine = (() => {
             correct,
             incorrect: answered - correct,
             unattempted,
-            score100
+            score100,
+            score10
         };
     }
 

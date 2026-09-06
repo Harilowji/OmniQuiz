@@ -198,7 +198,7 @@
             UIManager.closeMobilePalette();
         });
 
-        // Fast Question Keyboard Navigation (Arrow Keys)
+        // Fast Question Keyboard Navigation (Arrow Keys with Filter Awareness)
         window.addEventListener('keydown', (e) => {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
             if (!QuizEngine.state.questions || QuizEngine.state.questions.length === 0) return;
@@ -210,15 +210,29 @@
                 currentIdx = parseInt(activeBtn.id.replace('pbtn-', ''), 10) || 0;
             }
 
+            // Get list of visible palette buttons (respects active filter: all / answered / flagged / unanswered)
+            const visibleButtons = Array.from(document.querySelectorAll('.palette-btn'))
+                .filter(btn => btn.style.display !== 'none');
+
+            if (visibleButtons.length === 0) return;
+
+            const currentPos = visibleButtons.findIndex(btn => btn.id === 'pbtn-' + currentIdx);
+
             if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-                if (currentIdx < QuizEngine.state.questions.length - 1) {
-                    e.preventDefault();
-                    UIManager.scrollToQuestion(currentIdx + 1);
+                e.preventDefault();
+                const nextPos = (currentPos >= 0 && currentPos < visibleButtons.length - 1) ? currentPos + 1 : 0;
+                const targetId = visibleButtons[nextPos].id;
+                const targetIdx = parseInt(targetId.replace('pbtn-', ''), 10);
+                if (!isNaN(targetIdx)) {
+                    UIManager.scrollToQuestion(targetIdx);
                 }
             } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-                if (currentIdx > 0) {
-                    e.preventDefault();
-                    UIManager.scrollToQuestion(currentIdx - 1);
+                e.preventDefault();
+                const prevPos = (currentPos > 0) ? currentPos - 1 : visibleButtons.length - 1;
+                const targetId = visibleButtons[prevPos].id;
+                const targetIdx = parseInt(targetId.replace('pbtn-', ''), 10);
+                if (!isNaN(targetIdx)) {
+                    UIManager.scrollToQuestion(targetIdx);
                 }
             }
         });

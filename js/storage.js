@@ -5,21 +5,28 @@ const StorageManager = (() => {
     const STORAGE_KEY = 'quiz_cbt_v3';
 
     function saveState(state) {
+        const data = {
+            answers: state.userAnswers,
+            flagged: Array.from(state.flaggedQuestions),
+            customImages: state.customImages || {},
+            isSubmitted: state.isSubmitted,
+            timeLeft: state.timeLeft,
+            mode: state.currentMode,
+            theme: state.currentTheme,
+            lang: state.currentLang,
+            questionCount: state.questions ? state.questions.length : 0
+        };
         try {
-            const data = {
-                answers: state.userAnswers,
-                flagged: Array.from(state.flaggedQuestions),
-                customImages: state.customImages || {},
-                isSubmitted: state.isSubmitted,
-                timeLeft: state.timeLeft,
-                mode: state.currentMode,
-                theme: state.currentTheme,
-                lang: state.currentLang,
-                questionCount: state.questions ? state.questions.length : 0
-            };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         } catch (e) {
-            console.warn('Storage save failed:', e);
+            console.warn('Storage save failed with images, retrying without heavy image payload:', e);
+            try {
+                // Strip customImages payload if storage quota is hit so user answers are NEVER lost
+                const lightData = Object.assign({}, data, { customImages: {} });
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(lightData));
+            } catch (e2) {
+                console.warn('Storage save completely failed:', e2);
+            }
         }
     }
 

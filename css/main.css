@@ -52,6 +52,11 @@ body {
     align-items: start;
 }
 
+.quiz-main {
+    min-width: 0;
+    max-width: 100%;
+}
+
 @media (max-width: 960px) {
     .app-layout {
         grid-template-columns: 1fr;

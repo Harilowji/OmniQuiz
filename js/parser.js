@@ -92,6 +92,7 @@ const QuestionParser = (() => {
         const codeBlocks = [];
         const inlineCodes = [];
         const images = [];
+        const htmlImages = [];
 
         // 1. Extract & protect fenced code blocks ```lang ... ```
         let processed = text.replace(/```([a-zA-Z0-9_\-]*)\s*([\s\S]*?)```/g, (match, lang, code) => {
@@ -114,20 +115,39 @@ const QuestionParser = (() => {
             return `%%%QUIZ_IMG_${idx}%%%`;
         });
 
-        // 4. Auto-wrap math & chemistry outside code blocks and images
+        // 4. Extract & protect direct HTML <img> tags (e.g. from Word docx conversion)
+        processed = processed.replace(/<img\b([^>]*)\/?>/gi, (match) => {
+            const idx = htmlImages.length;
+            htmlImages.push(match);
+            return `%%%HTML_IMG_${idx}%%%`;
+        });
+
+        // 5. Auto-wrap math & chemistry outside code blocks and images
         processed = autoWrapMath(processed);
 
-        // 5. Shield relational '<' from HTML parsing (e.g. $0 < x < 5$)
-        processed = processed.replace(/<(?!(?:\/?(?:span|div|b|strong|em|p|br|table|tr|td|th)\b))/gi, '&lt;');
+        // 6. Shield relational '<' from HTML parsing (e.g. $0 < x < 5$)
+        processed = processed.replace(/<(?!(?:\/?(?:span|div|b|strong|em|p|br|table|tr|td|th|img)\b))/gi, '&lt;');
 
-        // 6. Restore markdown images
+        // 7. Restore markdown images
         processed = processed.replace(/%%%QUIZ_IMG_(\d+)%%%/g, (match, idx) => {
             const item = images[parseInt(idx, 10)];
             if (!item) return '';
             return `<div class="quiz-image-wrap" style="text-align: center; margin: 12px 0;"><img src="${item.src}" alt="${escapeHtml(item.alt)}" class="quiz-img"><br><span style="font-size: 0.85em; opacity: 0.8; font-style: italic;">${escapeHtml(item.alt)}</span></div>`;
         });
 
-        // 7. Restore inline code
+        // 8. Restore HTML <img> tags with quiz-img class for zoom support
+        processed = processed.replace(/%%%HTML_IMG_(\d+)%%%/g, (match, idx) => {
+            let imgTag = htmlImages[parseInt(idx, 10)];
+            if (!imgTag) return '';
+            if (!imgTag.includes('class=')) {
+                imgTag = imgTag.replace(/<img\b/i, '<img class="quiz-img"');
+            } else if (!imgTag.includes('quiz-img')) {
+                imgTag = imgTag.replace(/class=["\'](.*?)["\']/i, 'class="$1 quiz-img"');
+            }
+            return `<div class="quiz-image-wrap" style="text-align: center; margin: 12px 0;">${imgTag}</div>`;
+        });
+
+        // 9. Restore inline code
         processed = processed.replace(/%%%INLINE_CODE_(\d+)%%%/g, (match, idx) => {
             const code = inlineCodes[parseInt(idx, 10)];
             if (code === undefined) return '';

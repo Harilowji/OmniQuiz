@@ -461,6 +461,12 @@ const UIManager = (() => {
         document.getElementById('modal-incorrect').innerText = results.incorrect;
         document.getElementById('modal-unattempted').innerText = results.unattempted;
 
+        const subEl = document.getElementById('modal-subtitle');
+        if (subEl) {
+            const score10Text = results.score10 ? ` • ${results.score10}/10 đ` : '';
+            subEl.innerText = `${t('modalSubtitle')}${score10Text}`;
+        }
+
         modal.style.display = 'flex';
     }
 
@@ -519,9 +525,20 @@ const UIManager = (() => {
             };
         }
 
+        // Summary modal click-outside to dismiss
+        const sumModal = document.getElementById('summary-modal');
+        if (sumModal) {
+            sumModal.addEventListener('click', (e) => {
+                if (e.target === sumModal) {
+                    hideSummaryModal();
+                }
+            });
+        }
+
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeLightbox();
+                hideSummaryModal();
             }
         });
 

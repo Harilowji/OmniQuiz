@@ -204,17 +204,17 @@ body.theme-emerald .option:hover {
 body.theme-playful {
     --bg-gradient: #fff1f5;
     --text-color: #4a3834;
-    --heading-color: #ff5e7e;
+    --heading-color: #f43f5e;
     --card-bg: rgba(255, 255, 255, 0.92);
-    --card-border: #ffccd5;
-    --card-shadow: 0 8px 0px #ffccd5;
+    --card-border: #fecdd3;
+    --card-shadow: 0 8px 0px #fecdd3;
     --option-bg: rgba(255, 255, 255, 0.95);
-    --option-hover-bg: #f0fff4;
-    --option-border: #a7f3d0;
-    --primary-color: #38bdf8;
-    --primary-hover: #0284c7;
-    --exp-bg: rgba(224, 242, 254, 0.95);
-    --exp-border: #38bdf8;
+    --option-hover-bg: #fff1f2;
+    --option-border: #fbcfe8;
+    --primary-color: #f43f5e;
+    --primary-hover: #e11d48;
+    --exp-bg: rgba(255, 241, 242, 0.95);
+    --exp-border: #f43f5e;
     --stats-bg: rgba(255, 255, 255, 0.92);
     --correct-bg: #ecfdf5;
     --correct-border: #6ee7b7;
