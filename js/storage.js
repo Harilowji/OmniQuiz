@@ -9,6 +9,7 @@ const StorageManager = (() => {
             const data = {
                 answers: state.userAnswers,
                 flagged: Array.from(state.flaggedQuestions),
+                customImages: state.customImages || {},
                 isSubmitted: state.isSubmitted,
                 timeLeft: state.timeLeft,
                 mode: state.currentMode,
@@ -30,6 +31,7 @@ const StorageManager = (() => {
             return {
                 answers: data.answers || {},
                 flagged: new Set(data.flagged || []),
+                customImages: data.customImages || {},
                 isSubmitted: data.isSubmitted || false,
                 timeLeft: typeof data.timeLeft === 'number' ? data.timeLeft : 3600,
                 mode: data.mode || 'practice',

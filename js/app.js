@@ -7,6 +7,7 @@
     window.addEventListener('DOMContentLoaded', () => {
         initSettings();
         bindGlobalEvents();
+        UIManager.initGlobalUI(onImageAttached);
         loadQuestions();
     });
 
@@ -58,6 +59,7 @@
         QuizEngine.state.questions = [];
         QuizEngine.state.userAnswers = {};
         QuizEngine.state.flaggedQuestions = new Set();
+        QuizEngine.state.customImages = {};
         QuizEngine.state.isSubmitted = false;
         QuizEngine.state.timeLeft = 3600;
         QuizEngine.state.incorrectQData = [];
@@ -432,6 +434,7 @@
             StorageManager.clearState();
             QuizEngine.state.userAnswers = {};
             QuizEngine.state.flaggedQuestions = new Set();
+            QuizEngine.state.customImages = {};
             QuizEngine.state.isSubmitted = false;
             QuizEngine.state.timeLeft = 3600;
             QuizEngine.state.incorrectQData = [];
@@ -441,12 +444,14 @@
             if (saved && !saved.isSubmitted && saved.questionCount === parsed.length) {
                 QuizEngine.state.userAnswers = saved.answers || {};
                 QuizEngine.state.flaggedQuestions = saved.flagged || new Set();
+                QuizEngine.state.customImages = saved.customImages || {};
                 QuizEngine.state.isSubmitted = false;
                 QuizEngine.state.timeLeft = saved.timeLeft || 3600;
             } else {
                 StorageManager.clearState();
                 QuizEngine.state.userAnswers = {};
                 QuizEngine.state.flaggedQuestions = new Set();
+                QuizEngine.state.customImages = {};
                 QuizEngine.state.isSubmitted = false;
                 QuizEngine.state.timeLeft = 3600;
                 QuizEngine.state.incorrectQData = [];
@@ -474,7 +479,10 @@
             QuizEngine.state.isSubmitted,
             onOptionClicked,
             onFlagToggled,
-            onCheckAnswerClicked
+            onCheckAnswerClicked,
+            QuizEngine.state.customImages,
+            onImageAttached,
+            onImageRemoved
         );
         refreshPalette();
         UIManager.updateStats(
@@ -583,6 +591,18 @@
             QuizEngine.state.isSubmitted
         );
         UIManager.popAnsweredPaletteButton(qIndex);
+    }
+
+    function onImageAttached(qIndex, base64) {
+        QuizEngine.attachQuestionImage(qIndex, base64);
+        StorageManager.saveState(QuizEngine.state);
+        refreshUI();
+    }
+
+    function onImageRemoved(qIndex) {
+        QuizEngine.removeQuestionImage(qIndex);
+        StorageManager.saveState(QuizEngine.state);
+        refreshUI();
     }
 
     function startTimer() {

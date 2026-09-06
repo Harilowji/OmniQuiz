@@ -4,7 +4,19 @@
 const UIManager = (() => {
     let currentPaletteFilter = 'all';
 
-    function renderQuestionsList(questions, userAnswers, flaggedQuestions, mode, isSubmitted, onOptionClick, onFlagClick, onCheckAnswer) {
+    function renderQuestionsList(
+        questions, 
+        userAnswers, 
+        flaggedQuestions, 
+        mode, 
+        isSubmitted, 
+        onOptionClick, 
+        onFlagClick, 
+        onCheckAnswer,
+        customImages = {},
+        onAttachImage = null,
+        onRemoveImage = null
+    ) {
         const container = document.getElementById('quiz-container');
         if (!container) return;
         container.innerHTML = '';
@@ -30,13 +42,68 @@ const UIManager = (() => {
             title.innerHTML = `Q${qIndex + 1}. ${safeQText}`;
             header.appendChild(title);
 
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'q-header-actions';
+
+            const attachBtn = document.createElement('button');
+            attachBtn.className = 'attach-img-btn';
+            attachBtn.title = 'Đính kèm ảnh minh hoạ / sơ đồ / code (hoặc bấm Ctrl+V)';
+            attachBtn.innerHTML = '📷 + Ảnh';
+            attachBtn.onclick = () => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.onchange = (e) => {
+                    const file = e.target.files && e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (evt) => {
+                            if (typeof onAttachImage === 'function') {
+                                onAttachImage(qIndex, evt.target.result);
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                };
+                input.click();
+            };
+            actionsDiv.appendChild(attachBtn);
+
             const flagBtn = document.createElement('button');
             flagBtn.className = 'flag-btn' + (isFlagged ? ' active' : '');
             flagBtn.innerHTML = (isFlagged ? '🚩 ' : '🏳️ ') + t('reviewFlag');
             flagBtn.onclick = () => onFlagClick(qIndex);
-            header.appendChild(flagBtn);
+            actionsDiv.appendChild(flagBtn);
 
+            header.appendChild(actionsDiv);
             block.appendChild(header);
+
+            // Custom Attached Image
+            if (customImages && customImages[qIndex]) {
+                const imgWrap = document.createElement('div');
+                imgWrap.className = 'custom-q-image-wrap';
+                imgWrap.id = 'custom-img-' + qIndex;
+
+                const img = document.createElement('img');
+                img.className = 'quiz-img';
+                img.src = customImages[qIndex];
+                img.alt = `Ảnh minh họa Câu ${qIndex + 1}`;
+                imgWrap.appendChild(img);
+
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'btn-remove-img';
+                removeBtn.innerHTML = '✕ Gỡ';
+                removeBtn.title = 'Gỡ ảnh minh họa này';
+                removeBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (typeof onRemoveImage === 'function') {
+                        onRemoveImage(qIndex);
+                    }
+                };
+                imgWrap.appendChild(removeBtn);
+
+                block.appendChild(imgWrap);
+            }
 
             // Help Text
             const helpText = document.createElement('div');
@@ -431,11 +498,125 @@ const UIManager = (() => {
         if (modal) modal.style.display = 'none';
     }
 
+    function showToast(message) {
+        let toast = document.getElementById('omni-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'omni-toast';
+            toast.className = 'omni-toast';
+            document.body.appendChild(toast);
+        }
+        toast.innerText = message;
+        toast.classList.add('show');
+        if (toast._timer) clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2200);
+    }
+
+    function openLightbox(src, caption) {
+        const modal = document.getElementById('image-lightbox-modal');
+        const img = document.getElementById('lightbox-img');
+        const cap = document.getElementById('lightbox-caption');
+        if (!modal || !img) return;
+        img.src = src;
+        if (cap) cap.innerText = caption || '';
+        modal.style.display = 'flex';
+    }
+
+    function closeLightbox() {
+        const modal = document.getElementById('image-lightbox-modal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    let hasBoundGlobalUIEvents = false;
+    function initGlobalUI(onAttachImage) {
+        if (hasBoundGlobalUIEvents) return;
+        hasBoundGlobalUIEvents = true;
+
+        const closeBtn = document.getElementById('btn-close-lightbox');
+        if (closeBtn) {
+            closeBtn.onclick = closeLightbox;
+        }
+
+        const modal = document.getElementById('image-lightbox-modal');
+        if (modal) {
+            modal.onclick = (e) => {
+                if (e.target === modal || e.target.classList.contains('image-lightbox-content')) {
+                    closeLightbox();
+                }
+            };
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+
+        const quizContainer = document.getElementById('quiz-container');
+        if (quizContainer) {
+            quizContainer.addEventListener('click', (e) => {
+                // Click on quiz image -> open lightbox
+                const img = e.target.closest('img');
+                if (img && (img.classList.contains('quiz-img') || img.closest('.quiz-image-wrap') || img.closest('.custom-q-image-wrap'))) {
+                    openLightbox(img.src, img.alt || 'Hình minh họa câu hỏi');
+                    return;
+                }
+
+                // Click on copy code button
+                const copyBtn = e.target.closest('.btn-copy-code');
+                if (copyBtn) {
+                    const code = decodeURIComponent(copyBtn.dataset.code || '');
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(code).then(() => {
+                            const origText = copyBtn.innerText;
+                            copyBtn.innerText = '✓ Đã chép!';
+                            copyBtn.classList.add('copied');
+                            setTimeout(() => {
+                                copyBtn.innerText = origText;
+                                copyBtn.classList.remove('copied');
+                            }, 1500);
+                        }).catch(() => {});
+                    }
+                    return;
+                }
+            });
+        }
+
+        // Quick clipboard paste listener (Ctrl+V for cropped diagrams/code)
+        window.addEventListener('paste', (e) => {
+            if (!e.clipboardData || !e.clipboardData.items) return;
+            const items = e.clipboardData.items;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type && items[i].type.indexOf('image') !== -1) {
+                    const blob = items[i].getAsFile();
+                    if (blob) {
+                        const reader = new FileReader();
+                        reader.onload = (evt) => {
+                            if (typeof onAttachImage === 'function') {
+                                onAttachImage(activeViewingQuestionIndex, evt.target.result);
+                                showToast(`✓ Đã dán ảnh vào Câu ${activeViewingQuestionIndex + 1}`);
+                            }
+                        };
+                        reader.readAsDataURL(blob);
+                    }
+                    break;
+                }
+            }
+        });
+    }
+
+    function getActiveQuestionIndex() {
+        return activeViewingQuestionIndex;
+    }
+
     return {
         renderQuestionsList,
         updateSingleQuestion,
         renderPalette,
         setActiveQuestion,
+        getActiveQuestionIndex,
         popAnsweredPaletteButton,
         setupScrollSpy,
         toggleMobilePalette,
@@ -444,6 +625,10 @@ const UIManager = (() => {
         updateStats,
         scrollToQuestion,
         showSummaryModal,
-        hideSummaryModal
+        hideSummaryModal,
+        showToast,
+        openLightbox,
+        closeLightbox,
+        initGlobalUI
     };
 })();

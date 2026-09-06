@@ -6,6 +6,7 @@ const QuizEngine = (() => {
         questions: [],
         userAnswers: {}, // { [qIndex]: [selectedIndices] }
         flaggedQuestions: new Set(),
+        customImages: {}, // { [qIndex]: base64Data }
         currentMode: 'practice', // 'practice' | 'exam'
         currentTheme: 'academic',
         currentLang: 'vi',
@@ -18,8 +19,20 @@ const QuizEngine = (() => {
         state.questions = newQuestions;
         state.userAnswers = {};
         state.flaggedQuestions.clear();
+        state.customImages = {};
         state.isSubmitted = false;
         state.incorrectQData = [];
+    }
+
+    function attachQuestionImage(qIndex, base64Data) {
+        if (!state.customImages) state.customImages = {};
+        state.customImages[qIndex] = base64Data;
+    }
+
+    function removeQuestionImage(qIndex) {
+        if (state.customImages && state.customImages[qIndex]) {
+            delete state.customImages[qIndex];
+        }
     }
 
     function selectOption(qIndex, oIndex) {
@@ -192,6 +205,8 @@ const QuizEngine = (() => {
     return {
         state,
         setQuestions,
+        attachQuestionImage,
+        removeQuestionImage,
         selectOption,
         toggleFlag,
         isAnswerCorrect,
