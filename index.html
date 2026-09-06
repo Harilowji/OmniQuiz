@@ -202,6 +202,10 @@
                             <span id="lbl-correct" style="color: #22c55e;">Đúng: <strong id="correct-count">0</strong></span>
                             <span style="margin: 0 6px; opacity: 0.4;">|</span>
                             <span id="lbl-incorrect" style="color: #ef4444;">Sai: <strong id="incorrect-count">0</strong></span>
+                            <span id="stat-unattempted-wrap" style="display: none;">
+                                <span style="margin: 0 6px; opacity: 0.4;">|</span>
+                                <span id="lbl-unattempted-stat" style="color: #94a3b8;">Chưa làm: <strong id="unattempted-count">0</strong></span>
+                            </span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <div class="timer-badge">
@@ -250,7 +254,7 @@
                     <div class="legend-item"><div class="legend-dot" style="background:#10b981;"></div> <span id="txt-leg-correct">Đúng</span></div>
                     <div class="legend-item"><div class="legend-dot" style="background:#ef4444;"></div> <span id="txt-leg-incorrect">Sai</span></div>
                     <div class="legend-item"><div class="legend-dot" style="background:#3b82f6;"></div> <span id="txt-leg-answered">Đã chọn</span></div>
-                    <div class="legend-item"><div class="legend-dot" style="background:#eab308;"></div> <span id="txt-leg-flagged">Đánh dấu 🚩</span></div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#f1f5f9; border: 1.5px dashed #94a3b8;"></div> <span id="txt-leg-unattempted">Chưa làm</span></div>
                 </div>
 
                 <button class="btn-action btn-danger" id="txt-btn-submit-aside" style="width: 100%; padding: 12px; font-size: 1em; justify-content: center;">

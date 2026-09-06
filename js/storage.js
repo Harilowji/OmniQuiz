@@ -7,6 +7,7 @@ const StorageManager = (() => {
     function saveState(state) {
         const data = {
             answers: state.userAnswers,
+            evaluated: Array.from(state.evaluatedQuestions || []),
             flagged: Array.from(state.flaggedQuestions),
             customImages: state.customImages || {},
             isSubmitted: state.isSubmitted,
@@ -37,6 +38,7 @@ const StorageManager = (() => {
             const data = JSON.parse(raw);
             return {
                 answers: data.answers || {},
+                evaluated: new Set(data.evaluated || []),
                 flagged: new Set(data.flagged || []),
                 customImages: data.customImages || {},
                 isSubmitted: data.isSubmitted || false,

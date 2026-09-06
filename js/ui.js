@@ -12,10 +12,11 @@ const UIManager = (() => {
         isSubmitted, 
         onOptionClick, 
         onFlagClick, 
-        onCheckAnswer,
-        customImages = {},
-        onAttachImage = null,
-        onRemoveImage = null
+        onCheckAnswer, 
+        customImages = {}, 
+        onAttachImage = null, 
+        onRemoveImage = null,
+        evaluatedQuestions = null
     ) {
         const container = document.getElementById('quiz-container');
         if (!container) return;
@@ -29,6 +30,7 @@ const UIManager = (() => {
             const selected = userAnswers[qIndex] || [];
             const hasAnswered = selected.length > 0;
             const isFlagged = flaggedQuestions.has(qIndex);
+            const isEvaluated = isSubmitted || (mode === 'practice' && evaluatedQuestions && evaluatedQuestions.has(qIndex));
 
             // Header
             const header = document.createElement('div');
@@ -40,7 +42,23 @@ const UIManager = (() => {
                 ? QuestionParser.formatMathText(q.q) 
                 : q.q;
             title.innerHTML = `Q${qIndex + 1}. ${safeQText}`;
-            if (q.isDefaultAnswer) {
+
+            if (isEvaluated) {
+                const badge = document.createElement('span');
+                if (hasAnswered) {
+                    if (QuizEngine.isAnswerCorrect(q, selected)) {
+                        badge.className = 'badge-q-status badge-q-correct';
+                        badge.innerText = '✓ ' + (t('badgeCorrect') || 'Đúng');
+                    } else {
+                        badge.className = 'badge-q-status badge-q-incorrect';
+                        badge.innerText = '✗ ' + (t('badgeIncorrect') || 'Sai');
+                    }
+                } else if (isSubmitted) {
+                    badge.className = 'badge-q-status badge-q-unattempted';
+                    badge.innerText = '⚪ ' + (t('badgeUnattempted') || 'Chưa làm');
+                }
+                title.appendChild(badge);
+            } else if (q.isDefaultAnswer) {
                 const badge = document.createElement('span');
                 badge.className = 'badge-no-answer';
                 badge.innerText = '⚠️ ' + (t('noAnswerDeclared') || 'Chưa có đáp án');
@@ -91,7 +109,7 @@ const UIManager = (() => {
             // Options List
             const optContainer = document.createElement('div');
             optContainer.className = 'options-container';
-            if ((mode === 'practice' && hasAnswered) || isSubmitted) {
+            if (isEvaluated) {
                 optContainer.classList.add('disabled-options');
             }
 
@@ -100,11 +118,11 @@ const UIManager = (() => {
                 optDiv.className = 'option';
 
                 const isSelected = selected.includes(oIndex);
-                const isCorrect = q.answers.includes(oIndex);
+                const isCorrect = q.answers.map(Number).includes(oIndex);
 
                 if (isSelected) optDiv.classList.add('selected');
 
-                if ((mode === 'practice' && hasAnswered) || isSubmitted) {
+                if (isEvaluated) {
                     if (isCorrect) optDiv.classList.add('correct');
                     else if (isSelected) optDiv.classList.add('incorrect');
                 }
@@ -142,7 +160,7 @@ const UIManager = (() => {
             block.appendChild(optContainer);
 
             // Practice Mode: Check Answer Button for Multiple Choice
-            if (q.type === 'multiple' && mode === 'practice' && !hasAnswered && !isSubmitted) {
+            if (q.type === 'multiple' && mode === 'practice' && !isEvaluated) {
                 const checkBtn = document.createElement('button');
                 checkBtn.className = 'btn-action btn-primary btn-check-answer';
                 checkBtn.style.marginTop = '15px';
@@ -160,7 +178,7 @@ const UIManager = (() => {
                 : q.explanation;
             const hasExpText = q.explanation && q.explanation.trim().length > 0;
             expDiv.innerHTML = `<strong>${t('explanation')}</strong> ${safeExpText}`;
-            if (((mode === 'practice' && hasAnswered) || isSubmitted) && hasExpText) {
+            if (isEvaluated && hasExpText) {
                 expDiv.style.display = 'block';
             } else {
                 expDiv.style.display = 'none';
@@ -256,7 +274,7 @@ const UIManager = (() => {
         }
     }
 
-    function updateSingleQuestion(qIndex, questions, userAnswers, flaggedQuestions, mode, isSubmitted) {
+    function updateSingleQuestion(qIndex, questions, userAnswers, flaggedQuestions, mode, isSubmitted, evaluatedQuestions) {
         const block = document.getElementById('qblock-' + qIndex);
         if (!block) return;
         const q = questions[qIndex];
@@ -265,6 +283,7 @@ const UIManager = (() => {
         const selected = userAnswers[qIndex] || [];
         const hasAnswered = selected.length > 0;
         const isFlagged = flaggedQuestions.has(qIndex);
+        const isEvaluated = isSubmitted || (mode === 'practice' && evaluatedQuestions && evaluatedQuestions.has(qIndex));
 
         // Update Flag button
         const flagBtn = block.querySelector('.flag-btn');
@@ -273,10 +292,34 @@ const UIManager = (() => {
             flagBtn.innerHTML = (isFlagged ? '🚩 ' : '🏳️ ') + t('reviewFlag');
         }
 
+        // Update Header Status Badge
+        const titleEl = block.querySelector('.question-title');
+        if (titleEl) {
+            const oldBadge = titleEl.querySelector('.badge-q-status');
+            if (oldBadge) oldBadge.remove();
+
+            if (isEvaluated) {
+                const badge = document.createElement('span');
+                if (hasAnswered) {
+                    if (QuizEngine.isAnswerCorrect(q, selected)) {
+                        badge.className = 'badge-q-status badge-q-correct';
+                        badge.innerText = '✓ ' + (t('badgeCorrect') || 'Đúng');
+                    } else {
+                        badge.className = 'badge-q-status badge-q-incorrect';
+                        badge.innerText = '✗ ' + (t('badgeIncorrect') || 'Sai');
+                    }
+                } else if (isSubmitted) {
+                    badge.className = 'badge-q-status badge-q-unattempted';
+                    badge.innerText = '⚪ ' + (t('badgeUnattempted') || 'Chưa làm');
+                }
+                titleEl.appendChild(badge);
+            }
+        }
+
         // Update Options
         const optContainer = block.querySelector('.options-container');
         if (optContainer) {
-            if ((mode === 'practice' && hasAnswered) || isSubmitted) {
+            if (isEvaluated) {
                 optContainer.classList.add('disabled-options');
             } else {
                 optContainer.classList.remove('disabled-options');
@@ -285,13 +328,13 @@ const UIManager = (() => {
             const optDivs = optContainer.querySelectorAll('.option');
             optDivs.forEach((optDiv, oIndex) => {
                 const isSelected = selected.includes(oIndex);
-                const isCorrect = q.answers.includes(oIndex);
+                const isCorrect = q.answers.map(Number).includes(oIndex);
 
                 optDiv.classList.remove('selected', 'correct', 'incorrect');
                 if (isSelected) optDiv.classList.add('selected');
                 optDiv.setAttribute('aria-checked', isSelected ? 'true' : 'false');
 
-                if ((mode === 'practice' && hasAnswered) || isSubmitted) {
+                if (isEvaluated) {
                     if (isCorrect) optDiv.classList.add('correct');
                     else if (isSelected) optDiv.classList.add('incorrect');
                 }
@@ -301,21 +344,21 @@ const UIManager = (() => {
         // Multiple choice check answer button
         const checkBtn = block.querySelector('.btn-check-answer');
         if (checkBtn) {
-            checkBtn.style.display = (q.type === 'multiple' && mode === 'practice' && !hasAnswered && !isSubmitted) ? 'inline-flex' : 'none';
+            checkBtn.style.display = (q.type === 'multiple' && mode === 'practice' && !isEvaluated) ? 'inline-flex' : 'none';
         }
 
         // Update explanation
         const expDiv = document.getElementById('exp-' + qIndex);
         if (expDiv) {
             const hasExpText = q.explanation && q.explanation.trim().length > 0;
-            expDiv.style.display = (((mode === 'practice' && hasAnswered) || isSubmitted) && hasExpText) ? 'block' : 'none';
+            expDiv.style.display = (isEvaluated && hasExpText) ? 'block' : 'none';
         }
     }
 
     let activeViewingQuestionIndex = 0;
     let scrollObserver = null;
 
-    function renderPalette(questions, userAnswers, flaggedQuestions, mode, isSubmitted, onSelectQuestion) {
+    function renderPalette(questions, userAnswers, flaggedQuestions, mode, isSubmitted, onSelectQuestion, evaluatedQuestions) {
         const grid = document.getElementById('palette-grid');
         if (!grid) return;
 
@@ -346,6 +389,7 @@ const UIManager = (() => {
             const answers = userAnswers[qIndex] || [];
             const hasAnswered = answers.length > 0;
             const isFlagged = flaggedQuestions.has(qIndex);
+            const isEvaluated = isSubmitted || (mode === 'practice' && evaluatedQuestions && evaluatedQuestions.has(qIndex));
 
             if (hasAnswered) countAnswered++;
 
@@ -355,15 +399,18 @@ const UIManager = (() => {
 
             if (isFlagged) btn.classList.add('flagged');
 
-            const correct = QuizEngine.isAnswerCorrect(q, answers);
-            if (mode === 'practice' && hasAnswered) {
-                if (correct) btn.classList.add('correct');
-                else btn.classList.add('incorrect');
-            } else if (mode === 'exam') {
-                if (isSubmitted) {
+            if (isEvaluated) {
+                if (hasAnswered) {
+                    const correct = QuizEngine.isAnswerCorrect(q, answers);
                     if (correct) btn.classList.add('correct');
                     else btn.classList.add('incorrect');
-                } else if (hasAnswered) {
+                } else {
+                    btn.classList.add('unattempted');
+                }
+            } else if (hasAnswered) {
+                if (mode === 'practice' && q.type === 'multiple') {
+                    btn.classList.add('in-progress');
+                } else {
                     btn.classList.add('answered-exam');
                 }
             }
@@ -485,16 +532,27 @@ const UIManager = (() => {
         if (typeof onFilterChange === 'function') onFilterChange();
     }
 
-    function updateStats(questions, userAnswers, mode, isSubmitted) {
+    function updateStats(questions, userAnswers, mode, isSubmitted, evaluatedQuestions) {
         let answered = 0;
         let correct = 0;
         let incorrect = 0;
+        let unattempted = 0;
+
         questions.forEach((q, qIndex) => {
-            const ans = userAnswers[qIndex];
-            if (ans && ans.length > 0) {
-                answered++;
-                if (QuizEngine.isAnswerCorrect(q, ans)) correct++;
-                else incorrect++;
+            const ans = userAnswers[qIndex] || [];
+            const hasAns = ans.length > 0;
+            if (hasAns) answered++;
+            else unattempted++;
+
+            const isEvaluated = isSubmitted || (mode === 'practice' && evaluatedQuestions && evaluatedQuestions.has(qIndex));
+            if (isEvaluated) {
+                if (hasAns) {
+                    if (QuizEngine.isAnswerCorrect(q, ans)) {
+                        correct++;
+                    } else {
+                        incorrect++;
+                    }
+                }
             }
         });
 
@@ -502,6 +560,8 @@ const UIManager = (() => {
         const elTotal = document.getElementById('total-questions');
         const elCorrect = document.getElementById('correct-count');
         const elIncorrect = document.getElementById('incorrect-count');
+        const elUnattempted = document.getElementById('unattempted-count');
+        const wrapUnattempted = document.getElementById('stat-unattempted-wrap');
         const elBar = document.getElementById('quiz-progress-bar');
 
         if (elAnswered) elAnswered.innerText = answered;
@@ -510,9 +570,16 @@ const UIManager = (() => {
         if (mode === 'practice' || isSubmitted) {
             if (elCorrect) elCorrect.innerText = correct;
             if (elIncorrect) elIncorrect.innerText = incorrect;
+            if (isSubmitted) {
+                if (wrapUnattempted) wrapUnattempted.style.display = 'inline';
+                if (elUnattempted) elUnattempted.innerText = unattempted;
+            } else {
+                if (wrapUnattempted) wrapUnattempted.style.display = 'none';
+            }
         } else {
             if (elCorrect) elCorrect.innerText = '-';
             if (elIncorrect) elIncorrect.innerText = '-';
+            if (wrapUnattempted) wrapUnattempted.style.display = 'none';
         }
 
         const pct = questions.length > 0 ? (answered / questions.length) * 100 : 0;
@@ -549,10 +616,16 @@ const UIManager = (() => {
         // Retake incorrect questions button
         const retakeBtn = document.getElementById('txt-modal-retake');
         if (retakeBtn) {
-            const mistakesCount = (results.incorrect || 0) + (results.unattempted || 0);
-            if (mistakesCount > 0) {
+            const totalMissed = (results.incorrect || 0) + (results.unattempted || 0);
+            if (totalMissed > 0) {
                 retakeBtn.style.display = 'inline-flex';
-                retakeBtn.innerText = t('btnRetakeIncorrect', mistakesCount);
+                if (results.unattempted > 0 && results.incorrect > 0) {
+                    retakeBtn.innerText = t('btnRetakeMixed', totalMissed, results.incorrect, results.unattempted);
+                } else if (results.unattempted > 0) {
+                    retakeBtn.innerText = t('btnRetakeUnattempted', results.unattempted);
+                } else {
+                    retakeBtn.innerText = t('btnRetakeIncorrect', results.incorrect);
+                }
             } else {
                 retakeBtn.style.display = 'none';
             }

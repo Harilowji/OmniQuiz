@@ -89,6 +89,7 @@
         if (timerInterval) clearInterval(timerInterval);
         QuizEngine.state.questions = [];
         QuizEngine.state.userAnswers = {};
+        QuizEngine.state.evaluatedQuestions = new Set();
         QuizEngine.state.flaggedQuestions = new Set();
         QuizEngine.state.customImages = {};
         QuizEngine.state.isSubmitted = false;
@@ -782,6 +783,7 @@
         if (isNewExam) {
             StorageManager.clearState();
             QuizEngine.state.userAnswers = {};
+            QuizEngine.state.evaluatedQuestions = new Set();
             QuizEngine.state.flaggedQuestions = new Set();
             QuizEngine.state.customImages = (initialCustomImages && Object.keys(initialCustomImages).length > 0)
                 ? Object.assign({}, initialCustomImages)
@@ -797,6 +799,7 @@
             const saved = StorageManager.loadState();
             if (saved && !saved.isSubmitted && saved.questionCount === parsed.length) {
                 QuizEngine.state.userAnswers = saved.answers || {};
+                QuizEngine.state.evaluatedQuestions = saved.evaluated || new Set();
                 QuizEngine.state.flaggedQuestions = saved.flagged || new Set();
                 QuizEngine.state.customImages = saved.customImages || {};
                 QuizEngine.state.isSubmitted = false;
@@ -804,6 +807,7 @@
             } else {
                 StorageManager.clearState();
                 QuizEngine.state.userAnswers = {};
+                QuizEngine.state.evaluatedQuestions = new Set();
                 QuizEngine.state.flaggedQuestions = new Set();
                 QuizEngine.state.customImages = (initialCustomImages && Object.keys(initialCustomImages).length > 0)
                     ? Object.assign({}, initialCustomImages)
@@ -841,14 +845,16 @@
             onCheckAnswerClicked,
             QuizEngine.state.customImages,
             onImageAttached,
-            onImageRemoved
+            onImageRemoved,
+            QuizEngine.state.evaluatedQuestions
         );
         refreshPalette();
         UIManager.updateStats(
             QuizEngine.state.questions,
             QuizEngine.state.userAnswers,
             QuizEngine.state.currentMode,
-            QuizEngine.state.isSubmitted
+            QuizEngine.state.isSubmitted,
+            QuizEngine.state.evaluatedQuestions
         );
     }
 
@@ -867,7 +873,8 @@
             QuizEngine.state.flaggedQuestions,
             QuizEngine.state.currentMode,
             QuizEngine.state.isSubmitted,
-            (qIndex) => UIManager.scrollToQuestion(qIndex)
+            (qIndex) => UIManager.scrollToQuestion(qIndex),
+            QuizEngine.state.evaluatedQuestions
         );
     }
 
@@ -892,14 +899,16 @@
             QuizEngine.state.userAnswers,
             QuizEngine.state.flaggedQuestions,
             QuizEngine.state.currentMode,
-            QuizEngine.state.isSubmitted
+            QuizEngine.state.isSubmitted,
+            QuizEngine.state.evaluatedQuestions
         );
         refreshPalette();
         UIManager.updateStats(
             QuizEngine.state.questions,
             QuizEngine.state.userAnswers,
             QuizEngine.state.currentMode,
-            QuizEngine.state.isSubmitted
+            QuizEngine.state.isSubmitted,
+            QuizEngine.state.evaluatedQuestions
         );
         UIManager.popAnsweredPaletteButton(qIndex);
     }
@@ -913,12 +922,21 @@
             QuizEngine.state.userAnswers,
             QuizEngine.state.flaggedQuestions,
             QuizEngine.state.currentMode,
-            QuizEngine.state.isSubmitted
+            QuizEngine.state.isSubmitted,
+            QuizEngine.state.evaluatedQuestions
         );
         refreshPalette();
     }
 
     function onCheckAnswerClicked(qIndex) {
+        const sel = QuizEngine.state.userAnswers[qIndex] || [];
+        if (sel.length === 0) {
+            UIManager.showToast(QuizEngine.state.currentLang === 'vi'
+                ? (t('toastSelectFirst') || 'Vui lòng chọn ít nhất một đáp án trước khi kiểm tra!')
+                : (t('toastSelectFirst') || 'Please select at least one option before checking!'));
+            return;
+        }
+
         const correct = QuizEngine.evaluateQuestion(qIndex);
         if (correct === null) return;
 
@@ -932,14 +950,16 @@
             QuizEngine.state.userAnswers,
             QuizEngine.state.flaggedQuestions,
             QuizEngine.state.currentMode,
-            QuizEngine.state.isSubmitted
+            QuizEngine.state.isSubmitted,
+            QuizEngine.state.evaluatedQuestions
         );
         refreshPalette();
         UIManager.updateStats(
             QuizEngine.state.questions,
             QuizEngine.state.userAnswers,
             QuizEngine.state.currentMode,
-            QuizEngine.state.isSubmitted
+            QuizEngine.state.isSubmitted,
+            QuizEngine.state.evaluatedQuestions
         );
         UIManager.popAnsweredPaletteButton(qIndex);
     }

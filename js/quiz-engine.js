@@ -5,6 +5,7 @@ const QuizEngine = (() => {
     let state = {
         questions: [],
         userAnswers: {}, // { [qIndex]: [selectedIndices] }
+        evaluatedQuestions: new Set(), // { qIndex }
         flaggedQuestions: new Set(),
         customImages: {}, // { [qIndex]: base64Data }
         currentMode: 'practice', // 'practice' | 'exam'
@@ -22,6 +23,7 @@ const QuizEngine = (() => {
     function setQuestions(newQuestions) {
         state.questions = newQuestions;
         state.userAnswers = {};
+        state.evaluatedQuestions = new Set();
         state.flaggedQuestions.clear();
         state.customImages = {};
         state.isSubmitted = false;
@@ -64,8 +66,7 @@ const QuizEngine = (() => {
             if (userAns.length === 0) {
                 mistakeIndices.push(idx); // Unattempted
             } else {
-                const isCorrect = q.answers.length === userAns.length &&
-                    q.answers.every(a => userAns.includes(a));
+                const isCorrect = isAnswerCorrect(q, userAns);
                 if (!isCorrect) {
                     mistakeIndices.push(idx); // Incorrect
                 }
@@ -86,6 +87,7 @@ const QuizEngine = (() => {
         state.questions = filteredQuestions;
         state.customImages = filteredImages;
         state.userAnswers = {};
+        state.evaluatedQuestions.clear();
         state.flaggedQuestions.clear();
         state.isSubmitted = false;
         state.incorrectQData = [];
@@ -114,11 +116,15 @@ const QuizEngine = (() => {
         const q = state.questions[qIndex];
         if (!q) return false;
 
+        // In practice mode, lock option changes if already evaluated
+        if (state.currentMode === 'practice' && state.evaluatedQuestions.has(qIndex)) {
+            return false;
+        }
+
         const currentSelected = state.userAnswers[qIndex] ? [...state.userAnswers[qIndex]] : [];
 
         if (state.currentMode === 'practice') {
             if (q.type === 'single') {
-                if (currentSelected.length > 0) return false; // Already locked
                 state.userAnswers[qIndex] = [oIndex];
             } else {
                 const pos = currentSelected.indexOf(oIndex);
@@ -150,21 +156,38 @@ const QuizEngine = (() => {
     }
 
     function isAnswerCorrect(q, selectedIndices) {
-        if (!q || !Array.isArray(selectedIndices) || selectedIndices.length !== q.answers.length) {
+        if (!q || !Array.isArray(q.answers) || q.answers.length === 0) {
             return false;
         }
-        return q.answers.every(ans => selectedIndices.includes(ans));
+        if (!Array.isArray(selectedIndices) || selectedIndices.length === 0) {
+            return false;
+        }
+        const cleanSelected = selectedIndices.map(Number).filter(n => !isNaN(n));
+        const cleanAnswers = q.answers.map(Number).filter(n => !isNaN(n));
+
+        const selSet = new Set(cleanSelected);
+        const ansSet = new Set(cleanAnswers);
+
+        if (cleanSelected.length !== selSet.size || selSet.size !== ansSet.size) {
+            return false;
+        }
+        for (const val of ansSet) {
+            if (!selSet.has(val)) return false;
+        }
+        return true;
     }
 
     function evaluateQuestion(qIndex) {
         const q = state.questions[qIndex];
+        if (!q) return null;
         const sel = state.userAnswers[qIndex] || [];
         if (sel.length === 0) return null;
 
+        state.evaluatedQuestions.add(qIndex);
         const correct = isAnswerCorrect(q, sel);
         if (!correct) {
             if (!state.incorrectQData.some(item => item.qIndex === qIndex)) {
-                state.incorrectQData.push({ qIndex, q });
+                state.incorrectQData.push({ qIndex, q, userAnswers: sel, reason: 'incorrect' });
             }
         }
         return correct;
@@ -228,39 +251,45 @@ const QuizEngine = (() => {
 
         // Reset answers and flags for a fresh randomized test
         state.userAnswers = {};
+        state.evaluatedQuestions.clear();
         state.flaggedQuestions.clear();
         state.incorrectQData = [];
     }
 
     function calculateResults() {
         let correct = 0;
-        let answered = 0;
+        let incorrectAttempted = 0;
+        let unattempted = 0;
         state.incorrectQData = [];
 
         state.questions.forEach((q, qIndex) => {
             const sel = state.userAnswers[qIndex] || [];
             if (sel.length > 0) {
-                answered++;
                 if (isAnswerCorrect(q, sel)) {
                     correct++;
                 } else {
-                    state.incorrectQData.push({ qIndex, q });
+                    incorrectAttempted++;
+                    state.incorrectQData.push({ qIndex, q, userAnswers: sel, reason: 'incorrect' });
                 }
             } else {
-                state.incorrectQData.push({ qIndex, q });
+                unattempted++;
+                state.incorrectQData.push({ qIndex, q, userAnswers: [], reason: 'unattempted' });
             }
         });
 
-        const unattempted = state.questions.length - answered;
-        const score100 = state.questions.length > 0 ? Math.round((correct / state.questions.length) * 100) : 0;
-        const score10 = state.questions.length > 0 ? ((correct / state.questions.length) * 10).toFixed(2) : '0.00';
+        const total = state.questions.length;
+        const totalIncorrect = incorrectAttempted + unattempted;
+        const answered = total - unattempted;
+        const score100 = total > 0 ? Math.round((correct / total) * 100) : 0;
+        const score10 = total > 0 ? ((correct / total) * 10).toFixed(2) : '0.00';
 
         return {
-            total: state.questions.length,
+            total,
             answered,
             correct,
-            incorrect: answered - correct,
+            incorrect: incorrectAttempted,
             unattempted,
+            totalIncorrect,
             score100,
             score10,
             violations: state.violationCount,
@@ -281,7 +310,13 @@ const QuizEngine = (() => {
         if (state.incorrectQData.length === 0) {
             html += `<p style="text-align:center; color:#16a34a; font-size:16px; margin:40px 0;"><strong>${t('pdfOutstanding')}</strong></p>`;
         } else {
-            html += `<h3 style="border-bottom:2px solid #ef4444; padding-bottom:6px; color:#ef4444; margin-bottom:18px;">${t('pdfReviewSection')} (${state.incorrectQData.length})</h3>`;
+            const incorrectCount = state.incorrectQData.filter(i => i.reason === 'incorrect').length;
+            const unattemptedCount = state.incorrectQData.filter(i => i.reason === 'unattempted').length;
+            const breakdown = (unattemptedCount > 0 && incorrectCount > 0)
+                ? `(${state.incorrectQData.length} câu: ${incorrectCount} làm sai, ${unattemptedCount} chưa làm)`
+                : `(${state.incorrectQData.length} câu)`;
+
+            html += `<h3 style="border-bottom:2px solid #ef4444; padding-bottom:6px; color:#ef4444; margin-bottom:18px;">${t('pdfReviewSection')} ${breakdown}</h3>`;
             state.incorrectQData.forEach(item => {
                 const q = item.q;
                 const correctTexts = q.answers.map(idx => q.options[idx]).join(' | ');
@@ -300,10 +335,14 @@ const QuizEngine = (() => {
                     `;
                 }
 
+                const statusTag = item.reason === 'unattempted'
+                    ? `<span style="background:#e2e8f0; color:#475569; padding:2px 8px; border-radius:4px; font-size:11px; margin-left:8px; font-weight:normal;">[${t('badgeUnattempted') || 'Chưa làm'}]</span>`
+                    : `<span style="background:#fee2e2; color:#dc2626; padding:2px 8px; border-radius:4px; font-size:11px; margin-left:8px; font-weight:normal;">[${t('badgeIncorrect') || 'Làm sai'}]</span>`;
+
                 html += `
                     <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #cbd5e1; border-radius: 6px; page-break-inside: avoid; background:#f8fafc;">
                         <div style="font-weight:bold; font-size:14px; margin-bottom:8px; color:#0f172a;">
-                            ${t('questionLabel') || 'Câu'} ${item.qIndex + 1}: ${safeQ}
+                            ${t('questionLabel') || 'Câu'} ${item.qIndex + 1}: ${safeQ} ${statusTag}
                         </div>
                         ${imgHtml}
                         <div style="color:#15803d; font-size:13px; margin-bottom:6px;">
