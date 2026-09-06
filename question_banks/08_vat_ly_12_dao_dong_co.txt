@@ -1,0 +1,41 @@
+ĐỀ ÔN TẬP VẬT LÝ 12 - CHƯƠNG DAO ĐỘNG CƠ HỌC
+
+Câu 1: Một vật dao động điều hòa theo phương trình $x = A \cos(\omega t + \varphi)$. Đại lượng $\omega$ được gọi là:
+A. Tần số dao động
+B. Chu kì dao động
+C. Tần số góc của dao động
+D. Biên độ dao động
+Đáp án: C
+Lời giải: Trong phương trình dao động điều hòa, $\omega$ là tần số góc với đơn vị là rad/s.
+
+Câu 2: Chu kì dao động điều hòa của con lắc lò xo có độ cứng $k$ và vật nặng khối lượng $m$ là:
+A. $T = 2\pi \sqrt{\frac{m}{k}}$
+B. $T = 2\pi \sqrt{\frac{k}{m}}$
+C. $T = \frac{1}{2\pi} \sqrt{\frac{m}{k}}$
+D. $T = \frac{1}{2\pi} \sqrt{\frac{k}{m}}$
+Đáp án: A
+Lời giải: Công thức chu kì dao động của con lắc lò xo là $T = 2\pi \sqrt{m/k}$.
+
+Câu 3: Vận tốc của chất điểm dao động điều hòa biến thiên:
+A. Cùng pha với li độ
+B. Ngược pha với li độ
+C. Sớm pha $\frac{\pi}{2}$ so với li độ
+D. Trễ pha $\frac{\pi}{2}$ so với li độ
+Đáp án: C
+Lời giải: Ta có $v = x' = -\omega A \sin(\omega t + \varphi) = \omega A \cos(\omega t + \varphi + \frac{\pi}{2})$. Vận tốc sớm pha $\pi/2$ so với li độ.
+
+Câu 4: Gia tốc của một vật dao động điều hòa đạt giá trị cực đại khi vật ở vị trí:
+A. Cân bằng theo chiều dương
+B. Biên âm
+C. Biên dương
+D. Cân bằng theo chiều âm
+Đáp án: B
+Lời giải: Biểu thức gia tốc $a = -\omega^2 x$. Khi vật ở biên âm ($x = -A$), gia tốc đạt cực đại $a_{\max} = \omega^2 A$.
+
+Câu 5: Hiện tượng cộng hưởng cơ xảy ra khi:
+A. Tần số lực cưỡng bức bằng tần số dao động riêng của hệ
+B. Tần số lực cưỡng bức rất lớn so với tần số riêng
+C. Biên độ lực cưỡng bức đạt cực đại
+D. Chu kì dao động riêng giảm về 0
+Đáp án: A
+Lời giải: Hiện tượng cộng hưởng xảy ra khi tần số của ngoại lực cưỡng bức $f$ bằng tần số riêng $f_0$ của hệ dao động, làm biên độ dao động đạt giá trị cực đại.

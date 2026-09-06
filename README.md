@@ -1,57 +1,67 @@
-# 📐 Math Quiz CBT Platform (Computer-Based Testing)
+# 🎓 OmniQuiz - Multi-Subject CBT & Exam Preparation Platform
 
-An interactive, high-performance web application designed for mathematical computer-based testing, featuring full **LaTeX/MathJax 3** formula rendering, dynamic **Question Palette**, multi-mode testing (**Practice** vs. **Exam**), bilingual internationalization (**Tiếng Việt / English**), 4 distinct dynamic animated UI themes, auto-save state persistence, audio feedback, client-side **Word (.docx) parsing**, and **PDF report export**.
+An interactive, modern, high-performance web platform designed for computer-based testing (CBT) and exam practice across **all academic subjects** (Mathematics, Physics, Chemistry, English, Social Sciences, History, Geography, SAT, etc.). OmniQuiz features full **LaTeX/MathJax 3** formula rendering, Azota-inspired **Interactive Question Palette**, dual testing modes (**Practice** vs. **Exam**), bilingual internationalization (**Tiếng Việt / English**), 4 distinct dynamic animated themes, state persistence via LocalStorage, audio feedback, client-side **Microsoft Word (.docx)** and **.txt** file parsing, and **PDF performance report export**.
 
-![MathJax](https://img.shields.io/badge/MathJax-3.0-blue?style=for-the-badge)
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/Vanilla_JS-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+[![GitHub Pages](https://img.shields.io/badge/Deploy-GitHub_Pages-22c55e?style=for-the-badge&logo=github)](https://harilowji.github.io/OmniQuiz/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+[![MathJax 3](https://img.shields.io/badge/MathJax-3.0-008080?style=for-the-badge)](https://www.mathjax.org/)
+[![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES6+-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](#)
+[![Responsive UI](https://img.shields.io/badge/UI-Responsive_&_PWA-purple?style=for-the-badge)](#)
 
 ---
 
-## 🚀 Key Features
+## 🌟 Highlights & Capabilities
 
-- **LaTeX & MathJax 3 Engine:** Seamlessly formats complex algebraic, calculus, and arithmetic notation in real time with HTML entity shielding to protect inequality formulas (`$0 < x < 5$`).
-- **Flexible File Import (.txt & .docx Word):**
-  - Reads modern Microsoft Word files (`.docx`) client-side using `mammoth.js`.
-  - Supports both drag-and-drop and standard file browsing.
-  - Built-in instant "Nạp đề thi mẫu (50 câu)" button for zero-click testing.
-- **Dual-Engine Question Parser:**
-  - **Format 1 (Standard CBT):** `Q:`, `T:`, `O:`, `A:`, `E:`.
-  - **Format 2 (Vietnamese School & Natural Exam):** `Câu 1:`, `A.`, `B.`, `C.`, `D.`, `Đáp án: A`, `Lời giải: ...`. Supports horizontal options (`A. 1  B. 2  C. 3  D. 4`).
-- **Interactive Question Palette (Bản đồ câu hỏi):**
-  - Instant navigation to any question with smooth scrolling & highlight pulse animations.
-  - Color-coded badges: 🟢 Correct, 🔴 Incorrect, 🔵 Answered (Exam), 🟡 Flagged for Review 🚩, ⚪ Unanswered.
-  - Multi-criteria filter tabs: *All*, *Answered*, *Flagged*, *Unanswered*.
+- **Universal Multi-Subject Architecture:**
+  - Built-in support for multiple subjects: **Toán học (Math)**, **Vật lý (Physics)**, **Hóa học (Chemistry)**, **Tiếng Anh (English)**, **Lịch sử & Địa lý (Social Sciences)**, and **Digital SAT**.
+  - Formats any subject exam seamlessly without backend server dependencies.
+- **LaTeX & MathJax 3 Engine:**
+  - Seamlessly renders complex formulas, fractions, chemical equations, coordinate geometries, and calculus notation in real time.
+  - Built-in HTML-entity shielding prevents equation collision with `<` or `>` characters (e.g. `$0 < x < 5$`).
+- **Flexible Client-Side Import (.txt & .docx Word):**
+  - Instant client-side parsing of Microsoft Word files (`.docx`) with `mammoth.js` without uploading files to third-party servers.
+  - Drag-and-drop or standard file picker.
+  - Zero-click 50-question instant demo button.
+- **Dual-Engine Smart Question Parser:**
+  - **Format 1 (Vietnamese School & Natural Exam):** `Câu 1:`, `A.`, `B.`, `C.`, `D.`, `Đáp án: A`, `Lời giải: ...`. Supports horizontal options (`A. 1  B. 2  C. 3  D. 4`) and isolated trailing answer keys.
+  - **Format 2 (Standard CBT):** `Q:`, `T:`, `O:`, `A:`, `E:`.
+- **Interactive Question Palette (Bản đồ câu hỏi - Azota Inspired):**
+  - Smooth scroll and glowing pulse highlight when jumping to questions.
+  - Real-time color-coded badges:
+    - 🟢 **Correct** (Practice Mode)
+    - 🔴 **Incorrect** (Practice Mode)
+    - 🔵 **Answered** (Exam Mode)
+    - 🟡 **Flagged for Review 🚩**
+    - ⚪ **Unanswered**
+  - Quick filter tabs: *Tất cả (All)*, *Đã làm (Answered)*, *Cần xem (Flagged 🚩)*, *Chưa làm (Unanswered)*.
 - **Dual Testing Modes:**
-  - **🎯 Practice Mode (Luyện tập):** Instant evaluation, audio feedback (`ding`/`buzz`), and immediate step-by-step explanations.
-  - **⏱️ Exam Mode (Thi thử):** Simulates real standardized exam conditions with customizable countdown timer and final grading report.
+  - **🎯 Practice Mode (Luyện tập):** Immediate answer validation, cheerful sound effects (`ding`/`buzz`), and instant explanations.
+  - **⏱️ Exam Mode (Thi thử):** Official test environment with customizable countdown timer, answer shielding, and final performance analytics.
 - **Auto-Save & State Persistence (LocalStorage):**
-  - Preserves user selections, question flags, and countdown timer across browser refreshes (`F5`).
+  - Automatically saves progress, selected options, flagged questions, and remaining time. Cleanly resets when loading new test files.
 - **Bilingual Interface (i18n):**
-  - Switch instantly between 🇻🇳 **Tiếng Việt** and 🇬🇧 **English** with real-time text re-rendering.
+  - One-click toggle between 🇻🇳 **Tiếng Việt** and 🇬🇧 **English**.
 - **4 Dynamic Animated Background Themes:**
-  1. `Academic (Math)`: Animated engineering blueprint & graph paper coordinate drift (*Merriweather*).
-  2. `Minimalist`: Modern flowing aurora mesh gradient with frosted glass cards (*Inter*).
-  3. `Cyberpunk`: Retro-futuristic moving neon scanlines, dark cyber grid, and glowing borders (*Orbitron*).
-  4. `Playful`: Floating pastel candy bubbles and rounded 3D cards (*Quicksand*).
-- **Celebration Confetti & Scoring:**
-  - Lightweight Canvas particle confetti animation for scores $\ge 75\%$.
-  - Scaled scoring system (score out of 100 with correct/incorrect breakdown).
-- **Client-Side PDF Generation:**
-  - Exports a styled review sheet of all incorrectly answered questions using `html2pdf.js`.
-- **Shuffle Engine (Đảo đề):**
-  - Randomizes question orders using the Fisher-Yates algorithm for anti-memorization practice.
+  1. `Academic`: Engineering grid & blueprint drift with serif typography (*Merriweather*).
+  2. `Minimalist`: Smooth modern aurora gradient mesh with frosted glassmorphism (*Inter*).
+  3. `Cyberpunk`: Dark futuristic grid with moving neon scanlines and high-contrast glowing elements (*Orbitron*).
+  4. `Playful`: Floating pastel candy bubbles and soft 3D borders (*Quicksand*).
+- **Celebration Confetti & Scoring Analytics:**
+  - Dynamic Canvas particle confetti for test scores $\ge 75\%$.
+  - Comprehensive scoring overview with accuracy breakdown.
+- **Client-Side PDF Error Review Sheet:**
+  - Export all incorrect questions with complete answer keys and explanations to PDF using `html2pdf.js`.
+- **Fisher-Yates Shuffle Engine (Đảo đề):**
+  - Randomize questions and options on demand for effective review and anti-memorization practice.
 
 ---
 
 ## 📂 Project Structure
 
 ```text
-quiz_app/
-├── index.html            # Clean HTML5 entry point linking modular assets & PWA manifest
-├── manifest.json         # Web App Manifest for PWA installation
+OmniQuiz/
+├── index.html            # Application entry point with semantic HTML5 & PWA manifest
+├── manifest.json         # Progressive Web App (PWA) configuration
 ├── LICENSE               # MIT Open Source License
 ├── .gitignore            # Git exclusion rules
 ├── .github/
@@ -61,7 +71,7 @@ quiz_app/
 │   ├── main.css          # Base resets, container layout, scrollbars
 │   ├── themes.css        # 4 Themes with dynamic animated backgrounds & glassmorphism
 │   ├── components.css    # UI components (navbar, cards, options, dropzone, palette, modal)
-│   └── animations.css    # Dynamic keyframes (academicGridDrift, cyberpunkScanline, etc.)
+│   └── animations.css    # Keyframe animations (academicGridDrift, cyberpunkScanline, pulse)
 ├── js/
 │   ├── i18n.js           # Multi-language dictionary (Tiếng Việt / English)
 │   ├── audio.js          # Audio engine (HTML5 Audio + Web Audio API synthesizer)
@@ -71,22 +81,24 @@ quiz_app/
 │   ├── quiz-engine.js    # Core test logic, scoring, and PDF report generator
 │   ├── ui.js             # DOM renderer, granular element updates & modal controller
 │   └── app.js            # Main application coordinator, drag-and-drop & event binder
-├── question_banks/       # Curated topic-based exam banks (Ready to use & edit)
-│   ├── HUONG_DAN_SOAN_DE.txt # Detailed guide for creating custom exams
-│   ├── 01_khao_sat_ham_so.txt # 10 calculus & function analysis questions
-│   ├── 02_mu_va_logarit.txt   # 10 exponent & logarithm questions
-│   ├── 03_nguyen_ham_tich_phan.txt # 10 antiderivative & integral questions
-│   ├── 04_hinh_hoc_oxyz.txt   # 10 Oxyz coordinate geometry questions
-│   ├── 05_de_thi_thpt_tong_hop.txt # 20 comprehensive THPT national exam questions
-│   ├── 06_sat_math_cbt_english.txt # 10 Digital SAT Math practice questions (English)
-│   ├── 07_de_test_nhanh_5_cau.txt  # 5 quick test questions
-│   └── questions.txt          # 50 classic high-school math questions
+├── question_banks/       # Curated subject-specific question banks
+│   ├── HUONG_DAN_SOAN_DE.txt                # Complete formatting guide for educators
+│   ├── 01_khao_sat_ham_so.txt               # Math: Calculus & function analysis
+│   ├── 02_mu_va_logarit.txt                 # Math: Exponent & logarithm
+│   ├── 03_nguyen_ham_tich_phan.txt          # Math: Antiderivative & integral
+│   ├── 04_hinh_hoc_oxyz.txt                 # Math: Oxyz coordinate geometry
+│   ├── 05_de_thi_thpt_tong_hop.txt          # Math: 20 comprehensive THPT questions
+│   ├── 06_sat_math_cbt_english.txt          # SAT: Digital SAT Math practice (English)
+│   ├── 07_de_test_nhanh_5_cau.txt           # Quick 5-question test
+│   ├── 08_vat_ly_12_dao_dong_co.txt         # Physics: Harmonic oscillation & resonance
+│   ├── 09_hoa_hoc_12_este_lipit.txt         # Chemistry: Esters & lipids
+│   ├── 10_tieng_anh_thpt_reading_grammar.txt# English: High school grammar & vocabulary
+│   ├── 11_lich_su_dia_ly_tong_hop.txt       # Social Sciences: History & Geography
+│   └── questions.txt                        # High-school math bank (50 questions)
 ├── data/
-│   ├── questions.txt     # Standard CBT format dataset (50 math questions)
-│   ├── de_thi_toan_mau.txt # Vietnamese school format sample exam
-│   └── sample_math_exam.docx # Sample Microsoft Word (.docx) exam file
-├── questions.txt         # Root fallback dataset
-├── generate_questions.py # Python utility to synthesize question datasets
+│   ├── questions.txt                        # Standard CBT format dataset
+│   ├── de_thi_toan_mau.txt                  # Natural school format dataset
+│   └── sample_math_exam.docx                # Sample Microsoft Word (.docx) exam file
 ├── ding.wav              # Audio asset (Correct answer)
 ├── buzz.wav              # Audio asset (Incorrect answer)
 └── README.md             # Project documentation and architecture guide
@@ -94,41 +106,40 @@ quiz_app/
 
 ---
 
-## 📥 Getting Started
+## 🚀 Getting Started
 
-### 1. Local Browser (Zero Setup)
-Simply double-click `index.html` to open it in Chrome, Edge, Brave, or Firefox.
-- Click **"Nạp đề thi mẫu (50 câu)"** to start immediately.
-- Or drag and drop any `.txt` or `.docx` file into the upload zone!
+### 1. Direct Browser Access (Zero Setup)
+Simply double-click `index.html` to open in any modern browser (Chrome, Edge, Brave, Firefox, Safari).
+- Click **"Nạp đề thi mẫu (50 câu)"** to take an exam instantly.
+- Or drag and drop any `.txt` or `.docx` file from `question_banks/` directly into the web page!
 
-### 2. Local Web Server (Recommended)
-Run a lightweight HTTP server:
+### 2. Local HTTP Server (Recommended)
 ```bash
-# Using Python
+# Using Python 3
 python -m http.server 8080
 
 # Or using Node.js
 npx serve .
 ```
-Navigate to `http://localhost:8080` in your web browser.
+Visit `http://localhost:8080` in your web browser.
 
 ---
 
 ## 📝 Supported Question Formats
 
-### Format A: Vietnamese School / Natural Exam (Word or Text)
+### Format A: Vietnamese Natural Exam / Microsoft Word (.docx / .txt)
 ```text
-Câu 1: Cho hàm số y = f(x) có đạo hàm f'(x) = x^2 - 4. Điểm cực đại là:
-A. x = 2
-B. x = -2
-C. x = 0
-D. Không có cực đại
-Đáp án: B
-Lời giải: Ta xét dấu đạo hàm, f'(x) đổi dấu từ dương sang âm tại x = -2.
+Câu 1: Một vật dao động điều hòa theo phương trình x = A cos(ωt + φ). Đại lượng ω được gọi là:
+A. Tần số dao động
+B. Chu kì dao động
+C. Tần số góc của dao động
+D. Biên độ dao động
+Đáp án: C
+Lời giải: Trong phương trình dao động điều hòa, ω là tần số góc với đơn vị là rad/s.
 ```
-*(Supports horizontal options such as `A. 1  B. 2  C. 3  D. 4`)*
+*(Supports horizontal options: `A. 1  B. 2  C. 3  D. 4`)*
 
-### Format B: CBT Standard Specification
+### Format B: Standard CBT Format
 ```text
 Q: What is the derivative of $ f(x) = x^4 $?
 T: single
@@ -142,26 +153,22 @@ E: Using the power rule $(x^n)' = n x^{n-1}$, the derivative is $4x^3$.
 
 ---
 
-## 🚢 Publishing to GitHub Pages
+## 🚢 Publishing to GitHub & GitHub Pages
 
-1. Initialize Git and commit files:
+1. **Link Remote Repository:**
    ```bash
-   git init
-   git add .
-   git commit -m "feat: complete Math Quiz CBT platform with Word import & dynamic backgrounds"
-   ```
-2. Create a repository on GitHub and link the remote:
-   ```bash
-   git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+   git remote add origin https://github.com/Harilowji/OmniQuiz.git
    git branch -M main
    git push -u origin main
    ```
-3. In your GitHub repository:
-   - Go to **Settings** > **Pages**
-   - Under **Build and deployment** > **Source**, choose **GitHub Actions**
-   - The included `.github/workflows/deploy.yml` will automatically build and publish your website!
+
+2. **Enable GitHub Pages:**
+   - In GitHub, navigate to **Settings** > **Pages**.
+   - Under **Build and deployment** > **Source**, select **GitHub Actions**.
+   - The included workflow `.github/workflows/deploy.yml` will automatically build and publish your website to:
+     **`https://harilowji.github.io/OmniQuiz/`**
 
 ---
 
 ## 📄 License
-Released under the [MIT License](LICENSE).
+This project is open-source and available under the [MIT License](LICENSE).

@@ -4,7 +4,7 @@
  */
 const I18N = {
     vi: {
-        appTitle: "Hệ thống thi trắc nghiệm Toán",
+        appTitle: "OmniQuiz - Nền tảng thi trắc nghiệm",
         uploadTitle: "Kéo thả file đề thi hoặc tải lên từ máy tính",
         uploadPrompt: "Hỗ trợ định dạng <strong>.docx (Word)</strong> và <strong>.txt</strong> (Định dạng chuẩn hoặc đề thi tự nhiên)",
         btnBrowse: "Chọn file từ máy",
@@ -42,7 +42,7 @@ const I18N = {
         checkAnswer: "Kiểm tra đáp án",
         explanation: "Giải thích:",
         reviewFlag: "Xem lại",
-        pdfReportTitle: "Báo cáo kết quả kiểm tra trắc nghiệm Toán",
+        pdfReportTitle: "OmniQuiz - Báo cáo kết quả kiểm tra trắc nghiệm",
         pdfOutstanding: "Xuất sắc! Bạn đạt điểm tuyệt đối 100% không sai câu nào.",
         pdfReviewSection: "Danh sách câu hỏi cần ôn tập lại",
         correctAnswer: "Đáp án đúng:",
@@ -52,7 +52,7 @@ const I18N = {
         mobileFab: "Bản đồ"
     },
     en: {
-        appTitle: "Math Quiz CBT Platform",
+        appTitle: "OmniQuiz - Multi-Subject CBT Platform",
         uploadTitle: "Drag & drop quiz file or browse from computer",
         uploadPrompt: "Supports <strong>.docx (Word)</strong> and <strong>.txt</strong> (Standard CBT or natural exam format)",
         btnBrowse: "Browse file",
@@ -90,7 +90,7 @@ const I18N = {
         checkAnswer: "Check Answer",
         explanation: "Explanation:",
         reviewFlag: "Review",
-        pdfReportTitle: "Math Quiz Performance Report",
+        pdfReportTitle: "OmniQuiz - Performance Report",
         pdfOutstanding: "Outstanding! You scored 100% with no incorrect answers.",
         pdfReviewSection: "Questions for Review",
         correctAnswer: "Correct Answer:",
