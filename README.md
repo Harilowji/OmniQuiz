@@ -1,157 +1,161 @@
+<img src="assets/headers/header.svg" alt="OmniQuiz Pro Header Banner" width="100%" />
+
 <div align="center">
-
-  <img src="assets/logo.png" width="130" alt="OmniQuiz Pro Mascot Logo" style="border-radius: 24px;" />
-
-  # ⚡ OmniQuiz Pro
-  ### Nền tảng Thi Trắc nghiệm Máy tính (CBT) Đa môn & Tự do 100% Client-Side
-  *Universal Computer-Based Testing Platform — Zero-Backend, Zero-Setup, Privacy-First & PWA Offline*
-
-  <p>
-    <a href="https://harilowji.github.io/OmniQuiz/"><img src="https://img.shields.io/badge/🚀_Trải_nghiệm_ngay-GitHub_Pages-22c55e?style=for-the-badge&logo=github&logoColor=white" alt="Live Demo" /></a>
-    <img src="https://img.shields.io/badge/Version-3.0_Pro-6366f1?style=for-the-badge&logo=speedtest&logoColor=white" alt="Version 3.0 Pro" />
-    <img src="https://img.shields.io/badge/PWA-100%25_Offline-0284c7?style=for-the-badge&logo=pwa&logoColor=white" alt="PWA Ready" />
-    <img src="https://img.shields.io/badge/WCAG-2.1_AA_Compliant-10b981?style=for-the-badge&logo=w3c&logoColor=white" alt="WCAG 2.1 AA" />
-    <img src="https://img.shields.io/badge/Anti--Cheat-Active-ef4444?style=for-the-badge&logo=security&logoColor=white" alt="Anti-Cheat Protected" />
-    <img src="https://img.shields.io/badge/License-MIT-f59e0b?style=for-the-badge" alt="License" />
-  </p>
-
-  <br>
-
-  <!-- Hero Image -->
-  <a href="https://harilowji.github.io/OmniQuiz/">
-    <img src="docs/screenshots/hero-academic.png" width="96%" alt="OmniQuiz Pro Hero Studio" style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);" />
-  </a>
+  <br />
+  <img src="assets/omniquiz-animated-title.svg" alt="OmniQuiz Pro Animated Title" width="680" />
+  <img src="assets/dividers/divider-mini.svg" width="340" />
   
-  <p align="center">
-    <i>Giao diện Landing Studio với <b>Dual-Zone Upload</b> kéo thả file tự động & Ngân hàng Đề thi Curated phong phú</i>
-  </p>
+  # ⚡ OmniQuiz Pro 🦉
 
+  **Hệ thống thi trắc nghiệm máy tính (CBT) không máy chủ, bảo mật tối đa và chuẩn hóa quốc tế.**
+  *Universal Computer-Based Testing & Exam Preparation Platform — 100% Client-Side, Zero-Backend & PWA Offline.*
+
+  [![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-22c55e?style=for-the-badge&logo=github&logoColor=white&labelColor=0d1527&color=22c55e)](https://harilowji.github.io/OmniQuiz/)
+  [![Version](https://img.shields.io/badge/Version-3.0%20Pro-818cf8?style=for-the-badge&logo=speedtest&logoColor=white&labelColor=0d1527&color=818cf8)](https://github.com/Harilowji/OmniQuiz)
+  [![PWA Offline](https://img.shields.io/badge/PWA-100%25%20Offline-38bdf8?style=for-the-badge&logo=pwa&logoColor=white&labelColor=0d1527&color=38bdf8)](https://github.com/Harilowji/OmniQuiz)
+  [![WCAG](https://img.shields.io/badge/WCAG-2.1%20AA-10b981?style=for-the-badge&logo=w3c&logoColor=white&labelColor=0d1527&color=10b981)](https://github.com/Harilowji/OmniQuiz)
+  [![Anti-Cheat](https://img.shields.io/badge/Anti--Cheat-Protected-f43f5e?style=for-the-badge&logo=security&logoColor=white&labelColor=0d1527&color=f43f5e)](https://github.com/Harilowji/OmniQuiz)
+  [![License](https://img.shields.io/badge/License-MIT-c084fc?style=for-the-badge&logo=opensourceinitiative&logoColor=white&labelColor=0d1527&color=c084fc)](LICENSE)
+
+  <br />
 </div>
 
----
+## 💡 Why OmniQuiz Pro
 
-## ⚡ Điểm Khác Biệt Cốt Lõi (Core Highlights)
+**Luyện thi và tổ chức thi trực tuyến cần sự tự do, tốc độ tức thì và bảo mật dữ liệu tuyệt đối.**
+
+> Khi ôn luyện cho các kỳ thi THPT Quốc Gia, Đại học hay chứng chỉ quốc tế (Digital SAT, Tin học PRF/DSA), việc phụ thuộc vào máy chủ trung gian thường dẫn đến nghẽn mạng, lộ đề thi và không hỗ trợ tốt các công thức Toán/Hóa phức tạp hay khối mã lập trình.
+
+<div align="center">
+  <img src="assets/dividers/divider-mini.svg" width="340" />
+</div>
+
+**OmniQuiz Pro mang toàn bộ sức mạnh của phòng thi chuẩn hóa quốc tế trực tiếp vào trình duyệt.**
+
+> Tự động phân tích đề từ PDF/Word, nhận diện ma trận bảng đáp án cuối trang, cắt ghép đồ thị hình ảnh tự động, hiển thị công thức LaTeX MathJax và khối mã lệnh monospaced — tất cả xử lý hoàn toàn nội bộ (100% Client-Side), không cần cài đặt máy chủ.
+
+<div align="center">
+  <a href="https://harilowji.github.io/OmniQuiz/">
+    <img src="docs/screenshots/hero-academic.png" alt="OmniQuiz Pro Hero Studio" width="100%" />
+  </a>
+</div>
+
+<img src="assets/dividers/divider.svg" width="100%" />
+
+## ⚡ Highlights
 
 <table>
   <tr>
     <td width="50%">
-      <h3>🔒 100% Client-Side & Bảo mật</h3>
-      Toàn bộ dữ liệu thi, tài liệu Word/PDF và tiến độ được xử lý trực tiếp trên trình duyệt bằng WebAssembly & Vanilla JS. Không tải dữ liệu lên máy chủ ngoài, an toàn tuyệt đối.
+      <h3>🔒 100% Client-Side & Bảo Mật</h3>
+      <p>Không gửi đề thi hay dữ liệu người dùng lên bất kỳ server nào. Toàn bộ giải mã PDF/DOCX, chấm điểm và lưu tiến độ diễn ra trực tiếp trên trình duyệt qua WebAssembly và LocalStorage.</p>
     </td>
     <td width="50%">
-      <h3>📄 Tự Động Bóc Tách PDF & Word (.docx)</h3>
-      Tự động nhận diện bảng đáp án cuối trang (ma trận <code>1.A 2.B 3.C</code>), đọc file Word kèm ảnh minh họa và trích xuất hình vẽ, đồ thị từ file PDF gắn tương ứng từng câu hỏi.
+      <h3>📄 Bóc Tách PDF & Word Tự Động</h3>
+      <p>Tự động quét ma trận bảng đáp án cuối tài liệu (<code>1.A 2.B 3.C</code>), trích xuất văn bản từ Word kèm hình ảnh và tự động cắt đồ thị, sơ đồ từ PDF gắn tương ứng từng câu hỏi.</p>
     </td>
   </tr>
   <tr>
     <td width="50%">
-      <h3>📐 Đa Môn Học: Toán, Hóa & Lập Trình</h3>
-      Tích hợp MathJax 3 (LaTeX), <code>mhchem</code> (phương trình hóa học ion) và khối mã nguồn C, C++, Python, Pascal với cú pháp monospaced cùng nút sao chép 1-chạm.
+      <h3>📐 Đa Môn: LaTeX, Hóa Học & Mã Lệnh</h3>
+      <p>Tích hợp MathJax 3 rendering công thức tích phân, ma trận; tiện ích <code>mhchem</code> cho phương trình ion hóa; khối mã nguồn lập trình monospaced (C, C++, Python, Pascal) kèm nút sao chép 1-chạm.</p>
     </td>
     <td width="50%">
       <h3>🛡️ Giám Sát Phòng Thi (Anti-Cheat)</h3>
-      Theo dõi chuyển tab/cửa sổ với bộ đếm vi phạm, phát âm thanh cảnh báo, ngăn chặn sao chép câu hỏi, khóa chuột phải và chế độ Toàn màn hình (Fullscreen).
+      <p>Giám sát chuyển đổi tab/cửa sổ với cảnh báo âm thanh, khóa sao chép câu hỏi, ngăn chặn chuột phải và tự động thu bài thi khi thí sinh vi phạm quá số lần quy định.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <h3>🎯 Ôn Luyện Lại Câu Sai & Xuất PDF</h3>
+      <p>Phân tích điểm số chi tiết với circular gauge. Tự động tạo phiên ôn tập mới chỉ từ các câu làm sai với 1-chạm, hoặc kết xuất toàn bộ phiếu bài làm sai kèm lời giải thành file PDF.</p>
+    </td>
+    <td width="50%">
+      <h3>📶 PWA Offline & Chuẩn WCAG 2.1 AA</h3>
+      <p>Service Worker thông minh cho phép cài đặt web như ứng dụng native và làm bài thi hoàn toàn không cần Internet. Hỗ trợ điều hướng phím tắt và bàn phím chuyên nghiệp.</p>
     </td>
   </tr>
 </table>
 
----
+<img src="assets/dividers/divider.svg" width="100%" />
 
-## 🎨 5 Giao Diện Động Đẳng Cấp (Dynamic Animated Themes)
-
-OmniQuiz Pro được trang bị 5 bộ giao diện với bảng màu tuyển chọn kỹ lưỡng, hỗ trợ học tập và thi cử thoải mái trong mọi điều kiện ánh sáng:
+## 🖥️ Interface & Dynamic Themes
 
 <table>
   <tr>
-    <td align="center" width="50%">
-      <b>🏛️ Academic Pro (Mặc định Học thuật)</b><br><br>
-      <img src="docs/screenshots/hero-academic.png" width="100%" alt="Academic Pro Theme" /><br>
-      <i>Phối màu Indigo/Slate nhã nhặn, lưới toạ độ chuyển động êm dịu</i>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/hero-academic.png" alt="Academic Pro Theme" width="100%" />
+      <p><b>🏛️ Academic Pro (Mặc định)</b><br />Không gian học thuật trang nhã, lưới toạ độ chìm chuyển động êm dịu.</p>
     </td>
-    <td align="center" width="50%">
-      <b>⚡ Midnight Cyber (Dark Mode Công nghệ)</b><br><br>
-      <img src="docs/screenshots/theme-midnight.png" width="100%" alt="Midnight Cyber Theme" /><br>
-      <i>Gam màu Cyan Neon sắc nét, tối ưu làm bài thi ban đêm</i>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/theme-midnight.png" alt="Midnight Cyber Theme" width="100%" />
+      <p><b>⚡ Midnight Cyber (Dark Mode)</b><br />Gam màu Cyan Neon công nghệ cao, tối ưu làm bài thi ban đêm.</p>
     </td>
   </tr>
   <tr>
-    <td align="center" width="50%">
-      <b>🌲 Emerald Forest (Xanh Sinh thái Dịu mắt)</b><br><br>
-      <img src="docs/screenshots/theme-emerald.png" width="100%" alt="Emerald Forest Theme" /><br>
-      <i>Sắc xanh lục mát mẻ, xua tan cảm giác mỏi mắt khi luyện đề lâu</i>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/theme-emerald.png" alt="Emerald Forest Theme" width="100%" />
+      <p><b>🌲 Emerald Forest</b><br />Sắc xanh lục sinh thái tự nhiên, giảm mỏi mắt khi luyện đề lâu dài.</p>
     </td>
-    <td align="center" width="50%">
-      <b>🍬 Playful Candy (Kẹo Ngọt Năng động)</b><br><br>
-      <img src="docs/screenshots/theme-playful.png" width="100%" alt="Playful Candy Theme" /><br>
-      <i>Tone hồng tím pastel ngọt ngào, tạo cảm hứng học tập tích cực</i>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/theme-playful.png" alt="Playful Candy Theme" width="100%" />
+      <p><b>🍬 Playful Candy</b><br />Tone pastel ngọt ngào tươi sáng, xua tan áp lực tâm lý phòng thi.</p>
     </td>
   </tr>
   <tr>
-    <td align="center" colspan="2">
-      <b>☀️ Minimalist Light (Tối giản Thanh lịch)</b><br><br>
-      <img src="docs/screenshots/theme-minimalist.png" width="65%" alt="Minimalist Light Theme" /><br>
-      <i>Mô phỏng tờ đề thi giấy tiêu chuẩn quốc tế, độ tương phản cao</i>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/quiz-playful-code.png" alt="Informatics Code Engine" width="100%" />
+      <p><b>💻 Informatics Code Engine</b><br />Khối mã lệnh C/C++/Python sắc nét kèm nút copy 1-chạm.</p>
+    </td>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/quiz-multiple-palette.png" alt="Question Palette Matrix" width="100%" />
+      <p><b>🗺️ Question Palette Matrix</b><br />Bản đồ phân màu trạng thái thời gian thực và % tiến độ tròn.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/quiz-result-modal.png" alt="Score Dashboard" width="100%" />
+      <p><b>📊 Result Dashboard & Stats</b><br />Gauge chấm điểm tròn, thống kê chi tiết câu đúng/sai/bỏ qua.</p>
+    </td>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/theme-minimalist.png" alt="Minimalist Light Theme" width="100%" />
+      <p><b>☀️ Minimalist Light</b><br />Tờ đề thi giấy trắng chuẩn quốc tế, độ tương phản cao sắc nét.</p>
     </td>
   </tr>
 </table>
 
----
+<img src="assets/dividers/divider.svg" width="100%" />
 
-## 🚀 Trải Nghiệm Làm Bài & Quản Lý Đề Thi
+## 🚀 Getting Started
 
-<table>
-  <tr>
-    <td width="55%" valign="top">
-      <h3>💻 Phòng Thi Trực Quan & Khối Lập Trình</h3>
-      <ul>
-        <li><b>Khối Code Monospaced:</b> Tự động nhận diện mã C, C++, Python, Java với nút sao chép 1-chạm (<code>📋 Chép mã</code>).</li>
-        <li><b>Nhiều loại câu hỏi:</b> Một đáp án, nhiều đáp án (Multiple-choice check), câu hỏi trích xuất từ PDF/Word.</li>
-        <li><b>Bản đồ câu hỏi (Palette):</b> Hiển thị % tiến độ tròn, trạng thái phân màu thông minh.</li>
-      </ul>
-      <img src="docs/screenshots/quiz-playful-code.png" width="100%" alt="Quiz Interface Playful" />
-    </td>
-    <td width="45%" valign="top">
-      <h3>🗺️ Ma Trận Bản Đồ Phân Màu Thời Gian Thực</h3>
-      <ul>
-        <li><b>Mã màu chuẩn CBT:</b> Đúng 🟢, Sai 🔴, Đã chọn 🔵, Chưa làm ⚪, Đánh dấu xem lại 🚩.</li>
-        <li>Bộ lọc phân đoạn (Segmented Control) lọc tức thì các câu cần xem lại hoặc chưa làm.</li>
-        <li>Chế độ <b>Luyện tập:</b> Kiểm tra ngay với Web Audio Synth (ding/buzz) kèm lời giải.</li>
-      </ul>
-      <img src="docs/screenshots/quiz-multiple-palette.png" width="100%" alt="Quiz Color Palette Matrix" />
-    </td>
-  </tr>
-</table>
+Bạn có thể trải nghiệm OmniQuiz Pro theo phương thức phù hợp nhất với nhu cầu:
 
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <h3>🎯 Bảng Điểm & Thống Kê Chi Tiết</h3>
-      <ul>
-        <li>Gauge vòng tròn hiển thị điểm số trên thang điểm 10 & 100.</li>
-        <li>Thống kê rõ ràng: <b>Câu đúng</b>, <b>Câu sai</b>, <b>Chưa làm</b>, <b>Số lần rời màn hình</b>.</li>
-        <li>Pháo hoa chúc mừng (Canvas Confetti) khi đạt kết quả cao.</li>
-      </ul>
-      <img src="docs/screenshots/quiz-result-modal.png" width="100%" alt="Quiz Result Modal" />
-    </td>
-    <td width="50%" valign="top">
-      <h3>📥 Luyện Lại Câu Sai & Xuất PDF Phiếu Lỗi</h3>
-      <ul>
-        <li><b>🎯 Làm lại câu chưa làm / Làm lại câu sai:</b> Tạo ngay phiên ôn tập tập trung chỉ từ các câu làm sai chỉ với 1 nút bấm.</li>
-        <li><b>📄 Xuất PDF câu sai:</b> Tự động tạo file PDF tổng hợp các câu sai kèm đáp án chuẩn và lời giải chi tiết.</li>
-      </ul>
-      <img src="docs/screenshots/quiz-midnight-code.png" width="100%" alt="Midnight Exam Mode" />
-    </td>
-  </tr>
-</table>
+| Phương thức | Tệp / Địa chỉ | Phù hợp với | Mô tả |
+| :--- | :--- | :--- | :--- |
+| **Trực Tiếp** *(Khuyên dùng)* | [`index.html`](index.html) | Luyện thi tức thì | Mở trực tiếp trên mọi trình duyệt web hiện đại (Chrome, Edge, Safari, Firefox). Kéo thả file đề thi vào là bắt đầu làm bài! |
+| **Cài Đặt PWA** | [Trang chủ OmniQuiz](https://harilowji.github.io/OmniQuiz/) | Offline / Máy tính bảng | Nhấp nút **Install** trên thanh địa chỉ trình duyệt để cài đặt thành ứng dụng độc lập, thi ngoại tuyến 100% khi mất mạng. |
+| **Docker Container** | [`docker-compose.yml`](docker-compose.yml) | Phòng máy trường học / Lab | Đóng gói Nginx Alpine siêu nhẹ (< 25MB RAM). Khởi chạy máy chủ cục bộ tốc độ cao cho hàng trăm học sinh cùng lúc. |
 
----
+> [!TIP]
+> **Yêu cầu hệ thống**: Mọi thiết bị có trình duyệt web hỗ trợ ES6 (Windows, macOS, Linux, iPadOS, Android). Không yêu cầu NodeJS, Python hay cơ sở dữ liệu để vận hành.
 
-## 📝 Cú Pháp Soạn Đề Siêu Tốc (Quick Syntax Guide)
+## ⌨️ Essential Shortcuts
 
-<details open>
-<summary><b>1. Đề thi Phổ thông / Toán - Lý - Hóa - Anh (Khuyên dùng)</b></summary>
-<br>
+| Phím tắt | Thao tác |
+| :--- | :--- |
+| <kbd>1</kbd> ... <kbd>4</kbd> hoặc <kbd>A</kbd> ... <kbd>D</kbd> | Chọn nhanh đáp án A, B, C, D |
+| <kbd>←</kbd> / <kbd>→</kbd> | Chuyển tới câu hỏi Trước / Kế tiếp |
+| <kbd>F</kbd> | Đánh dấu cờ câu hỏi cần xem lại (Flag) |
+| <kbd>Space</kbd> / <kbd>Enter</kbd> | Kích hoạt lựa chọn đáp án (Chuẩn tiếp cận WCAG 2.1 AA) |
+| <kbd>F11</kbd> | Bật / Tắt chế độ Toàn màn hình (Fullscreen CBT) |
+| <kbd>Esc</kbd> | Đóng thông báo / Hộp thoại kết quả bài thi |
 
+<details>
+<summary><b>📝 Format Soạn Đề Mẫu (Quick Syntax Guide)</b></summary>
+
+<br />
+
+### 1. Đề thi Phổ thông (Toán - Lý - Hóa - Tiếng Anh)
 ```text
 Câu 1: Cho hàm số y = f(x) có bảng biến thiên như hình vẽ. Số nghiệm của f(x) = 2 là:
 A. 1
@@ -161,13 +165,9 @@ D. 4
 Đáp án: C
 Lời giải: Dựa vào sự tương giao đồ thị, đường thẳng y = 2 cắt đồ thị tại 3 điểm phân biệt.
 ```
-*(Hỗ trợ đáp án nằm trên 1 dòng ngang: `A. 1   B. 2   C. 3   D. 4` hoặc `[A] 1 [B] 2...`)*
-</details>
+*(Hỗ trợ đáp án nằm trên 1 hàng ngang: `A. 1   B. 2   C. 3   D. 4`)*
 
-<details>
-<summary><b>2. Đề thi có Bảng Đáp Án ở cuối tài liệu (.docx / .pdf)</b></summary>
-<br>
-
+### 2. Đề thi có Bảng Đáp Án ở cuối tài liệu (.docx / .pdf)
 ```text
 Câu 1: Khí nào sau đây gây ra hiệu ứng nhà kính?
 A. N2          B. O2          C. CO2          D. H2
@@ -180,12 +180,8 @@ A. C6H12O6     B. C12H22O11   C. C2H4O2       D. C3H6O3
 BẢNG ĐÁP ÁN:
 1.C   2.A   3.B   4.D   5.C
 ```
-</details>
 
-<details>
-<summary><b>3. Đề thi Tin học / Khối Mã Lệnh (Informatics Code Blocks)</b></summary>
-<br>
-
+### 3. Đề thi Tin học / Khối Mã Lệnh (Informatics)
 ````text
 Câu 1: Cho đoạn mã C sau. Kết quả in ra màn hình là gì?
 ```c
@@ -199,58 +195,20 @@ B. 20
 C. 30
 D. 0
 Đáp án: C
-Lời giải: Con trỏ p trỏ tới a, phép gán *p = *p + b tương đương a = a + b = 30.
 ````
+
+### 4. Triển khai bằng Docker Compose
+```bash
+docker compose up -d
+# Truy cập tại: http://localhost:8080
+```
+
 </details>
 
----
-
-## ⚡ Khởi Chạy Nhanh (Quick Start)
-
-<table>
-  <tr>
-    <td width="50%">
-      <h3>🌐 Cách 1: Chạy Trực Tiếp (Không Cần Cài Đặt)</h3>
-      1. Tải repository hoặc clone về máy.<br>
-      2. Mở trực tiếp file <code>index.html</code> trên mọi trình duyệt web.<br>
-      3. Kéo thả file đề thi vào hoặc chọn một trong các bộ đề mẫu có sẵn!
-    </td>
-    <td width="50%">
-      <h3>🐳 Cách 2: Chạy Bằng Docker / Compose</h3>
-      <pre><code># Khởi chạy tức thì (< 25MB RAM)
-docker compose up -d
-
-# Mở trình duyệt truy cập:
-http://localhost:8080</code></pre>
-    </td>
-  </tr>
-</table>
-
----
-
-## 🛠️ Công Nghệ & Tiêu Chuẩn (Tech Stack)
+<br />
 
 <div align="center">
-
-| Hạng mục | Công nghệ / Thư viện | Tính năng nổi bật |
-| :--- | :--- | :--- |
-| **Kiến trúc Core** | Vanilla HTML5 / CSS3 / ES6+ | Siêu nhẹ, nạp tức thì, không bundle cồng kềnh |
-| **Toán học & Hóa học** | MathJax 3.2 + `mhchem` | Render mượt LaTeX, tích phân, ma trận, công thức hóa học |
-| **Xử lý Tài liệu** | PDF.js + Mammoth.js | Phân tích PDF & Word trực tiếp, tự động bóc tách ảnh minh họa |
-| **Chuẩn tiếp cận** | WCAG 2.1 AA | Điều hướng bàn phím hoàn toàn (`Tab`, `Space`, `Enter`), ARIA |
-| **Offline Engine** | Progressive Web App (PWA) | Service Worker cache toàn diện, thi ngoại tuyến không cần mạng |
-| **Âm thanh** | Web Audio API + HTML5 Audio | Bộ phát âm thanh trực tiếp (ding/buzz) không phụ thuộc file ngoài |
-| **Báo cáo & PDF** | html2pdf.js + Canvas Confetti | Tạo file PDF phiếu câu sai, pháo hoa mừng điểm cao |
-
-</div>
-
----
-
-<div align="center">
-
-  <b>OmniQuiz Pro</b> • Phát triển với đam mê vì nền giáo dục trực tuyến chất lượng cao & dễ tiếp cận.<br>
-  Được phát hành dưới giấy phép mã nguồn mở **[MIT License](LICENSE)**.
-
-  <sub>Tác giả: <a href="https://github.com/Harilowji">Harilowji</a> • Built with Google DeepMind Antigravity Pair-Programming Assistant</sub>
-
+  <img src="assets/footers/footer.svg" width="100%" />
+  <br /><br />
+  MIT License · Thiết kế & Phát triển với đam mê bởi <a href="https://github.com/Harilowji">Harilowji</a>
 </div>

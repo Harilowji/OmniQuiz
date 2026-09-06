@@ -1,0 +1,113 @@
+<svg width="1000" height="110" viewBox="0 0 1000 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- OmniQuiz Aurora & Cyber Gradients -->
+    <linearGradient id="header-sky-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b0f19" stop-opacity="0.95" />
+      <stop offset="35%" stop-color="#1e1b4b" stop-opacity="0.8" />
+      <stop offset="70%" stop-color="#0f172a" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#080b12" stop-opacity="0.98" />
+    </linearGradient>
+
+    <linearGradient id="aurora-wave-1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0" />
+      <stop offset="25%" stop-color="#38bdf8" stop-opacity="0.65" />
+      <stop offset="50%" stop-color="#6366f1" stop-opacity="0.85" />
+      <stop offset="75%" stop-color="#c084fc" stop-opacity="0.65" />
+      <stop offset="100%" stop-color="#ec4899" stop-opacity="0" />
+    </linearGradient>
+
+    <linearGradient id="aurora-wave-2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0" />
+      <stop offset="30%" stop-color="#10b981" stop-opacity="0.5" />
+      <stop offset="60%" stop-color="#06b6d4" stop-opacity="0.75" />
+      <stop offset="85%" stop-color="#818cf8" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#c084fc" stop-opacity="0" />
+    </linearGradient>
+
+    <linearGradient id="top-border-glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0" />
+      <stop offset="30%" stop-color="#6366f1" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#c084fc" stop-opacity="1" />
+      <stop offset="70%" stop-color="#38bdf8" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="soft-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <style>
+      @keyframes wave-flow-1 {
+        0%, 100% { transform: translateY(0px) scaleY(1); }
+        50% { transform: translateY(-5px) scaleY(1.08); }
+      }
+      @keyframes wave-flow-2 {
+        0%, 100% { transform: translateY(0px) scaleY(1); }
+        50% { transform: translateY(6px) scaleY(0.92); }
+      }
+      @keyframes bubble-rise {
+        0%, 100% { transform: translateY(0px); opacity: 0.2; }
+        50% { transform: translateY(-10px); opacity: 0.7; }
+      }
+      @keyframes star-twinkle {
+        0%, 100% { opacity: 0.2; transform: scale(0.8); }
+        50% { opacity: 0.95; transform: scale(1.3); }
+      }
+      @keyframes border-drift {
+        0% { stroke-dashoffset: 600; }
+        100% { stroke-dashoffset: -600; }
+      }
+      .anim-wave-1 {
+        transform-origin: 500px 55px;
+        animation: wave-flow-1 6s ease-in-out infinite;
+      }
+      .anim-wave-2 {
+        transform-origin: 500px 55px;
+        animation: wave-flow-2 5.2s ease-in-out infinite 1s;
+      }
+      .b1 { transform-origin: center; animation: bubble-rise 4s ease-in-out infinite; }
+      .b2 { transform-origin: center; animation: bubble-rise 4.6s ease-in-out infinite 1.4s; }
+      .b3 { transform-origin: center; animation: bubble-rise 3.8s ease-in-out infinite 0.7s; }
+      .b4 { transform-origin: center; animation: bubble-rise 5.2s ease-in-out infinite 2.1s; }
+      .s1 { transform-box: fill-box; transform-origin: center; animation: star-twinkle 3s ease-in-out infinite; }
+      .s2 { transform-box: fill-box; transform-origin: center; animation: star-twinkle 3s ease-in-out infinite 1.5s; }
+      .s3 { transform-box: fill-box; transform-origin: center; animation: star-twinkle 2.5s ease-in-out infinite 0.8s; }
+      .laser-border {
+        stroke-dasharray: 120 480;
+        animation: border-drift 6s linear infinite;
+      }
+    </style>
+  </defs>
+
+  <!-- Top Base Container with rounded top corners -->
+  <rect x="0" y="0" width="1000" height="90" fill="url(#header-sky-grad)" rx="14" />
+
+  <!-- Flowing Aurora Wave 2 (Deeper, Emerald & Cyan) -->
+  <path class="anim-wave-2"
+        d="M 0 65 Q 180 35, 360 60 T 720 50 T 1000 65 L 1000 110 L 0 110 Z"
+        fill="url(#aurora-wave-2)" />
+
+  <!-- Flowing Aurora Wave 1 (Brighter, Indigo & Violet) -->
+  <path class="anim-wave-1"
+        d="M 0 52 Q 220 78, 460 48 T 820 62 T 1000 52 L 1000 110 L 0 110 Z"
+        fill="url(#aurora-wave-1)" />
+
+  <!-- Glowing Laser Border Runner along top edge -->
+  <rect class="laser-border" x="2" y="2" width="996" height="86" rx="12" fill="none" stroke="url(#top-border-glow)" stroke-width="2" filter="url(#soft-glow)" />
+
+  <!-- Twinkling Knowledge Star Nodes -->
+  <g class="s1"><circle cx="120" cy="25" r="1.8" fill="#ffffff" filter="url(#soft-glow)" /></g>
+  <g class="s2"><circle cx="280" cy="18" r="2.2" fill="#38bdf8" filter="url(#soft-glow)" /></g>
+  <g class="s1"><circle cx="480" cy="22" r="1.5" fill="#ffffff" /></g>
+  <g class="s3"><circle cx="680" cy="16" r="2.4" fill="#c084fc" filter="url(#soft-glow)" /></g>
+  <g class="s2"><circle cx="860" cy="28" r="2" fill="#38bdf8" filter="url(#soft-glow)" /></g>
+  <g class="s1"><circle cx="940" cy="20" r="1.5" fill="#ffffff" /></g>
+
+  <!-- Floating Ambient Wisdom Bubbles -->
+  <circle class="b1" cx="200" cy="50" r="3.5" fill="#38bdf8" opacity="0.4" />
+  <circle class="b2" cx="390" cy="62" r="2.5" fill="#818cf8" opacity="0.5" />
+  <circle class="b3" cx="620" cy="48" r="4" fill="#c084fc" opacity="0.35" />
+  <circle class="b4" cx="790" cy="58" r="3" fill="#10b981" opacity="0.4" />
+</svg>
