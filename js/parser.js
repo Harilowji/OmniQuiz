@@ -3,7 +3,8 @@
  */
 const QuestionParser = (() => {
     /**
-     * Auto-wrap naked LaTeX commands outside of $ ... $ in inline math delimiters.
+     * Auto-wrap naked LaTeX commands and Chemistry formulas outside of $ ... $
+     * in inline math & mhchem delimiters.
      */
     function autoWrapMath(text) {
         if (!text || typeof text !== 'string') return '';
@@ -11,14 +12,50 @@ const QuestionParser = (() => {
         // Split text by math delimiters $ ... $ or $$ ... $$ to process only plain text parts
         const parts = text.split(/(\$\$[\s\S]*?\$\$|\$[^\$]*?\$)/g);
 
+        // Regex to match chemical formulas like H2SO4, Fe2(SO4)3, CH3COOH, C2H5OH, BaCl2, NaOH, (C17H35COO)3C3H5
+        const chemRegex = /(?:^|(?<=[^A-Za-z0-9_]))((?:\d+\s*)?(?:\([A-Z][a-zA-Z0-9]*\)\d*|[A-Z][a-z]?(?:\d+|[A-Z][a-z]?|\([A-Za-z0-9]+\)\d*)*)+(?:\^?\d*[\+\-])?)(?=[^A-Za-z0-9_]|$)/g;
+        const chemElemSeq = /^(?:He|Li|Be|Ne|Na|Mg|Al|Si|Cl|Ar|Ca|Sc|Ti|Cr|Mn|Fe|Co|Ni|Cu|Zn|Ga|Ge|As|Se|Br|Kr|Rb|Sr|Zr|Nb|Mo|Ru|Rh|Pd|Ag|Cd|In|Sn|Sb|Te|Xe|Cs|Ba|La|Ce|Pt|Au|Hg|Pb|Bi|H|B|C|N|O|F|P|S|K|V|Y|I|W|\d|\(|\))+$/;
+
         for (let i = 0; i < parts.length; i++) {
             // Even indices are plain text outside math delimiters
             if (i % 2 === 0) {
                 let part = parts[i];
-                // 1. Detect LaTeX commands like \frac{...}{...}, \sqrt{...}, \lim_{...}, \int, \sum
+
+                // 1. Convert reaction arrows in chemistry outside math
+                part = part.replace(/\s*->\s*/g, ' $\\rightarrow$ ');
+                part = part.replace(/\s*-->\s*/g, ' $\\rightarrow$ ');
+                part = part.replace(/\s*<=>\s*/g, ' $\\rightleftharpoons$ ');
+                part = part.replace(/\s*<->\s*/g, ' $\\rightleftharpoons$ ');
+
+                // 2. Wrap chemical formulas with \ce{...}
+                part = part.replace(chemRegex, (match) => {
+                    const trimmed = match.trim();
+                    // Exclude pure all-caps words without digits/parentheses/charges if length >= 3 (e.g. ESTE, LIPIT, THPT)
+                    if (/^[A-Z]+$/.test(trimmed) && trimmed.length >= 3 && trimmed !== 'KOH' && trimmed !== 'HCN' && trimmed !== 'HCOOH') {
+                        return match;
+                    }
+
+                    // Exclude common words that happen to look like element abbreviations
+                    const ignoredWords = ['In', 'At', 'As', 'He', 'An', 'No', 'Or', 'On', 'Is', 'Am', 'Be', 'Do', 'So', 'To', 'Up', 'By', 'My', 'We', 'Go', 'Me', 'If', 'It', 'Cho', 'Khi', 'Các', 'Dung', 'Chất', 'Este', 'Không', 'Muối', 'Khí', 'Dạng', 'Dãy', 'Nhóm', 'Điểm', 'Giá', 'Tính', 'Theo', 'Sau', 'Bằng', 'Trong', 'Đoạn', 'Tìm', 'Biết', 'Một', 'CH', 'NG', 'VA'];
+                    if (ignoredWords.includes(trimmed)) return match;
+
+                    const isValidChemSeq = chemElemSeq.test(trimmed);
+                    const hasDigit = /\d/.test(trimmed);
+                    const hasParen = /[()]/.test(trimmed);
+                    const hasCharge = /[+\-]/.test(trimmed);
+                    const hasMultipleChemElements = (trimmed.match(/[A-Z]/g) || []).length >= 2 && isValidChemSeq;
+
+                    if (hasDigit || hasParen || hasCharge || hasMultipleChemElements) {
+                        return `$\\ce{${trimmed}}$`;
+                    }
+                    return match;
+                });
+
+                // 3. Detect LaTeX commands like \frac{...}{...}, \sqrt{...}, \lim_{...}, \int, \sum
                 part = part.replace(/(\\(?:frac\{[^{}]*\}\{[^{}]*\}|sqrt\{[^{}]*\}|sqrt\[[^\[\]]*\]\{[^{}]*\}|lim_\{[^{}]*\}|int_[^\s^]*\^[^\s]*|sum_[^\s^]*\^[^\s]*|[a-zA-Z]+(?:_[0-9a-zA-Z]+|\^[0-9a-zA-Z]+)+))/g, '$$ $1 $$');
-                // 2. Wrap standalone math symbols like \times, \pm, \le, \ge, \ne, \approx if not in math
-                part = part.replace(/(\\(?:times|pm|le|ge|ne|approx|in|subset|cup|cap|infty|alpha|beta|theta|pi|Delta))\b/g, '$$ $1 $$');
+                // 4. Wrap standalone math symbols like \times, \pm, \le, \ge, \ne, \approx if not in math
+                part = part.replace(/(\\(?:times|pm|le|ge|ne|approx|in|subset|cup|cap|infty|alpha|beta|theta|pi|Delta|omega|Omega|lambda|sigma))\b/g, '$$ $1 $$');
+
                 parts[i] = part;
             }
         }
@@ -27,13 +64,14 @@ const QuestionParser = (() => {
     }
 
     /**
-     * Safely format math text: auto-wrap LaTeX and escape HTML < and > to protect
-     * mathematical expressions like $0 < x < 5$ from browser DOM tag swallowing.
+     * Safely format math and chemistry text: auto-wrap LaTeX/mhchem and protect
+     * mathematical expressions from browser DOM tag swallowing without breaking arrows.
      */
     function formatMathText(text) {
         if (!text || typeof text !== 'string') return '';
         const wrapped = autoWrapMath(text);
-        return wrapped.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        // Only escape '<' when followed by a letter or / to avoid browser creating phantom HTML tags
+        return wrapped.replace(/<(?=[a-zA-Z/!])/g, '&lt;');
     }
 
     /**

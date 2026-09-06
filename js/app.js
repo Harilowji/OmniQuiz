@@ -81,6 +81,39 @@
             }
         });
 
+        // Change Exam button
+        document.getElementById('btn-change-exam')?.addEventListener('click', () => {
+            if (confirm(t('confirmChangeExam'))) {
+                StorageManager.clearCurrentExam();
+                StorageManager.clearState();
+                if (timerInterval) clearInterval(timerInterval);
+                QuizEngine.state.questions = [];
+                QuizEngine.state.userAnswers = {};
+                QuizEngine.state.flaggedQuestions = new Set();
+                QuizEngine.state.isSubmitted = false;
+                QuizEngine.state.incorrectQData = [];
+
+                document.getElementById('upload-section').style.display = 'block';
+                document.getElementById('stats-section').style.display = 'none';
+                document.getElementById('palette-section').style.display = 'none';
+                const btnChange = document.getElementById('btn-change-exam');
+                if (btnChange) btnChange.style.display = 'none';
+                const fab = document.getElementById('btn-mobile-palette-toggle');
+                if (fab) fab.style.display = 'none';
+
+                const container = document.getElementById('quiz-container');
+                if (container) {
+                    container.innerHTML = `
+                        <div id="empty-quiz-welcome" style="text-align: center; padding: 50px 20px; opacity: 0.85;">
+                            <div style="font-size: 2.5em; margin-bottom: 10px;">🎓</div>
+                            <h3 style="margin-bottom: 6px; font-weight: 700;">Chào mừng bạn đến với OmniQuiz!</h3>
+                            <p style="font-size: 0.95em; opacity: 0.8;">Vui lòng tải lên file đề thi của bạn ở khung phía trên, hoặc chọn một đề mẫu đa môn học để bắt đầu ôn luyện.</p>
+                        </div>
+                    `;
+                }
+            }
+        });
+
         // Finish button (Navbar & Sidebar)
         document.getElementById('finish-btn')?.addEventListener('click', promptFinishQuiz);
         document.getElementById('txt-btn-submit-aside')?.addEventListener('click', promptFinishQuiz);
@@ -144,29 +177,43 @@
     async function loadQuestions() {
         // Wire sample exam button
         document.getElementById('btn-load-sample')?.addEventListener('click', async () => {
-            const tryPaths = ['questions.txt', 'data/questions.txt'];
-            let loadedText = null;
-            for (const path of tryPaths) {
-                try {
-                    const res = await fetch(path);
-                    if (res.ok) {
-                        loadedText = await res.text();
-                        break;
-                    }
-                } catch (err) {
-                    // Ignore and try next
-                }
+            const selectEl = document.getElementById('sample-subject-select');
+            const subjectKey = selectEl ? selectEl.value : 'math_50';
+
+            // 1. Try bundled sample banks first (fastest, offline-safe, 0 network failure)
+            if (typeof SampleBanks !== 'undefined' && SampleBanks[subjectKey]) {
+                document.getElementById('upload-section').style.display = 'none';
+                setupQuiz(SampleBanks[subjectKey], true);
+                return;
             }
 
-            if (loadedText) {
-                document.getElementById('upload-section').style.display = 'none';
-                setupQuiz(loadedText, true);
-            } else {
-                // Embedded demo fallback if file:// protocol blocks fetch
-                alert(QuizEngine.state.currentLang === 'vi' 
-                    ? 'Đang mở trực tiếp từ file://, vui lòng chọn file questions.txt hoặc kéo thả file vào ô bên dưới!'
-                    : 'Opening via file:// protocol. Please select questions.txt or drag and drop a file below!');
+            // 2. Fallback to fetch paths
+            const pathMap = {
+                math_50: 'question_banks/questions.txt',
+                physics_12: 'question_banks/08_vat_ly_12_dao_dong_co.txt',
+                chem_12: 'question_banks/09_hoa_hoc_12_este_lipit.txt',
+                english_thpt: 'question_banks/10_tieng_anh_thpt_reading_grammar.txt',
+                social_12: 'question_banks/11_lich_su_dia_ly_tong_hop.txt',
+                sat_math: 'question_banks/06_sat_math_cbt_english.txt',
+                quick_5: 'question_banks/07_de_test_nhanh_5_cau.txt'
+            };
+
+            const filePath = pathMap[subjectKey] || 'question_banks/questions.txt';
+            try {
+                const res = await fetch(filePath);
+                if (res.ok) {
+                    const loadedText = await res.text();
+                    document.getElementById('upload-section').style.display = 'none';
+                    setupQuiz(loadedText, true);
+                    return;
+                }
+            } catch (err) {
+                // Ignore and alert below
             }
+
+            alert(QuizEngine.state.currentLang === 'vi' 
+                ? 'Không thể tải đề thi mẫu. Vui lòng chọn file .docx hoặc .txt từ máy tính của bạn!'
+                : 'Unable to load sample quiz. Please select a .docx or .txt file from your computer!');
         });
 
         // Wire drag and drop
@@ -202,27 +249,20 @@
             if (file) handleUploadedFile(file);
         });
 
-        // Try automatic auto-fetch for HTTP/HTTPS web servers
-        const tryPaths = ['questions.txt', 'data/questions.txt'];
-        let loadedText = null;
-
-        for (const path of tryPaths) {
-            try {
-                const res = await fetch(path);
-                if (res.ok) {
-                    loadedText = await res.text();
-                    break;
-                }
-            } catch (err) {
-                // Ignore and try next
-            }
-        }
-
-        if (loadedText) {
+        // Restore active exam ONLY if user was already taking one
+        const savedExam = StorageManager.loadCurrentExam();
+        if (savedExam && savedExam.rawText) {
             document.getElementById('upload-section').style.display = 'none';
-            setupQuiz(loadedText, false);
+            setupQuiz(savedExam.rawText, false);
         } else {
+            // First time opening or clean visit: ALWAYS show upload section! DO NOT auto-load hardcoded exam!
             document.getElementById('upload-section').style.display = 'block';
+            document.getElementById('stats-section').style.display = 'none';
+            document.getElementById('palette-section').style.display = 'none';
+            const btnChange = document.getElementById('btn-change-exam');
+            if (btnChange) btnChange.style.display = 'none';
+            const fab = document.getElementById('btn-mobile-palette-toggle');
+            if (fab) fab.style.display = 'none';
         }
     }
 
@@ -276,6 +316,9 @@
             return;
         }
 
+        // Save active exam text for refresh recovery
+        StorageManager.saveCurrentExam(rawText);
+
         QuizEngine.setQuestions(parsed);
 
         // When loading a new file or exam, always start clean with no revealed answers
@@ -308,6 +351,8 @@
 
         document.getElementById('stats-section').style.display = 'block';
         document.getElementById('palette-section').style.display = 'block';
+        const btnChange = document.getElementById('btn-change-exam');
+        if (btnChange) btnChange.style.display = 'inline-flex';
         const fab = document.getElementById('btn-mobile-palette-toggle');
         if (fab) fab.style.display = 'inline-flex';
 

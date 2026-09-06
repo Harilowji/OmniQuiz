@@ -63,11 +63,50 @@ const StorageManager = (() => {
         }
     }
 
+    const EXAM_KEY = 'quiz_cbt_current_exam';
+
+    function saveCurrentExam(rawText, title = '') {
+        try {
+            if (!rawText) {
+                localStorage.removeItem(EXAM_KEY);
+                return;
+            }
+            const data = {
+                rawText: rawText,
+                title: title,
+                timestamp: Date.now()
+            };
+            localStorage.setItem(EXAM_KEY, JSON.stringify(data));
+        } catch (e) {
+            console.warn('Exam save failed:', e);
+        }
+    }
+
+    function loadCurrentExam() {
+        try {
+            const raw = localStorage.getItem(EXAM_KEY);
+            if (!raw) return null;
+            return JSON.parse(raw);
+        } catch (e) {
+            console.warn('Exam load failed:', e);
+            return null;
+        }
+    }
+
+    function clearCurrentExam() {
+        try {
+            localStorage.removeItem(EXAM_KEY);
+        } catch (e) {}
+    }
+
     return {
         saveState,
         loadState,
         clearState,
         savePreference,
-        loadPreference
+        loadPreference,
+        saveCurrentExam,
+        loadCurrentExam,
+        clearCurrentExam
     };
 })();

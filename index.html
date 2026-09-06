@@ -19,10 +19,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 
-    <!-- MathJax 3 Configuration (Crucial for inline $ ... $ formulas & reactive typesetting) -->
+    <!-- MathJax 3 Configuration with mhchem for Chemistry & Physics -->
     <script>
         window.MathJax = {
+            loader: { load: ['[tex]/mhchem'] },
             tex: {
+                packages: {'[+]': ['mhchem']},
                 inlineMath: [['$', '$'], ['\\(', '\\)']],
                 displayMath: [['$$', '$$'], ['\\[', '\\]']],
                 processEscapes: true
@@ -74,6 +76,7 @@
                     <option value="cyberpunk">Cyberpunk</option>
                     <option value="playful">Playful</option>
                 </select>
+                <button class="btn-action" id="btn-change-exam" title="Tải đề thi khác hoặc đổi môn học" style="display: none;">📂 <span id="txt-btn-change-exam">Đổi đề thi</span></button>
                 <button class="btn-action" id="btn-shuffle" title="Đảo câu hỏi và đáp án">🔀 Đảo đề</button>
                 <button class="btn-action btn-danger" id="btn-reset" title="Xóa tiến độ và làm lại">🔄 Làm mới</button>
             </div>
@@ -84,21 +87,34 @@
             <!-- LEFT COLUMN: QUIZ CONTENT -->
             <main class="quiz-main">
                 <div id="upload-section">
-                    <div class="upload-icon">📂</div>
-                    <p id="txt-upload-title" style="font-size: 1.15em; font-weight: 700; margin-bottom: 6px;">
-                        Kéo thả file đề thi hoặc tải lên từ máy tính
+                    <div class="upload-icon">🎓</div>
+                    <p id="txt-upload-title" style="font-size: 1.2em; font-weight: 700; margin-bottom: 6px;">
+                        Tải lên đề thi của bạn hoặc chọn bộ đề ôn tập có sẵn
                     </p>
-                    <p id="txt-upload-prompt" style="font-size: 0.9em; opacity: 0.8; margin-bottom: 18px;">
-                        Hỗ trợ định dạng <strong>.docx (Word)</strong> và <strong>.txt</strong> (Định dạng chuẩn hoặc đề thi tự nhiên)
+                    <p id="txt-upload-prompt" style="font-size: 0.9em; opacity: 0.8; margin-bottom: 20px;">
+                        Hỗ trợ định dạng <strong>.docx (Word)</strong> và <strong>.txt</strong> (Toán, Lý, Hóa, Anh, Sử - Địa, SAT...)
                     </p>
-                    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; align-items: center;">
                         <label class="btn-action btn-primary" style="cursor: pointer;">
-                            📁 <span id="txt-btn-browse">Chọn file từ máy</span>
+                            📁 <span id="txt-btn-browse">Chọn file từ máy (.docx, .txt)</span>
                             <input type="file" id="file-input" accept=".txt,.docx,.doc" style="display: none;">
                         </label>
-                        <button class="btn-action" id="btn-load-sample" style="background: var(--option-bg);">
-                            🚀 <span id="txt-btn-sample">Nạp đề thi mẫu (50 câu)</span>
-                        </button>
+
+                        <div style="display: flex; align-items: center; gap: 8px; background: var(--option-bg); padding: 4px 10px; border-radius: var(--border-radius); border: 1.5px solid var(--option-border);">
+                            <span style="font-size: 1.1em;">📚</span>
+                            <select class="custom-select" id="sample-subject-select" aria-label="Chọn đề ôn tập mẫu" style="border: none; background: transparent; padding: 6px 8px; font-weight: 600;">
+                                <option value="math_50">📐 Toán học - Đề thi thử THPT (50 câu)</option>
+                                <option value="physics_12">⚡ Vật lý 12 - Dao động cơ học (5 câu)</option>
+                                <option value="chem_12">🧪 Hóa học 12 - Este & Lipit (5 câu)</option>
+                                <option value="english_thpt">🇬🇧 Tiếng Anh THPT - Ngữ pháp (5 câu)</option>
+                                <option value="social_12">🌏 KHXH - Lịch sử & Địa lý (5 câu)</option>
+                                <option value="sat_math">🎓 Digital SAT Math CBT (English)</option>
+                                <option value="quick_5">⚡ Đề kiểm tra nhanh (5 câu)</option>
+                            </select>
+                            <button class="btn-action btn-primary" id="btn-load-sample" style="padding: 6px 14px; font-weight: 700;">
+                                🚀 <span id="txt-btn-sample">Làm bài</span>
+                            </button>
+                        </div>
                     </div>
                     <div style="font-size: 0.82em; opacity: 0.65; margin-top: 14px;">
                         * Định dạng Word .doc (97-2003) cũ: Vui lòng dùng "Save As" sang .docx để ứng dụng đọc tốt nhất
@@ -127,8 +143,10 @@
                 </div>
 
                 <div id="quiz-container">
-                    <div style="text-align: center; padding: 40px; font-weight: 600; opacity: 0.7;">
-                        Đang tải dữ liệu câu hỏi...
+                    <div id="empty-quiz-welcome" style="text-align: center; padding: 50px 20px; opacity: 0.85;">
+                        <div style="font-size: 2.5em; margin-bottom: 10px;">🎓</div>
+                        <h3 style="margin-bottom: 6px; font-weight: 700;">Chào mừng bạn đến với OmniQuiz!</h3>
+                        <p style="font-size: 0.95em; opacity: 0.8;">Vui lòng tải lên file đề thi của bạn ở khung phía trên, hoặc chọn một đề mẫu đa môn học để bắt đầu ôn luyện.</p>
                     </div>
                 </div>
             </main>
@@ -215,6 +233,7 @@
     <script src="js/audio.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/confetti.js"></script>
+    <script src="js/sample-banks.js"></script>
     <script src="js/parser.js"></script>
     <script src="js/quiz-engine.js"></script>
     <script src="js/ui.js"></script>
