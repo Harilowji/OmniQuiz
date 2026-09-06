@@ -11,7 +11,11 @@ const QuizEngine = (() => {
         currentTheme: 'academic',
         currentLang: 'vi',
         isSubmitted: false,
+        durationMinutes: 60,
         timeLeft: 3600,
+        violationCount: 0,
+        maxViolations: 3,
+        violationLogs: [],
         incorrectQData: []
     };
 
@@ -22,6 +26,76 @@ const QuizEngine = (() => {
         state.customImages = {};
         state.isSubmitted = false;
         state.incorrectQData = [];
+        state.violationCount = 0;
+        state.violationLogs = [];
+        state.timeLeft = state.durationMinutes > 0 ? state.durationMinutes * 60 : -1;
+    }
+
+    function setExamDuration(minutes) {
+        const mins = parseInt(minutes, 10);
+        state.durationMinutes = isNaN(mins) ? 60 : mins;
+        state.timeLeft = state.durationMinutes > 0 ? state.durationMinutes * 60 : -1;
+    }
+
+    function recordViolation(reason) {
+        if (state.currentMode !== 'exam' || state.isSubmitted || !state.questions || state.questions.length === 0) {
+            return null;
+        }
+        state.violationCount++;
+        const logEntry = {
+            time: new Date().toLocaleTimeString(),
+            reason: reason || 'Rời màn hình thi (Chuyển tab / Mở ứng dụng khác)'
+        };
+        state.violationLogs.push(logEntry);
+        return {
+            count: state.violationCount,
+            max: state.maxViolations,
+            isExceeded: state.violationCount >= state.maxViolations,
+            logEntry
+        };
+    }
+
+    function createRetakeMistakesExam() {
+        if (!state.questions || state.questions.length === 0) return null;
+
+        const mistakeIndices = [];
+        state.questions.forEach((q, idx) => {
+            const userAns = state.userAnswers[idx] || [];
+            if (userAns.length === 0) {
+                mistakeIndices.push(idx); // Unattempted
+            } else {
+                const isCorrect = q.answers.length === userAns.length &&
+                    q.answers.every(a => userAns.includes(a));
+                if (!isCorrect) {
+                    mistakeIndices.push(idx); // Incorrect
+                }
+            }
+        });
+
+        if (mistakeIndices.length === 0) return null;
+
+        // Clone mistake questions
+        const filteredQuestions = mistakeIndices.map(idx => JSON.parse(JSON.stringify(state.questions[idx])));
+        const filteredImages = {};
+        mistakeIndices.forEach((oldIdx, newIdx) => {
+            if (state.customImages && state.customImages[oldIdx]) {
+                filteredImages[newIdx] = state.customImages[oldIdx];
+            }
+        });
+
+        state.questions = filteredQuestions;
+        state.customImages = filteredImages;
+        state.userAnswers = {};
+        state.flaggedQuestions.clear();
+        state.isSubmitted = false;
+        state.incorrectQData = [];
+        state.violationCount = 0;
+        state.violationLogs = [];
+        state.timeLeft = state.durationMinutes > 0 ? state.durationMinutes * 60 : -1;
+
+        return {
+            count: filteredQuestions.length
+        };
     }
 
     function attachQuestionImage(qIndex, base64Data) {
@@ -188,7 +262,9 @@ const QuizEngine = (() => {
             incorrect: answered - correct,
             unattempted,
             score100,
-            score10
+            score10,
+            violations: state.violationCount,
+            violationLogs: state.violationLogs
         };
     }
 
@@ -276,6 +352,9 @@ const QuizEngine = (() => {
         evaluateQuestion,
         shuffle,
         calculateResults,
-        exportPDFReport
+        exportPDFReport,
+        setExamDuration,
+        recordViolation,
+        createRetakeMistakesExam
     };
 })();

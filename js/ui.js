@@ -40,6 +40,12 @@ const UIManager = (() => {
                 ? QuestionParser.formatMathText(q.q) 
                 : q.q;
             title.innerHTML = `Q${qIndex + 1}. ${safeQText}`;
+            if (q.isDefaultAnswer) {
+                const badge = document.createElement('span');
+                badge.className = 'badge-no-answer';
+                badge.innerText = '⚠️ ' + (t('noAnswerDeclared') || 'Chưa có đáp án');
+                title.appendChild(badge);
+            }
             header.appendChild(title);
 
             const flagBtn = document.createElement('button');
@@ -102,6 +108,21 @@ const UIManager = (() => {
                     if (isCorrect) optDiv.classList.add('correct');
                     else if (isSelected) optDiv.classList.add('incorrect');
                 }
+
+                // WCAG 2.1 AA Keyboard & Screen Reader Accessibility
+                optDiv.setAttribute('tabindex', '0');
+                optDiv.setAttribute('role', q.type === 'multiple' ? 'checkbox' : 'radio');
+                optDiv.setAttribute('aria-checked', isSelected ? 'true' : 'false');
+                const plainOptText = optText.replace(/<[^>]+>/g, '').trim();
+                optDiv.setAttribute('aria-label', `${String.fromCharCode(65 + oIndex)}. ${plainOptText}`);
+
+                // Keyboard activation with Space or Enter
+                optDiv.addEventListener('keydown', (e) => {
+                    if (e.key === ' ' || e.key === 'Enter') {
+                        e.preventDefault();
+                        onOptionClick(qIndex, oIndex);
+                    }
+                });
 
                 const indicator = document.createElement('span');
                 indicator.className = 'option-indicator';
@@ -176,6 +197,63 @@ const UIManager = (() => {
 
         // Initialize scroll spy after rendering
         setupScrollSpy(questions);
+
+        // Progressive MathJax Typesetting (eliminates main-thread freeze on large exams)
+        typesetMathJaxProgressively(container);
+    }
+
+    let mathObserver = null;
+
+    function typesetMathJaxProgressively(container) {
+        if (!container || !window.MathJax || typeof MathJax.typesetPromise !== 'function') return;
+
+        if (mathObserver) {
+            mathObserver.disconnect();
+            mathObserver = null;
+        }
+
+        const blocks = Array.from(container.querySelectorAll('.question-block'));
+        if (blocks.length === 0) return;
+
+        // Fast path: if 5 questions or fewer, typeset all together
+        if (blocks.length <= 5) {
+            MathJax.typesetPromise([container]).catch(() => {});
+            return;
+        }
+
+        // Medium/large exam: immediately typeset first 3 visible questions
+        const immediateBatch = blocks.slice(0, 3);
+        MathJax.typesetPromise(immediateBatch).catch(() => {});
+
+        // Progressive rendering via IntersectionObserver
+        if ('IntersectionObserver' in window) {
+            mathObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        observer.unobserve(entry.target);
+                        if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
+                            MathJax.typesetPromise([entry.target]).catch(() => {});
+                        }
+                    }
+                });
+            }, { rootMargin: '350px 0px' });
+
+            blocks.slice(3).forEach(b => mathObserver.observe(b));
+        } else {
+            // Fallback for older browsers: chunked typesetting in idle frames
+            let idx = 3;
+            function processNextChunk() {
+                if (idx >= blocks.length) return;
+                const chunk = blocks.slice(idx, idx + 4);
+                idx += 4;
+                MathJax.typesetPromise(chunk).then(() => {
+                    setTimeout(processNextChunk, 80);
+                }).catch(() => {
+                    setTimeout(processNextChunk, 80);
+                });
+            }
+            setTimeout(processNextChunk, 100);
+        }
     }
 
     function updateSingleQuestion(qIndex, questions, userAnswers, flaggedQuestions, mode, isSubmitted) {
@@ -211,6 +289,7 @@ const UIManager = (() => {
 
                 optDiv.classList.remove('selected', 'correct', 'incorrect');
                 if (isSelected) optDiv.classList.add('selected');
+                optDiv.setAttribute('aria-checked', isSelected ? 'true' : 'false');
 
                 if ((mode === 'practice' && hasAnswered) || isSubmitted) {
                     if (isCorrect) optDiv.classList.add('correct');
@@ -467,11 +546,73 @@ const UIManager = (() => {
             subEl.innerText = `${t('modalSubtitle')}${score10Text}`;
         }
 
+        // Retake incorrect questions button
+        const retakeBtn = document.getElementById('txt-modal-retake');
+        if (retakeBtn) {
+            const mistakesCount = (results.incorrect || 0) + (results.unattempted || 0);
+            if (mistakesCount > 0) {
+                retakeBtn.style.display = 'inline-flex';
+                retakeBtn.innerText = t('btnRetakeIncorrect', mistakesCount);
+            } else {
+                retakeBtn.style.display = 'none';
+            }
+        }
+
+        // Violations count stat box
+        const vioBox = document.getElementById('modal-box-violations');
+        const vioNum = document.getElementById('modal-violations');
+        if (vioBox && vioNum) {
+            if (results.violations !== undefined && results.violations > 0) {
+                vioBox.style.display = 'block';
+                vioNum.innerText = results.violations;
+                vioNum.style.color = '#ef4444';
+            } else if (results.violations !== undefined) {
+                vioBox.style.display = 'block';
+                vioNum.innerText = '0';
+                vioNum.style.color = '#10b981';
+            } else {
+                vioBox.style.display = 'none';
+            }
+        }
+
         modal.style.display = 'flex';
     }
 
     function hideSummaryModal() {
         const modal = document.getElementById('summary-modal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    function showAntiCheatModal(count, max, isExceeded, onConfirm) {
+        const modal = document.getElementById('anticheat-modal');
+        if (!modal) return;
+
+        const titleEl = modal.querySelector('#anticheat-title');
+        const descEl = modal.querySelector('#anticheat-desc');
+        const pillEl = modal.querySelector('#anticheat-pill');
+        const ackBtn = modal.querySelector('#anticheat-ack-btn');
+
+        if (titleEl) titleEl.innerText = t('antiCheatWarningTitle');
+        if (descEl) {
+            descEl.innerText = isExceeded ? t('antiCheatLimitReached') : t('antiCheatWarningText');
+        }
+        if (pillEl) {
+            pillEl.innerText = t('antiCheatViolations', count, max);
+            pillEl.className = 'anticheat-violation-pill ' + (isExceeded ? 'danger' : 'warning');
+        }
+        if (ackBtn) {
+            ackBtn.innerText = isExceeded ? t('btnSubmit') : t('antiCheatBtnAcknowledge');
+            ackBtn.onclick = () => {
+                modal.style.display = 'none';
+                if (typeof onConfirm === 'function') onConfirm();
+            };
+        }
+
+        modal.style.display = 'flex';
+    }
+
+    function hideAntiCheatModal() {
+        const modal = document.getElementById('anticheat-modal');
         if (modal) modal.style.display = 'none';
     }
 
@@ -686,6 +827,9 @@ const UIManager = (() => {
         initGlobalUI,
         showLoadingModal,
         updateLoadingProgress,
-        hideLoadingModal
+        hideLoadingModal,
+        showAntiCheatModal,
+        hideAntiCheatModal,
+        typesetMathJaxProgressively
     };
 })();

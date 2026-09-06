@@ -1293,3 +1293,95 @@ body.theme-emerald .quiz-inline-code {
         font-size: 1.65em;
     }
 }
+
+/* WCAG 2.1 AA Keyboard Accessibility Focus Indicator */
+.option:focus-visible {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25);
+}
+
+/* Missing Answer Warning Badge */
+.badge-no-answer {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(245, 158, 11, 0.12);
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    font-size: 0.72em;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+/* Anti-Cheat Modal & Badges */
+.anticheat-modal-card {
+    max-width: 460px;
+    text-align: center;
+    border: 2px solid #ef4444;
+    box-shadow: 0 12px 36px rgba(239, 68, 68, 0.35);
+    animation: pulseWarningBorder 1.5s infinite alternate ease-in-out;
+}
+@keyframes pulseWarningBorder {
+    0% { box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25); }
+    100% { box-shadow: 0 15px 45px rgba(239, 68, 68, 0.5); }
+}
+.anticheat-icon-pulse {
+    font-size: 3.5em;
+    margin-bottom: 8px;
+    animation: shakeIcon 0.8s infinite ease-in-out;
+}
+@keyframes shakeIcon {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(-8deg) scale(1.08); }
+    75% { transform: rotate(8deg) scale(1.08); }
+}
+.anticheat-badge-wrap {
+    margin: 12px 0;
+}
+.anticheat-violation-pill {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 0.9em;
+    font-weight: 700;
+}
+.anticheat-violation-pill.warning {
+    background: rgba(245, 158, 11, 0.15);
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+}
+.anticheat-violation-pill.danger {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.5);
+}
+
+/* Omni Toast Notification */
+.omni-toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(50px);
+    background: rgba(15, 23, 42, 0.92);
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 99px;
+    font-size: 0.9em;
+    font-weight: 600;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    z-index: 999999;
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+}
+.omni-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+

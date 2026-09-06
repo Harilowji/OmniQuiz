@@ -85,6 +85,17 @@
                         <option value="exam">⏱️ Thi thử (Exam)</option>
                     </select>
                 </div>
+                <div class="pill-select-wrap" id="wrap-duration-selector" title="Thời gian làm bài thi">
+                    <select class="custom-select" id="duration-selector" aria-label="Thời gian làm bài">
+                        <option value="15">⏱️ 15 phút</option>
+                        <option value="30">⏱️ 30 phút</option>
+                        <option value="45">⏱️ 45 phút</option>
+                        <option value="60" selected>⏱️ 60 phút</option>
+                        <option value="90">⏱️ 90 phút</option>
+                        <option value="120">⏱️ 120 phút</option>
+                        <option value="0">♾️ Không giới hạn</option>
+                    </select>
+                </div>
                 <div class="pill-select-wrap">
                     <select class="custom-select" id="theme-selector" aria-label="Select Theme">
                         <option value="academic">Academic Pro</option>
@@ -94,6 +105,7 @@
                         <option value="playful">🍭 Playful</option>
                     </select>
                 </div>
+                <button class="btn-action" id="btn-fullscreen-toggle" title="Toàn màn hình">⛶ Toàn màn hình</button>
                 <button class="btn-action" id="btn-shuffle" title="Đảo câu hỏi và đáp án">🔀 Đảo đề</button>
                 <button class="btn-action btn-danger" id="btn-reset" title="Làm mới và quay về trang nhập đề thi">🔄 Làm mới</button>
             </div>
@@ -277,13 +289,33 @@
                     <div class="num" id="modal-unattempted" style="color: #64748b;">0</div>
                     <div class="lbl" id="txt-modal-unattempted">Chưa làm</div>
                 </div>
+                <div class="modal-box" id="modal-box-violations" style="display: none;">
+                    <div class="num" id="modal-violations" style="color: #10b981;">0</div>
+                    <div class="lbl" id="txt-modal-violations">Rời màn hình</div>
+                </div>
             </div>
 
             <div class="modal-actions">
                 <button class="btn-action" id="txt-modal-review">Xem lại bài làm</button>
+                <button class="btn-action btn-primary" id="txt-modal-retake" style="display: none;">🎯 Luyện lại câu sai</button>
                 <button class="btn-action btn-success" id="txt-modal-export">Xuất PDF câu sai</button>
                 <button class="btn-action btn-danger" id="txt-modal-new-quiz">🔄 Làm bài mới</button>
             </div>
+        </div>
+    </div>
+
+    <!-- ANTI-CHEAT WARNING MODAL -->
+    <div class="modal-overlay" id="anticheat-modal" style="display: none; z-index: 99999;">
+        <div class="modal-content anticheat-modal-card">
+            <div class="anticheat-icon-pulse">🚨</div>
+            <h2 id="anticheat-title" style="color: #ef4444; margin-bottom: 8px;">Cảnh báo Liêm chính Phòng thi!</h2>
+            <p id="anticheat-desc" style="font-size: 0.95em; opacity: 0.9; margin-bottom: 16px; line-height: 1.5;">Hệ thống phát hiện bạn vừa rời khỏi màn hình bài thi.</p>
+            <div class="anticheat-badge-wrap">
+                <span class="anticheat-violation-pill" id="anticheat-pill">Số lần vi phạm: 1/3</span>
+            </div>
+            <button class="btn-action btn-danger" id="anticheat-ack-btn" style="margin-top: 20px; width: 100%; justify-content: center; font-weight: 600; padding: 12px;">
+                Tôi hiểu và cam kết tiếp tục làm bài
+            </button>
         </div>
     </div>
 

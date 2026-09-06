@@ -82,7 +82,23 @@ const I18N = {
             math_50: "📐 Toán học",
             physics_12: "⚡ Vật lý",
             sat_math: "🎓 SAT Math"
-        }
+        },
+        antiCheatWarningTitle: "⚠️ Cảnh báo Liêm chính Phòng thi!",
+        antiCheatWarningText: "Hệ thống phát hiện bạn vừa rời khỏi màn hình bài thi (chuyển tab hoặc ứng dụng khác).",
+        antiCheatViolations: "Số lần vi phạm: {0}/{1}",
+        antiCheatLimitReached: "Bạn đã vi phạm rời màn hình quá số lần quy định. Bài thi sẽ được tự động thu nộp ngay bây giờ!",
+        antiCheatBtnAcknowledge: "Tôi hiểu và cam kết tiếp tục làm bài",
+        antiCheatCopyWarning: "⚠️ Chế độ Thi thử: Đã khóa thao tác sao chép & chuột phải để đảm bảo tính công bằng!",
+        btnRetakeIncorrect: "🎯 Luyện lại câu sai ({0})",
+        retakeSuccess: "🎯 Đã tạo phiên ôn tập tập trung với {0} câu bạn đã làm sai hoặc chưa làm!",
+        btnFullscreen: "⛶ Toàn màn hình",
+        btnExitFullscreen: "🗗 Thu nhỏ",
+        noAnswerDeclared: "Chưa có đáp án chính thức",
+        lblExamDuration: "Thời gian:",
+        optDurationUnlimited: "Không giới hạn",
+        optDurationMins: "{0} phút",
+        lblViolations: "Rời màn hình:",
+        cleanViolations: "0 lần (Hợp lệ)"
     },
     en: {
         appTitle: "Universal Multi-Subject CBT Platform",
@@ -163,7 +179,23 @@ const I18N = {
             math_50: "📐 Mathematics",
             physics_12: "⚡ Physics",
             sat_math: "🎓 SAT Math"
-        }
+        },
+        antiCheatWarningTitle: "⚠️ Exam Integrity Alert!",
+        antiCheatWarningText: "The system detected that you left the exam screen (tab switch or external application).",
+        antiCheatViolations: "Violations: {0}/{1}",
+        antiCheatLimitReached: "You have exceeded the maximum allowed screen-switch violations. Your exam will be automatically submitted now!",
+        antiCheatBtnAcknowledge: "I understand and promise to continue my exam",
+        antiCheatCopyWarning: "⚠️ Exam Mode: Copy-paste and right-click are disabled to ensure test integrity!",
+        btnRetakeIncorrect: "🎯 Retake Mistakes ({0})",
+        retakeSuccess: "🎯 Created a focused review session with {0} incorrect/unanswered questions!",
+        btnFullscreen: "⛶ Fullscreen",
+        btnExitFullscreen: "🗗 Exit Fullscreen",
+        noAnswerDeclared: "No official answer key",
+        lblExamDuration: "Duration:",
+        optDurationUnlimited: "No limit",
+        optDurationMins: "{0} mins",
+        lblViolations: "Screen switches:",
+        cleanViolations: "0 times (Valid)"
     }
 };
 
@@ -204,7 +236,8 @@ function updateUILanguage(lang) {
         'txt-modal-unattempted': trans.modalUnattempted,
         'txt-modal-review': trans.modalReview,
         'txt-modal-export': trans.modalExport,
-        'txt-modal-new-quiz': trans.modalNewQuiz
+        'txt-modal-new-quiz': trans.modalNewQuiz,
+        'lbl-duration-picker': trans.lblExamDuration
     };
 
     for (const [id, text] of Object.entries(elementMap)) {

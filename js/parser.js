@@ -135,10 +135,14 @@ const QuestionParser = (() => {
             return `<div class="quiz-image-wrap" style="text-align: center; margin: 12px 0;"><img src="${item.src}" alt="${escapeHtml(item.alt)}" class="quiz-img"><br><span style="font-size: 0.85em; opacity: 0.8; font-style: italic;">${escapeHtml(item.alt)}</span></div>`;
         });
 
-        // 8. Restore HTML <img> tags with quiz-img class for zoom support
+        // 8. Restore HTML <img> tags with quiz-img class for zoom support and strict XSS sanitization
         processed = processed.replace(/%%%HTML_IMG_(\d+)%%%/g, (match, idx) => {
             let imgTag = htmlImages[parseInt(idx, 10)];
             if (!imgTag) return '';
+            // XSS sanitization: strip all inline event handlers (on*) and javascript: URIs
+            imgTag = imgTag.replace(/\s+on[a-z]+\s*=\s*(?:'[^']*'|"[^"]*"|[^\s>]+)/gi, '');
+            imgTag = imgTag.replace(/src\s*=\s*(?:'javascript:[^']*'|"javascript:[^"]*")/gi, 'src=""');
+
             if (!imgTag.includes('class=')) {
                 imgTag = imgTag.replace(/<img\b/i, '<img class="quiz-img"');
             } else if (!imgTag.includes('quiz-img')) {
@@ -491,11 +495,13 @@ const QuestionParser = (() => {
         }
 
         // Default answer if none declared
+        let isDefaultAnswer = false;
         if (answers.length === 0) {
             if (keyMap && keyMap[qNum] !== undefined) {
                 answers = [keyMap[qNum]];
             } else if (options.length > 0) {
                 answers = [0];
+                isDefaultAnswer = true;
             }
         }
 
@@ -506,7 +512,8 @@ const QuestionParser = (() => {
             options: options,
             type: type,
             answers: answers,
-            explanation: explanation.trim()
+            explanation: explanation.trim(),
+            isDefaultAnswer: isDefaultAnswer
         };
     }
 
@@ -523,16 +530,30 @@ const QuestionParser = (() => {
 
     function parse(rawText) {
         if (!rawText || typeof rawText !== 'string') return [];
+        let questions = [];
+
         // Standard CBT format
         if (rawText.includes('Q: ') && rawText.includes('O: ')) {
-            return parseStandard(rawText.split(/\r?\n/));
+            questions = parseStandard(rawText.split(/\r?\n/));
+        } else {
+            // Try natural Vietnamese / Word exam format
+            questions = parseNatural(rawText);
+            if (questions.length === 0) {
+                // Fallback to standard
+                questions = parseStandard(rawText.split(/\r?\n/));
+            }
         }
-        // Try natural Vietnamese / Word exam format
-        const natural = parseNatural(rawText);
-        if (natural.length > 0) return natural;
 
-        // Fallback to standard
-        return parseStandard(rawText.split(/\r?\n/));
+        // Auto-detect exam duration from text header if specified (e.g. "Thời gian làm bài: 45 phút", "Time: 60 mins")
+        const durationMatch = rawText.match(/(?:thời\s*gian(?:\s*làm\s*bài)?|duration|time)[\s\:\-\—]*(\d{1,3})\s*(?:phút|mins?|m\b)/i);
+        if (durationMatch) {
+            const parsedMinutes = parseInt(durationMatch[1], 10);
+            if (!isNaN(parsedMinutes) && parsedMinutes > 0 && parsedMinutes <= 300) {
+                questions.parsedDuration = parsedMinutes;
+            }
+        }
+
+        return questions;
     }
 
     return {

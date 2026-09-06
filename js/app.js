@@ -3,13 +3,44 @@
  */
 (() => {
     let timerInterval = null;
+    let lastViolationTimestamp = 0;
 
     window.addEventListener('DOMContentLoaded', () => {
         initSettings();
         bindGlobalEvents();
         UIManager.initGlobalUI(onImageAttached);
         loadQuestions();
+
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('OmniQuiz PWA ServiceWorker ready, scope:', reg.scope))
+                .catch(err => console.warn('OmniQuiz ServiceWorker registration skipped:', err));
+        }
     });
+
+    function handleAntiCheatViolation(reason) {
+        if (QuizEngine.state.currentMode !== 'exam' || QuizEngine.state.isSubmitted) return;
+        if (!QuizEngine.state.questions || QuizEngine.state.questions.length === 0) return;
+
+        const now = Date.now();
+        if (now - lastViolationTimestamp < 2500) return;
+        lastViolationTimestamp = now;
+
+        const res = QuizEngine.recordViolation(reason);
+        if (!res) return;
+
+        AudioManager.playBuzz();
+
+        if (res.isExceeded) {
+            UIManager.showAntiCheatModal(res.count, res.max, true, () => {
+                finishQuiz(true);
+            });
+            finishQuiz(true);
+        } else {
+            UIManager.showAntiCheatModal(res.count, res.max, false);
+        }
+    }
 
     function initSettings() {
         const savedTheme = StorageManager.loadPreference('theme', 'academic');
@@ -167,12 +198,84 @@
         document.getElementById('txt-modal-review')?.addEventListener('click', () => {
             UIManager.hideSummaryModal();
         });
+        document.getElementById('txt-modal-retake')?.addEventListener('click', () => {
+            const res = QuizEngine.createRetakeMistakesExam();
+            UIManager.hideSummaryModal();
+            if (res && res.count > 0) {
+                StorageManager.saveState(QuizEngine.state);
+                refreshUI();
+                startTimer();
+                updateResetButtonState();
+                UIManager.showToast(t('retakeSuccess', res.count));
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
         document.getElementById('txt-modal-export')?.addEventListener('click', () => {
             QuizEngine.exportPDFReport();
         });
         document.getElementById('txt-modal-new-quiz')?.addEventListener('click', () => {
             if (confirm(t('confirmReset'))) {
                 resetToInitialUploadScreen();
+            }
+        });
+
+        // Fullscreen toggle
+        document.getElementById('btn-fullscreen-toggle')?.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
+        });
+
+        document.addEventListener('fullscreenchange', () => {
+            const btn = document.getElementById('btn-fullscreen-toggle');
+            if (btn) {
+                btn.innerText = document.fullscreenElement ? t('btnExitFullscreen') : t('btnFullscreen');
+            }
+        });
+
+        // Exam Duration Selector
+        document.getElementById('duration-selector')?.addEventListener('change', (e) => {
+            QuizEngine.setExamDuration(e.target.value);
+            if (isExamActiveUnsubmitted()) {
+                startTimer();
+            }
+        });
+
+        // Anti-Cheat: Tab-switching & Window Blur monitoring for Exam Mode
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                handleAntiCheatViolation(QuizEngine.state.currentLang === 'vi' 
+                    ? 'Chuyển tab / Ẩn màn hình thi' 
+                    : 'Tab switch / Hidden exam window');
+            }
+        });
+
+        window.addEventListener('blur', () => {
+            handleAntiCheatViolation(QuizEngine.state.currentLang === 'vi' 
+                ? 'Rời màn hình thi (Chuyển sang ứng dụng khác)' 
+                : 'Focus lost (Switched to external app)');
+        });
+
+        // Anti-Cheat: Context menu (right-click) & Copy prevention in Exam Mode
+        document.addEventListener('contextmenu', (e) => {
+            if (QuizEngine.state.currentMode === 'exam' && isExamActiveUnsubmitted()) {
+                const mainArea = document.querySelector('.quiz-main');
+                if (mainArea && mainArea.contains(e.target)) {
+                    e.preventDefault();
+                    UIManager.showToast(t('antiCheatCopyWarning'));
+                }
+            }
+        });
+
+        document.addEventListener('copy', (e) => {
+            if (QuizEngine.state.currentMode === 'exam' && isExamActiveUnsubmitted()) {
+                const mainArea = document.querySelector('.quiz-main');
+                if (mainArea && mainArea.contains(e.target)) {
+                    e.preventDefault();
+                    UIManager.showToast(t('antiCheatCopyWarning'));
+                }
             }
         });
 
@@ -665,6 +768,16 @@
 
         QuizEngine.setQuestions(parsed);
 
+        // Configure exam duration
+        if (parsed.parsedDuration) {
+            QuizEngine.setExamDuration(parsed.parsedDuration);
+            const durationSelect = document.getElementById('duration-selector');
+            if (durationSelect) durationSelect.value = String(parsed.parsedDuration);
+        } else {
+            const durVal = document.getElementById('duration-selector')?.value || '60';
+            QuizEngine.setExamDuration(durVal);
+        }
+
         // When loading a new file or exam, always start clean with no revealed answers
         if (isNewExam) {
             StorageManager.clearState();
@@ -674,7 +787,9 @@
                 ? Object.assign({}, initialCustomImages)
                 : {};
             QuizEngine.state.isSubmitted = false;
-            QuizEngine.state.timeLeft = 3600;
+            QuizEngine.state.timeLeft = QuizEngine.state.durationMinutes > 0 ? QuizEngine.state.durationMinutes * 60 : -1;
+            QuizEngine.state.violationCount = 0;
+            QuizEngine.state.violationLogs = [];
             QuizEngine.state.incorrectQData = [];
             StorageManager.saveState(QuizEngine.state);
         } else {
@@ -685,7 +800,7 @@
                 QuizEngine.state.flaggedQuestions = saved.flagged || new Set();
                 QuizEngine.state.customImages = saved.customImages || {};
                 QuizEngine.state.isSubmitted = false;
-                QuizEngine.state.timeLeft = saved.timeLeft || 3600;
+                QuizEngine.state.timeLeft = saved.timeLeft !== undefined ? saved.timeLeft : (QuizEngine.state.durationMinutes > 0 ? QuizEngine.state.durationMinutes * 60 : -1);
             } else {
                 StorageManager.clearState();
                 QuizEngine.state.userAnswers = {};
@@ -694,7 +809,9 @@
                     ? Object.assign({}, initialCustomImages)
                     : {};
                 QuizEngine.state.isSubmitted = false;
-                QuizEngine.state.timeLeft = 3600;
+                QuizEngine.state.timeLeft = QuizEngine.state.durationMinutes > 0 ? QuizEngine.state.durationMinutes * 60 : -1;
+                QuizEngine.state.violationCount = 0;
+                QuizEngine.state.violationLogs = [];
                 QuizEngine.state.incorrectQData = [];
                 StorageManager.saveState(QuizEngine.state);
             }
@@ -733,21 +850,13 @@
             QuizEngine.state.currentMode,
             QuizEngine.state.isSubmitted
         );
-
-        // Targeted MathJax rendering
-        if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
-            const container = document.getElementById('quiz-container');
-            if (container) {
-                MathJax.typesetPromise([container]).catch(() => {});
-            }
-        }
     }
 
     // Reactive MathJax hook when MathJax finishes loading asynchronously
     window.onMathJaxReady = () => {
         const container = document.getElementById('quiz-container');
-        if (container && window.MathJax && typeof MathJax.typesetPromise === 'function') {
-            MathJax.typesetPromise([container]).catch(() => {});
+        if (container && typeof UIManager !== 'undefined' && UIManager.typesetMathJaxProgressively) {
+            UIManager.typesetMathJaxProgressively(container);
         }
     };
 
@@ -851,14 +960,20 @@
         if (timerInterval) clearInterval(timerInterval);
 
         const updateTimerDisplay = () => {
+            const timerEl = document.getElementById('time-remaining');
+            if (!timerEl) return;
+            if (QuizEngine.state.timeLeft === -1) {
+                timerEl.innerText = '♾️ --:--';
+                return;
+            }
             let m = Math.floor(QuizEngine.state.timeLeft / 60);
             let s = QuizEngine.state.timeLeft % 60;
             const display = (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
-            const timerEl = document.getElementById('time-remaining');
-            if (timerEl) timerEl.innerText = display;
+            timerEl.innerText = display;
         };
 
         updateTimerDisplay();
+        if (QuizEngine.state.timeLeft === -1) return;
 
         timerInterval = setInterval(() => {
             if (QuizEngine.state.isSubmitted) {
