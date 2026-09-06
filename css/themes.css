@@ -104,50 +104,100 @@ body.theme-academic::before {
     animation: academicGridDrift 45s linear infinite;
 }
 
-/* 3. Cyberpunk Theme (Dark, Neon Cyan & Magenta, Orbitron) */
+/* 3. Midnight Cyber Theme (Modern Deep Obsidian, Neon Cyan & Indigo Accents, Ultra-Readable Inter) */
 body.theme-cyberpunk {
-    --bg-gradient: #06070b;
-    --text-color: #00f0ff;
-    --heading-color: #ff007f;
-    --card-bg: rgba(13, 14, 21, 0.88);
-    --card-border: #ff007f;
-    --card-shadow: 0 0 25px rgba(255, 0, 127, 0.35);
-    --option-bg: rgba(10, 11, 16, 0.9);
-    --option-hover-bg: #141622;
-    --option-border: #00f0ff;
-    --primary-color: #ff007f;
-    --primary-hover: #d9006c;
-    --exp-bg: rgba(16, 17, 26, 0.95);
-    --exp-border: #ffe600;
-    --stats-bg: rgba(13, 14, 21, 0.92);
-    --correct-bg: #032b16;
-    --correct-border: #00ff66;
-    --correct-text: #00ff66;
-    --incorrect-bg: #3d0510;
-    --incorrect-border: #ff0033;
-    --incorrect-text: #ff0033;
-    --font-family: 'Orbitron', 'Courier New', monospace, sans-serif;
-    --border-radius: 2px;
+    --bg-gradient: #080c16;
+    --text-color: #f1f5f9;
+    --heading-color: #38bdf8;
+    --card-bg: rgba(15, 23, 42, 0.84);
+    --card-border: rgba(56, 189, 248, 0.28);
+    --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 16px rgba(56, 189, 248, 0.12);
+    --option-bg: rgba(30, 41, 59, 0.72);
+    --option-hover-bg: rgba(51, 65, 85, 0.85);
+    --option-border: rgba(100, 116, 139, 0.45);
+    --primary-color: #38bdf8;
+    --primary-hover: #0284c7;
+    --exp-bg: rgba(15, 23, 42, 0.95);
+    --exp-border: #6366f1;
+    --stats-bg: rgba(15, 23, 42, 0.88);
+    --correct-bg: rgba(6, 78, 59, 0.65);
+    --correct-border: #10b981;
+    --correct-text: #6ee7b7;
+    --incorrect-bg: rgba(127, 29, 29, 0.65);
+    --incorrect-border: #ef4444;
+    --incorrect-text: #fca5a5;
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --border-radius: 12px;
 }
 
 body.theme-cyberpunk::before {
-    background-color: #06070b;
+    background-color: #080c16;
     background-image:
-        linear-gradient(rgba(0, 240, 255, 0.07) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 0, 127, 0.06) 1px, transparent 1px),
-        radial-gradient(circle at 50% 5%, rgba(255, 0, 127, 0.22), transparent 55%),
-        radial-gradient(circle at 50% 95%, rgba(0, 240, 255, 0.20), transparent 55%);
-    background-size: 36px 36px, 36px 36px, 100% 100%, 100% 100%;
-    animation: cyberpunkScanline 12s linear infinite;
+        radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.18), transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(99, 102, 241, 0.18), transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.10), transparent 50%),
+        linear-gradient(rgba(56, 189, 248, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+    animation: midnightDrift 30s ease-in-out infinite alternate;
 }
 
 body.theme-cyberpunk .top-navbar,
 body.theme-cyberpunk .question-block,
 body.theme-cyberpunk .palette-sidebar {
-    box-shadow: 0 0 16px rgba(255, 0, 127, 0.25);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
 }
+
 body.theme-cyberpunk .option:hover {
-    box-shadow: 0 0 14px var(--primary-color);
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+    border-color: var(--primary-color);
+}
+
+/* 4. Emerald Forest Theme (Deep Forest Obsidian, Mint & Emerald, Relaxing Eye Comfort) */
+body.theme-emerald {
+    --bg-gradient: #04140e;
+    --text-color: #ecfdf5;
+    --heading-color: #34d399;
+    --card-bg: rgba(6, 32, 22, 0.85);
+    --card-border: rgba(16, 185, 129, 0.3);
+    --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 16px rgba(16, 185, 129, 0.1);
+    --option-bg: rgba(10, 46, 32, 0.72);
+    --option-hover-bg: rgba(16, 62, 44, 0.85);
+    --option-border: rgba(52, 211, 153, 0.35);
+    --primary-color: #10b981;
+    --primary-hover: #059669;
+    --exp-bg: rgba(6, 32, 22, 0.95);
+    --exp-border: #34d399;
+    --stats-bg: rgba(6, 32, 22, 0.88);
+    --correct-bg: rgba(6, 78, 59, 0.65);
+    --correct-border: #34d399;
+    --correct-text: #a7f3d0;
+    --incorrect-bg: rgba(127, 29, 29, 0.65);
+    --incorrect-border: #f87171;
+    --incorrect-text: #fecaca;
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --border-radius: 12px;
+}
+
+body.theme-emerald::before {
+    background-color: #04140e;
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.18), transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(5, 150, 105, 0.18), transparent 50%),
+        radial-gradient(circle at 50% 10%, rgba(52, 211, 153, 0.10), transparent 45%);
+    background-size: 150% 150%;
+    animation: emeraldFlow 25s ease-in-out infinite alternate;
+}
+
+body.theme-emerald .top-navbar,
+body.theme-emerald .question-block,
+body.theme-emerald .palette-sidebar {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+body.theme-emerald .option:hover {
+    box-shadow: 0 0 16px rgba(52, 211, 153, 0.25);
+    border-color: var(--primary-color);
 }
 
 /* 4. Playful Theme (Pastels, Rounded 3D, Quicksand) */

@@ -29,6 +29,68 @@
 
         document.body.className = 'theme-' + savedTheme;
         updateUILanguage(savedLang);
+        updateResetButtonState();
+    }
+
+    function isExamActiveUnsubmitted() {
+        return Boolean(QuizEngine.state.questions && QuizEngine.state.questions.length > 0 && !QuizEngine.state.isSubmitted);
+    }
+
+    function updateResetButtonState() {
+        const btnReset = document.getElementById('btn-reset');
+        if (!btnReset) return;
+
+        if (isExamActiveUnsubmitted()) {
+            btnReset.classList.add('btn-locked');
+            btnReset.setAttribute('aria-disabled', 'true');
+            btnReset.title = t('tooltipResetDisabled');
+        } else {
+            btnReset.classList.remove('btn-locked');
+            btnReset.removeAttribute('aria-disabled');
+            btnReset.title = t('tooltipResetEnabled');
+        }
+    }
+
+    function resetToInitialUploadScreen() {
+        StorageManager.clearCurrentExam();
+        StorageManager.clearState();
+        if (timerInterval) clearInterval(timerInterval);
+        QuizEngine.state.questions = [];
+        QuizEngine.state.userAnswers = {};
+        QuizEngine.state.flaggedQuestions = new Set();
+        QuizEngine.state.isSubmitted = false;
+        QuizEngine.state.timeLeft = 3600;
+        QuizEngine.state.incorrectQData = [];
+
+        // Reset file input
+        const fileInput = document.getElementById('file-input');
+        if (fileInput) fileInput.value = '';
+
+        // Show upload section, hide stats and palette
+        const uploadSec = document.getElementById('upload-section');
+        if (uploadSec) uploadSec.style.display = 'block';
+        const statsSec = document.getElementById('stats-section');
+        if (statsSec) statsSec.style.display = 'none';
+        const paletteSec = document.getElementById('palette-section');
+        if (paletteSec) paletteSec.style.display = 'none';
+        const fab = document.getElementById('btn-mobile-palette-toggle');
+        if (fab) fab.style.display = 'none';
+
+        // Show clean empty welcome state
+        const container = document.getElementById('quiz-container');
+        if (container) {
+            container.innerHTML = `
+                <div id="empty-quiz-welcome" style="text-align: center; padding: 50px 20px; opacity: 0.85;">
+                    <div style="font-size: 2.5em; margin-bottom: 10px;">🎓</div>
+                    <h3 style="margin-bottom: 6px; font-weight: 700;">Chào mừng bạn đến với OmniQuiz!</h3>
+                    <p style="font-size: 0.95em; opacity: 0.8;">Vui lòng tải lên file đề thi của bạn ở khung phía trên, hoặc chọn một đề mẫu đa môn học để bắt đầu ôn luyện.</p>
+                </div>
+            `;
+        }
+
+        UIManager.hideSummaryModal();
+        updateResetButtonState();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function bindGlobalEvents() {
@@ -46,6 +108,7 @@
             QuizEngine.state.currentLang = lang;
             StorageManager.savePreference('lang', lang);
             updateUILanguage(lang);
+            updateResetButtonState();
             refreshUI();
         });
 
@@ -69,46 +132,18 @@
 
         // Reset button: returns completely to the initial exam selection/upload screen
         document.getElementById('btn-reset')?.addEventListener('click', () => {
-            // Only confirm if a quiz is active
+            // Cannot reset while actively taking an exam
+            if (isExamActiveUnsubmitted()) {
+                alert(t('cannotResetDuringExam'));
+                return;
+            }
+
+            // Only confirm if a quiz was completed / loaded
             if (QuizEngine.state.questions && QuizEngine.state.questions.length > 0) {
                 if (!confirm(t('confirmReset'))) return;
             }
 
-            StorageManager.clearCurrentExam();
-            StorageManager.clearState();
-            if (timerInterval) clearInterval(timerInterval);
-            QuizEngine.state.questions = [];
-            QuizEngine.state.userAnswers = {};
-            QuizEngine.state.flaggedQuestions = new Set();
-            QuizEngine.state.isSubmitted = false;
-            QuizEngine.state.timeLeft = 3600;
-            QuizEngine.state.incorrectQData = [];
-
-            // Reset file input
-            const fileInput = document.getElementById('file-input');
-            if (fileInput) fileInput.value = '';
-
-            // Show upload section, hide stats and palette
-            document.getElementById('upload-section').style.display = 'block';
-            document.getElementById('stats-section').style.display = 'none';
-            document.getElementById('palette-section').style.display = 'none';
-            const fab = document.getElementById('btn-mobile-palette-toggle');
-            if (fab) fab.style.display = 'none';
-
-            // Show clean empty welcome state
-            const container = document.getElementById('quiz-container');
-            if (container) {
-                container.innerHTML = `
-                    <div id="empty-quiz-welcome" style="text-align: center; padding: 50px 20px; opacity: 0.85;">
-                        <div style="font-size: 2.5em; margin-bottom: 10px;">🎓</div>
-                        <h3 style="margin-bottom: 6px; font-weight: 700;">Chào mừng bạn đến với OmniQuiz!</h3>
-                        <p style="font-size: 0.95em; opacity: 0.8;">Vui lòng tải lên file đề thi của bạn ở khung phía trên, hoặc chọn một đề mẫu đa môn học để bắt đầu ôn luyện.</p>
-                    </div>
-                `;
-            }
-
-            UIManager.hideSummaryModal();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            resetToInitialUploadScreen();
         });
 
         // Finish button (Navbar & Sidebar)
@@ -121,6 +156,11 @@
         });
         document.getElementById('txt-modal-export')?.addEventListener('click', () => {
             QuizEngine.exportPDFReport();
+        });
+        document.getElementById('txt-modal-new-quiz')?.addEventListener('click', () => {
+            if (confirm(t('confirmReset'))) {
+                resetToInitialUploadScreen();
+            }
         });
 
         // Palette filter buttons
@@ -258,6 +298,7 @@
             document.getElementById('palette-section').style.display = 'none';
             const fab = document.getElementById('btn-mobile-palette-toggle');
             if (fab) fab.style.display = 'none';
+            updateResetButtonState();
         }
     }
 
@@ -351,6 +392,7 @@
 
         refreshUI();
         startTimer();
+        updateResetButtonState();
     }
 
     function refreshUI() {
@@ -532,6 +574,7 @@
         UIManager.showSummaryModal(results, isTimeout);
 
         refreshUI();
+        updateResetButtonState();
 
         if (results.score100 >= 75) {
             Confetti.launch();

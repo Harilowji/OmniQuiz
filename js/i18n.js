@@ -35,6 +35,10 @@ const I18N = {
         modalUnattempted: "Chưa làm",
         modalReview: "Xem lại bài làm",
         modalExport: "Xuất PDF câu sai",
+        modalNewQuiz: "🔄 Làm bài mới",
+        cannotResetDuringExam: "Bạn đang trong quá trình làm bài thi! Không thể làm mới.\n\nVui lòng hoàn thành và nộp bài trước khi bắt đầu bài thi mới.",
+        tooltipResetDisabled: "Không thể làm mới khi đang làm bài thi. Vui lòng nộp bài trước!",
+        tooltipResetEnabled: "Làm mới và quay về màn hình nhập đề thi ban đầu",
         confirmFinish: "Bạn có chắc chắn muốn nộp bài sớm không?",
         unansweredWarning: "Bạn vẫn còn {0} câu chưa hoàn thành!",
         confirmReset: "Bạn có chắc muốn làm mới và quay về màn hình nhập đề thi ban đầu không?",
@@ -85,6 +89,10 @@ const I18N = {
         modalUnattempted: "Unattempted",
         modalReview: "Review Answers",
         modalExport: "Export Incorrect (PDF)",
+        modalNewQuiz: "🔄 New Exam / Upload",
+        cannotResetDuringExam: "You are currently taking an exam! Resetting is disabled.\n\nPlease finish and submit your exam first before starting a new one.",
+        tooltipResetDisabled: "Cannot reset while taking an exam. Please submit first!",
+        tooltipResetEnabled: "Reset and return to the initial exam upload screen",
         confirmFinish: "Are you sure you want to finish the quiz?",
         unansweredWarning: "You still have {0} unanswered question(s)!",
         confirmReset: "Are you sure you want to reset and return to the initial exam upload screen?",
@@ -142,7 +150,8 @@ function updateUILanguage(lang) {
         'txt-modal-incorrect': trans.modalIncorrect,
         'txt-modal-unattempted': trans.modalUnattempted,
         'txt-modal-review': trans.modalReview,
-        'txt-modal-export': trans.modalExport
+        'txt-modal-export': trans.modalExport,
+        'txt-modal-new-quiz': trans.modalNewQuiz
     };
 
     for (const [id, text] of Object.entries(elementMap)) {

@@ -102,15 +102,27 @@
     }
 }
 
-@keyframes cyberpunkScanline {
+@keyframes midnightDrift {
     0% {
-        background-position: 0 0, 0 0, 50% 0%, 50% 100%;
+        background-position: 0% 0%, 100% 100%, 50% 50%, 0 0, 0 0;
     }
     50% {
-        background-position: 0 30px, 30px 0, 45% 15%, 55% 85%;
+        background-position: 25% 15%, 75% 85%, 45% 65%, 18px 18px, 18px 18px;
     }
     100% {
-        background-position: 0 60px, 60px 0, 50% 0%, 50% 100%;
+        background-position: 0% 0%, 100% 100%, 50% 50%, 36px 36px, 36px 36px;
+    }
+}
+
+@keyframes emeraldFlow {
+    0% {
+        background-position: 0% 0%, 100% 100%, 50% 0%;
+    }
+    50% {
+        background-position: 30% 30%, 70% 70%, 50% 50%;
+    }
+    100% {
+        background-position: 0% 0%, 100% 100%, 50% 0%;
     }
 }
 
