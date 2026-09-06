@@ -64,14 +64,30 @@ const QuestionParser = (() => {
     }
 
     /**
-     * Safely format math and chemistry text: auto-wrap LaTeX/mhchem and protect
-     * mathematical expressions from browser DOM tag swallowing without breaking arrows.
+     * Safely format math, chemistry, code blocks, and images: auto-wrap LaTeX/mhchem,
+     * render code snippets and diagrams, and protect math expressions from browser DOM tag swallowing.
      */
     function formatMathText(text) {
         if (!text || typeof text !== 'string') return '';
-        const wrapped = autoWrapMath(text);
-        // Only escape '<' when followed by a letter or / to avoid browser creating phantom HTML tags
-        return wrapped.replace(/<(?=[a-zA-Z/!])/g, '&lt;');
+
+        // 1. Convert markdown images ![alt](url/base64)
+        let processed = text.replace(/!\[(.*?)\]\((.*?)\)/g, (match, alt, src) => {
+            return `<div class="quiz-image-wrap" style="text-align: center; margin: 12px 0;"><img src="${src}" alt="${alt}" class="quiz-img" style="max-width: 100%; max-height: 400px; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.15); border: 1.5px solid var(--option-border, #cbd5e1);"><br><span style="font-size: 0.85em; opacity: 0.8; font-style: italic;">${alt}</span></div>`;
+        });
+
+        // 2. Convert markdown code blocks ```lang\ncode\n```
+        processed = processed.replace(/```(?:[a-zA-Z0-9_\-]+)?\s*([\s\S]*?)```/g, (match, code) => {
+            return `<pre class="quiz-code-block" style="background: rgba(15, 23, 42, 0.92); color: #38bdf8; padding: 12px 16px; border-radius: 8px; font-family: 'Courier New', Consolas, monospace; font-size: 0.9em; overflow-x: auto; margin: 10px 0; border: 1px solid rgba(56, 189, 248, 0.25); text-align: left;"><code>${code.trim()}</code></pre>`;
+        });
+
+        // 3. Convert inline code `code`
+        processed = processed.replace(/`([^`]+)`/g, '<code style="background: rgba(0,0,0,0.08); padding: 2px 6px; border-radius: 4px; font-family: Consolas, monospace; font-size: 0.9em;">$1</code>');
+
+        // 4. Auto-wrap math & chemistry outside HTML tags
+        const wrapped = autoWrapMath(processed);
+
+        // 5. Only escape '<' when it is NOT part of an allowed HTML tag (img, div, span, pre, code, br, b, strong, em, p)
+        return wrapped.replace(/<(?!(?:\/?(?:img|div|span|pre|code|br|b|strong|em|p)\b))/gi, '&lt;');
     }
 
     /**

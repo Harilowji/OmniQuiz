@@ -226,6 +226,7 @@
 
             // 2. Fallback to fetch paths
             const pathMap = {
+                informatics_10: 'question_banks/13_tin_hoc_lap_trinh_co_ban.txt',
                 chem_40_pdf: 'question_banks/12_hoa_hoc_40_cau_pdf_trac_nghiem.txt',
                 math_50: 'question_banks/questions.txt',
                 physics_12: 'question_banks/08_vat_ly_12_dao_dong_co.txt',
@@ -364,16 +365,32 @@
             reader.onload = function(loadEvent) {
                 const arrayBuffer = loadEvent.target.result;
                 if (window.mammoth) {
-                    mammoth.extractRawText({ arrayBuffer: arrayBuffer })
-                        .then(function(result) {
-                            document.getElementById('upload-section').style.display = 'none';
-                            setupQuiz(result.value, true);
-                        })
-                        .catch(function(err) {
-                            alert(QuizEngine.state.currentLang === 'vi' 
-                                ? 'Lỗi đọc file .docx: ' + err.message
-                                : 'Error reading .docx file: ' + err.message);
-                        });
+                    mammoth.convertToHtml(
+                        { arrayBuffer: arrayBuffer },
+                        {
+                            convertImage: mammoth.images.imgElement(function(image) {
+                                return image.read("base64").then(function(imageBuffer) {
+                                    return {
+                                        src: "data:" + image.contentType + ";base64," + imageBuffer
+                                    };
+                                });
+                            })
+                        }
+                    )
+                    .then(function(result) {
+                        let text = result.value
+                            .replace(/<br\s*\/?>/gi, '\n')
+                            .replace(/<\/(?:p|div|h[1-6]|li)>/gi, '\n')
+                            .replace(/<(?:p|div|h[1-6]|ul|ol)[\s\S]*?>/gi, '')
+                            .replace(/<(?!(?:\/?img\b))[^>]+>/gi, '');
+                        document.getElementById('upload-section').style.display = 'none';
+                        setupQuiz(text.trim(), true);
+                    })
+                    .catch(function(err) {
+                        alert(QuizEngine.state.currentLang === 'vi' 
+                            ? 'Lỗi đọc file .docx: ' + err.message
+                            : 'Error reading .docx file: ' + err.message);
+                    });
                 } else {
                     alert(QuizEngine.state.currentLang === 'vi'
                         ? 'Thư viện đọc file Word (Mammoth.js) chưa sẵn sàng.'

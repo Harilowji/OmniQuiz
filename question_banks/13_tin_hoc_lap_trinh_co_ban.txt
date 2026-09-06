@@ -1,0 +1,102 @@
+ĐỀ THI ÔN TẬP TIN HỌC & LẬP TRÌNH CƠ BẢN
+(Hệ thống câu hỏi trắc nghiệm Tin học THPT & Nhập môn Khoa học Máy tính)
+
+Câu 1: Cho đoạn mã ngôn ngữ C sau đây:
+```c
+int a = 10, b = 20;
+int *p = &a;
+*p = *p + b;
+printf("%d", a);
+```
+Kết quả in ra màn hình là gì?
+A. 10
+B. 20
+C. 30
+D. 0
+Đáp án: C
+Lời giải: Con trỏ `p` trỏ tới địa chỉ của biến `a`. Khi thực hiện `*p = *p + b`, giá trị tại ô nhớ của `a` được cập nhật thành `10 + 20 = 30`. Do đó `printf("%d", a)` in ra giá trị 30.
+
+Câu 2: Trong ngôn ngữ Python, kết quả của biểu thức sau là gì?
+```python
+numbers = [10, 20, 30, 40, 50, 60]
+print(numbers[1:4])
+```
+A. [10, 20, 30]
+B. [20, 30, 40]
+C. [20, 30, 40, 50]
+D. [10, 20, 30, 40]
+Đáp án: B
+Lời giải: Cú pháp slice `numbers[start:stop]` lấy các phần tử từ chỉ số `start` đến `stop - 1`. Chỉ số 1 là 20, 2 là 30, 3 là 40. Kết quả là `[20, 30, 40]`.
+
+Câu 3: Cấu trúc dữ liệu nào hoạt động theo nguyên lý LIFO (Last In, First Out - Vào sau, ra trước)?
+A. Hàng đợi (Queue)
+B. Ngăn xếp (Stack)
+C. Danh sách liên kết đơn (Singly Linked List)
+D. Mảng một chiều (Array)
+Đáp án: B
+Lời giải: Ngăn xếp (Stack) là cấu trúc dữ liệu tuân theo cơ chế LIFO, phần tử được đưa vào cuối cùng sẽ là phần tử được lấy ra đầu tiên (ví dụ thao tác Undo/Redo). Trong khi Hàng đợi (Queue) tuân theo FIFO.
+
+Câu 4: Trong hệ quản trị cơ sở dữ liệu quan hệ (RDBMS) và ngôn ngữ SQL, mệnh đề nào được sử dụng để lọc điều kiện sau khi đã nhóm dữ liệu bằng `GROUP BY`?
+A. WHERE
+B. HAVING
+C. ORDER BY
+D. DISTINCT
+Đáp án: B
+Lời giải: Mệnh đề `WHERE` lọc từng dòng dữ liệu trước khi nhóm, còn mệnh đề `HAVING` dùng để lọc các nhóm sau khi thực hiện `GROUP BY` (thường kết hợp với các hàm tổng hợp như COUNT, SUM, AVG).
+
+Câu 5: Trong mô hình mạng OSI và TCP/IP, giao thức nào ở tầng Giao vận (Transport Layer) cung cấp dịch vụ truyền dữ liệu tin cậy, có cơ chế bắt tay 3 bước (3-way handshake) và kiểm soát luồng?
+A. UDP
+B. IP
+C. TCP
+D. ICMP
+Đáp án: C
+Lời giải: TCP (Transmission Control Protocol) là giao thức hướng kết nối, đảm bảo dữ liệu được truyền đến đích đầy đủ, đúng thứ tự và không bị lỗi thông qua cơ chế bắt tay 3 bước và truyền lại gói tin mất.
+
+Câu 6: Cho hàm đệ quy viết bằng Python như sau:
+```python
+def f(n):
+    if n <= 1:
+        return 1
+    return n * f(n - 1)
+
+print(f(4))
+```
+Kết quả hiển thị trên màn hình là:
+A. 10
+B. 16
+C. 24
+D. 12
+Đáp án: C
+Lời giải: Hàm `f(n)` tính giai thừa của $n$ ($n!$). Với $n = 4$: $f(4) = 4 \times f(3) = 4 \times 3 \times 2 \times 1 = 24$.
+
+Câu 7: Hình thức tấn công mạng nào khiến cho một máy chủ hoặc dịch vụ trực tuyến bị quá tải và không thể đáp ứng yêu cầu của người dùng hợp lệ bằng cách gửi một lượng khổng lồ lưu lượng truy cập từ nhiều máy tính ma (botnet)?
+A. Phishing (Tấn công giả mạo)
+B. DDoS (Tấn công từ chối dịch vụ phân tán)
+C. SQL Injection (Tấn công tiêm mã SQL)
+D. Man-in-the-middle (Tấn công xen giữa)
+Đáp án: B
+Lời giải: DDoS (Distributed Denial of Service) là hình thức làm tê liệt dịch vụ mục tiêu bằng cách điều khiển mạng lưới máy tính ma phân tán (botnet) đồng loạt gửi lưu lượng rác gây nghẽn băng thông hoặc cạn kiệt tài nguyên máy chủ.
+
+Câu 8: Trong hệ điều hành, hiện tượng hai hay nhiều tiến trình (process) cùng bị treo vô thời hạn do mỗi tiến trình đều chờ đợi tài nguyên mà tiến trình khác đang nắm giữ được gọi là:
+A. Starvation (Bỏ đói tiến trình)
+B. Thrashing (Quá tải bộ nhớ ảo)
+C. Deadlock (Bế tắc)
+D. Race Condition (Điều kiện tranh đua)
+Đáp án: C
+Lời giải: Deadlock (bế tắc) là tình trạng tập hợp các tiến trình bị chặn hoàn toàn vì mỗi tiến trình đang giữ ít nhất một tài nguyên và đang chờ nhận thêm tài nguyên do tiến trình khác trong tập hợp đang chiếm giữ.
+
+Câu 9: Thuật toán tìm kiếm nhị phân (Binary Search) trên một mảng đã được sắp xếp gồm $N$ phần tử có độ phức tạp thời gian trong trường hợp xấu nhất (Worst-case Time Complexity) là:
+A. $O(N)$
+B. $O(N^2)$
+C. $O(\log N)$
+D. $O(1)$
+Đáp án: C
+Lời giải: Tại mỗi bước so sánh, không gian tìm kiếm được giảm đi một nửa ($N / 2$). Do đó số lần so sánh tối đa là xấp xỉ $\log_2 N$, độ phức tạp thời gian là $O(\log N)$.
+
+Câu 10: Trong ngôn ngữ lập trình, chỉ số của phần tử đầu tiên trong mảng (0-indexed array) thường bắt đầu từ:
+A. 1
+B. 0
+C. -1
+D. Bất kỳ giá trị nào tùy ý
+Đáp án: B
+Lời giải: Hầu hết các ngôn ngữ lập trình hiện đại như C, C++, Java, Python, JavaScript đều áp dụng cơ chế đánh chỉ số từ 0 (0-indexed), trong đó địa chỉ phần tử đầu tiên trùng với địa chỉ bắt đầu của mảng.
