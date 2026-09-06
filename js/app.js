@@ -67,51 +67,48 @@
             }
         });
 
-        // Reset button
+        // Reset button: returns completely to the initial exam selection/upload screen
         document.getElementById('btn-reset')?.addEventListener('click', () => {
-            if (confirm(t('confirmReset'))) {
-                StorageManager.clearState();
-                QuizEngine.state.userAnswers = {};
-                QuizEngine.state.flaggedQuestions.clear();
-                QuizEngine.state.isSubmitted = false;
-                QuizEngine.state.timeLeft = 3600;
-                QuizEngine.state.incorrectQData = [];
-                refreshUI();
-                startTimer();
+            // Only confirm if a quiz is active
+            if (QuizEngine.state.questions && QuizEngine.state.questions.length > 0) {
+                if (!confirm(t('confirmReset'))) return;
             }
-        });
 
-        // Change Exam button
-        document.getElementById('btn-change-exam')?.addEventListener('click', () => {
-            if (confirm(t('confirmChangeExam'))) {
-                StorageManager.clearCurrentExam();
-                StorageManager.clearState();
-                if (timerInterval) clearInterval(timerInterval);
-                QuizEngine.state.questions = [];
-                QuizEngine.state.userAnswers = {};
-                QuizEngine.state.flaggedQuestions = new Set();
-                QuizEngine.state.isSubmitted = false;
-                QuizEngine.state.incorrectQData = [];
+            StorageManager.clearCurrentExam();
+            StorageManager.clearState();
+            if (timerInterval) clearInterval(timerInterval);
+            QuizEngine.state.questions = [];
+            QuizEngine.state.userAnswers = {};
+            QuizEngine.state.flaggedQuestions = new Set();
+            QuizEngine.state.isSubmitted = false;
+            QuizEngine.state.timeLeft = 3600;
+            QuizEngine.state.incorrectQData = [];
 
-                document.getElementById('upload-section').style.display = 'block';
-                document.getElementById('stats-section').style.display = 'none';
-                document.getElementById('palette-section').style.display = 'none';
-                const btnChange = document.getElementById('btn-change-exam');
-                if (btnChange) btnChange.style.display = 'none';
-                const fab = document.getElementById('btn-mobile-palette-toggle');
-                if (fab) fab.style.display = 'none';
+            // Reset file input
+            const fileInput = document.getElementById('file-input');
+            if (fileInput) fileInput.value = '';
 
-                const container = document.getElementById('quiz-container');
-                if (container) {
-                    container.innerHTML = `
-                        <div id="empty-quiz-welcome" style="text-align: center; padding: 50px 20px; opacity: 0.85;">
-                            <div style="font-size: 2.5em; margin-bottom: 10px;">🎓</div>
-                            <h3 style="margin-bottom: 6px; font-weight: 700;">Chào mừng bạn đến với OmniQuiz!</h3>
-                            <p style="font-size: 0.95em; opacity: 0.8;">Vui lòng tải lên file đề thi của bạn ở khung phía trên, hoặc chọn một đề mẫu đa môn học để bắt đầu ôn luyện.</p>
-                        </div>
-                    `;
-                }
+            // Show upload section, hide stats and palette
+            document.getElementById('upload-section').style.display = 'block';
+            document.getElementById('stats-section').style.display = 'none';
+            document.getElementById('palette-section').style.display = 'none';
+            const fab = document.getElementById('btn-mobile-palette-toggle');
+            if (fab) fab.style.display = 'none';
+
+            // Show clean empty welcome state
+            const container = document.getElementById('quiz-container');
+            if (container) {
+                container.innerHTML = `
+                    <div id="empty-quiz-welcome" style="text-align: center; padding: 50px 20px; opacity: 0.85;">
+                        <div style="font-size: 2.5em; margin-bottom: 10px;">🎓</div>
+                        <h3 style="margin-bottom: 6px; font-weight: 700;">Chào mừng bạn đến với OmniQuiz!</h3>
+                        <p style="font-size: 0.95em; opacity: 0.8;">Vui lòng tải lên file đề thi của bạn ở khung phía trên, hoặc chọn một đề mẫu đa môn học để bắt đầu ôn luyện.</p>
+                    </div>
+                `;
             }
+
+            UIManager.hideSummaryModal();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
         // Finish button (Navbar & Sidebar)
@@ -259,8 +256,6 @@
             document.getElementById('upload-section').style.display = 'block';
             document.getElementById('stats-section').style.display = 'none';
             document.getElementById('palette-section').style.display = 'none';
-            const btnChange = document.getElementById('btn-change-exam');
-            if (btnChange) btnChange.style.display = 'none';
             const fab = document.getElementById('btn-mobile-palette-toggle');
             if (fab) fab.style.display = 'none';
         }
@@ -351,8 +346,6 @@
 
         document.getElementById('stats-section').style.display = 'block';
         document.getElementById('palette-section').style.display = 'block';
-        const btnChange = document.getElementById('btn-change-exam');
-        if (btnChange) btnChange.style.display = 'inline-flex';
         const fab = document.getElementById('btn-mobile-palette-toggle');
         if (fab) fab.style.display = 'inline-flex';
 
