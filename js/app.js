@@ -257,6 +257,19 @@
                 : 'Unable to load sample quiz. Please select a .docx or .txt file from your computer!');
         });
 
+        // Subject quick pills in upload studio
+        document.querySelectorAll('.subj-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                const subj = pill.getAttribute('data-subj');
+                const sel = document.getElementById('sample-subject-select');
+                const btn = document.getElementById('btn-load-sample');
+                if (sel && subj) {
+                    sel.value = subj;
+                    if (btn) btn.click();
+                }
+            });
+        });
+
         // Wire drag and drop
         const dropZone = document.getElementById('upload-section');
         if (dropZone) {

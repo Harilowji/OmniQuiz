@@ -67,30 +67,30 @@ body.theme-minimalist::before {
     animation: minimalistFlow 22s ease-in-out infinite alternate;
 }
 
-/* 2. Academic (Math) Theme (Merriweather, Blueprint & Graph Paper) */
+/* 2. Academic Pro Theme (Modern Precision, Clean Sans, Elegant Indigo, Smooth Elevation) */
 body.theme-academic {
-    --bg-gradient: #fafaf8;
-    --text-color: #292524;
-    --heading-color: #1c1917;
-    --card-bg: rgba(255, 255, 255, 0.94);
-    --card-border: #d6d3d1;
-    --card-shadow: 0 4px 16px rgba(28, 25, 23, 0.08);
-    --option-bg: rgba(250, 250, 249, 0.9);
-    --option-hover-bg: #f5f5f4;
-    --option-border: #a8a29e;
-    --primary-color: #1e3a8a;
-    --primary-hover: #172554;
-    --exp-bg: rgba(245, 245, 244, 0.95);
-    --exp-border: #1e3a8a;
-    --stats-bg: rgba(255, 255, 255, 0.95);
+    --bg-gradient: #f8fafc;
+    --text-color: #1e293b;
+    --heading-color: #0f172a;
+    --card-bg: rgba(255, 255, 255, 0.92);
+    --card-border: #e2e8f0;
+    --card-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.08);
+    --option-bg: rgba(255, 255, 255, 0.85);
+    --option-hover-bg: #f1f5f9;
+    --option-border: #cbd5e1;
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --exp-bg: rgba(248, 250, 252, 0.95);
+    --exp-border: #6366f1;
+    --stats-bg: rgba(255, 255, 255, 0.94);
     --correct-bg: #f0fdf4;
     --correct-border: #4ade80;
     --correct-text: #14532d;
     --incorrect-bg: #fef2f2;
     --incorrect-border: #f87171;
     --incorrect-text: #7f1d1d;
-    --font-family: 'Merriweather', 'Cambria Math', Georgia, serif;
-    --border-radius: 6px;
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --border-radius: 16px;
 }
 
 body.theme-academic::before {

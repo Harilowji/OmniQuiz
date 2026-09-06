@@ -7,7 +7,8 @@
     <title>OmniQuiz - Multi-Subject CBT Platform</title>
 
     <!-- Favicon & PWA Manifest -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <link rel="apple-touch-icon" href="assets/logo.png">
     <link rel="manifest" href="manifest.json">
 
     <!-- Google Fonts -->
@@ -65,24 +66,34 @@
         <!-- TOP NAVIGATION BAR -->
         <header class="top-navbar">
             <div class="brand-title">
-                <span>🎓</span> <span id="txt-app-title">OmniQuiz - Nền tảng thi trắc nghiệm</span>
+                <img src="assets/logo.png" alt="OmniQuiz Logo" class="brand-logo-img">
+                <div class="brand-text-wrap">
+                    <div class="brand-name">OmniQuiz <span class="brand-badge-pro">PRO</span></div>
+                    <div class="brand-tagline" id="txt-app-title">Nền tảng thi trắc nghiệm đa môn học</div>
+                </div>
             </div>
             <div class="controls-group">
-                <select class="custom-select" id="lang-selector" aria-label="Select Language">
-                    <option value="vi">🇻🇳 Tiếng Việt</option>
-                    <option value="en">🇬🇧 English</option>
-                </select>
-                <select class="custom-select" id="mode-selector" aria-label="Select Mode">
-                    <option value="practice">🎯 Luyện tập (Practice)</option>
-                    <option value="exam">⏱️ Thi thử (Exam)</option>
-                </select>
-                <select class="custom-select" id="theme-selector" aria-label="Select Theme">
-                    <option value="academic">Academic (Math)</option>
-                    <option value="minimalist">Minimalist</option>
-                    <option value="cyberpunk">🌌 Midnight Cyber</option>
-                    <option value="emerald">🌿 Emerald Forest</option>
-                    <option value="playful">🍭 Playful</option>
-                </select>
+                <div class="pill-select-wrap">
+                    <select class="custom-select" id="lang-selector" aria-label="Select Language">
+                        <option value="vi">🇻🇳 Tiếng Việt</option>
+                        <option value="en">🇬🇧 English</option>
+                    </select>
+                </div>
+                <div class="pill-select-wrap">
+                    <select class="custom-select" id="mode-selector" aria-label="Select Mode">
+                        <option value="practice">🎯 Luyện tập (Practice)</option>
+                        <option value="exam">⏱️ Thi thử (Exam)</option>
+                    </select>
+                </div>
+                <div class="pill-select-wrap">
+                    <select class="custom-select" id="theme-selector" aria-label="Select Theme">
+                        <option value="academic">Academic Pro</option>
+                        <option value="minimalist">Minimalist</option>
+                        <option value="cyberpunk">🌌 Midnight Cyber</option>
+                        <option value="emerald">🌿 Emerald Forest</option>
+                        <option value="playful">🍭 Playful</option>
+                    </select>
+                </div>
                 <button class="btn-action" id="btn-shuffle" title="Đảo câu hỏi và đáp án">🔀 Đảo đề</button>
                 <button class="btn-action btn-danger" id="btn-reset" title="Làm mới và quay về trang nhập đề thi">🔄 Làm mới</button>
             </div>
@@ -92,40 +103,79 @@
         <div class="app-layout">
             <!-- LEFT COLUMN: QUIZ CONTENT -->
             <main class="quiz-main">
-                <div id="upload-section">
-                    <div class="upload-icon">🎓</div>
-                    <p id="txt-upload-title" style="font-size: 1.2em; font-weight: 700; margin-bottom: 6px;">
-                        Tải lên đề thi của bạn hoặc chọn bộ đề ôn tập có sẵn
-                    </p>
-                    <p id="txt-upload-prompt" style="font-size: 0.9em; opacity: 0.8; margin-bottom: 20px;">
-                        Hỗ trợ định dạng <strong>.docx (Word)</strong>, <strong>.pdf</strong> và <strong>.txt</strong> (Toán, Lý, Hóa, Anh, Sử - Địa, SAT...)
-                    </p>
-                    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; align-items: center;">
-                        <label class="btn-action btn-primary" style="cursor: pointer;">
-                            📁 <span id="txt-btn-browse">Chọn file từ máy (.docx, .pdf, .txt)</span>
-                            <input type="file" id="file-input" accept=".txt,.docx,.doc,.pdf" style="display: none;">
-                        </label>
-
-                        <div style="display: flex; align-items: center; gap: 8px; background: var(--option-bg); padding: 4px 10px; border-radius: var(--border-radius); border: 1.5px solid var(--option-border);">
-                            <span style="font-size: 1.1em;">📚</span>
-                            <select class="custom-select" id="sample-subject-select" aria-label="Chọn đề ôn tập mẫu" style="border: none; background: transparent; padding: 6px 8px; font-weight: 600;">
-                                <option value="informatics_10">💻 Tin học - Lập trình & CNTT (10 câu)</option>
-                                <option value="chem_40_pdf">🧪 Hóa học - 40 câu trắc nghiệm (Trích xuất từ file PDF)</option>
-                                <option value="math_50">📐 Toán học - Đề thi thử THPT (50 câu)</option>
-                                <option value="physics_12">⚡ Vật lý 12 - Dao động cơ học (5 câu)</option>
-                                <option value="chem_12">🧪 Hóa học 12 - Este & Lipit (5 câu)</option>
-                                <option value="english_thpt">🇬🇧 Tiếng Anh THPT - Ngữ pháp (5 câu)</option>
-                                <option value="social_12">🌏 KHXH - Lịch sử & Địa lý (5 câu)</option>
-                                <option value="sat_math">🎓 Digital SAT Math CBT (English)</option>
-                                <option value="quick_5">⚡ Đề kiểm tra nhanh (5 câu)</option>
-                            </select>
-                            <button class="btn-action btn-primary" id="btn-load-sample" style="padding: 6px 14px; font-weight: 700;">
-                                🚀 <span id="txt-btn-sample">Làm bài</span>
-                            </button>
-                        </div>
+                <div id="upload-section" class="upload-studio-card">
+                    <div class="studio-header">
+                        <div class="studio-badge">✨ CBT Studio 2.0</div>
+                        <h2 id="txt-upload-title" class="studio-title">
+                            Khởi tạo đề thi hoặc Khám phá kho đề tuyển chọn
+                        </h2>
+                        <p id="txt-upload-prompt" class="studio-subtitle">
+                            Hỗ trợ tải trực tiếp file <strong>.PDF</strong> (Tự động cắt ảnh/code), <strong>.DOCX (Word)</strong> và <strong>.TXT</strong>
+                        </p>
                     </div>
-                    <div style="font-size: 0.82em; opacity: 0.65; margin-top: 14px;">
-                        * Định dạng Word .doc (97-2003) cũ: Vui lòng dùng "Save As" sang .docx để ứng dụng đọc tốt nhất
+
+                    <div class="studio-grid">
+                        <!-- Zone 1: File Dropzone -->
+                        <div class="dropzone-box" id="dropzone-area">
+                            <div class="dropzone-icon-ring">
+                                <span class="dropzone-icon">📂</span>
+                            </div>
+                            <h3 class="dropzone-title">Tải lên file đề thi</h3>
+                            <p class="dropzone-hint">Kéo thả file vào đây hoặc bấm nút duyệt file từ thiết bị</p>
+                            
+                            <div class="format-badges-list">
+                                <span class="fmt-badge pdf">.PDF (Auto-crop)</span>
+                                <span class="fmt-badge docx">.DOCX (Word)</span>
+                                <span class="fmt-badge txt">.TXT</span>
+                            </div>
+
+                            <label class="btn-action btn-primary btn-upload-cta">
+                                📁 <span id="txt-btn-browse">Chọn file từ thiết bị</span>
+                                <input type="file" id="file-input" accept=".txt,.docx,.doc,.pdf" style="display: none;">
+                            </label>
+                            
+                            <div class="dropzone-note">
+                                * File .doc cũ: Vui lòng lưu thành .docx để đọc tốt nhất
+                            </div>
+                        </div>
+
+                        <!-- Zone 2: Curated Subject Bank -->
+                        <div class="curated-bank-box">
+                            <div class="curated-header">
+                                <span class="curated-icon">📚</span>
+                                <div>
+                                    <h3 class="curated-title">Kho đề thi mẫu chuẩn</h3>
+                                    <p class="curated-subtitle">Chọn nhanh môn học để bắt đầu ôn luyện ngay</p>
+                                </div>
+                            </div>
+
+                            <div class="subject-picker-wrap">
+                                <select class="custom-select select-subject-lg" id="sample-subject-select" aria-label="Chọn đề ôn tập mẫu">
+                                    <option value="informatics_10">💻 Tin học - Lập trình & CNTT (10 câu)</option>
+                                    <option value="chem_40_pdf">🧪 Hóa học - 40 câu trắc nghiệm (Trích xuất từ file PDF)</option>
+                                    <option value="math_50">📐 Toán học - Đề thi thử THPT (50 câu)</option>
+                                    <option value="physics_12">⚡ Vật lý 12 - Dao động cơ học (5 câu)</option>
+                                    <option value="chem_12">🧪 Hóa học 12 - Este & Lipit (5 câu)</option>
+                                    <option value="english_thpt">🇬🇧 Tiếng Anh THPT - Ngữ pháp (5 câu)</option>
+                                    <option value="social_12">🌏 KHXH - Lịch sử & Địa lý (5 câu)</option>
+                                    <option value="sat_math">🎓 Digital SAT Math CBT (English)</option>
+                                    <option value="quick_5">⚡ Đề kiểm tra nhanh (5 câu)</option>
+                                </select>
+                                
+                                <button class="btn-action btn-primary btn-start-curated" id="btn-load-sample">
+                                    🚀 <span id="txt-btn-sample">Bắt đầu làm bài</span>
+                                </button>
+                            </div>
+
+                            <!-- Subject Quick Highlights -->
+                            <div class="subject-quick-pills">
+                                <button type="button" class="subj-pill" data-subj="informatics_10">💻 Tin học</button>
+                                <button type="button" class="subj-pill" data-subj="chem_40_pdf">🧪 Hóa học</button>
+                                <button type="button" class="subj-pill" data-subj="math_50">📐 Toán học</button>
+                                <button type="button" class="subj-pill" data-subj="physics_12">⚡ Vật lý</button>
+                                <button type="button" class="subj-pill" data-subj="sat_math">🎓 SAT Math</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
