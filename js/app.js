@@ -306,80 +306,275 @@
         }
     }
 
+    function isCanvasBlank(canvas) {
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return true;
+        const width = canvas.width;
+        const height = canvas.height;
+        if (width === 0 || height === 0) return true;
+
+        try {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            let nonWhitePixels = 0;
+            const step = 16; // Sample every 4th pixel for speed
+            for (let i = 0; i < data.length; i += step) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+                const a = data[i + 3];
+                if (a > 50 && (r < 235 || g < 235 || b < 235)) {
+                    nonWhitePixels++;
+                    if (nonWhitePixels > 50) return false;
+                }
+            }
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    async function handlePdfUpload(file) {
+        if (!window.pdfjsLib) {
+            alert(QuizEngine.state.currentLang === 'vi'
+                ? 'Thư viện đọc file PDF (PDF.js) chưa sẵn sàng.'
+                : 'PDF parsing library (PDF.js) not ready.');
+            return;
+        }
+
+        UIManager.showLoadingModal('Đang xử lý đề thi PDF...', 'Đang nạp file và kiểm tra cấu trúc...');
+        UIManager.updateLoadingProgress(6, 'Đang đọc file PDF...');
+
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const typedArray = new Uint8Array(arrayBuffer);
+            const loadingTask = pdfjsLib.getDocument({ data: typedArray });
+            const pdfDoc = await loadingTask.promise;
+            const totalPages = pdfDoc.numPages;
+
+            let fullExtractedText = '';
+            const pageLinesMap = [];
+
+            // Phase 1: Extract Text & Coordinates per page
+            for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+                const pct = 6 + Math.round((pageNum / totalPages) * 36);
+                UIManager.updateLoadingProgress(pct, `Đang trích xuất văn bản (Trang ${pageNum}/${totalPages})...`);
+
+                const page = await pdfDoc.getPage(pageNum);
+                const textContent = await page.getTextContent();
+                let pageText = '';
+                let lastY;
+
+                const lines = [];
+                for (const item of textContent.items) {
+                    if (!item.str) continue;
+                    if (lastY !== undefined && Math.abs(item.transform[5] - lastY) > 5) {
+                        pageText += '\n';
+                    } else if (pageText.length > 0 && !pageText.endsWith(' ') && !pageText.endsWith('\n')) {
+                        pageText += ' ';
+                    }
+                    pageText += item.str;
+                    lastY = item.transform[5];
+
+                    const y = Math.round(item.transform[5]);
+                    let line = lines.find(l => Math.abs(l.y - y) <= 4);
+                    if (!line) {
+                        line = { y, text: item.str.trim(), minX: item.transform[4] };
+                        lines.push(line);
+                    } else {
+                        line.text += ' ' + item.str.trim();
+                    }
+                }
+
+                lines.sort((a, b) => b.y - a.y);
+                pageLinesMap.push({ pageNum, lines });
+                fullExtractedText += pageText + '\n\n';
+            }
+
+            if (!fullExtractedText.trim()) {
+                UIManager.hideLoadingModal();
+                alert(QuizEngine.state.currentLang === 'vi'
+                    ? 'Không thể trích xuất văn bản từ file PDF này (có thể do file scan dạng hình ảnh không có OCR). Vui lòng sử dụng file Word hoặc text!'
+                    : 'Could not extract text from this PDF file. Please use a Word or text file!');
+                return;
+            }
+
+            // Phase 2: Parse questions
+            const parsedQuestions = QuestionParser.parse(fullExtractedText);
+            if (parsedQuestions.length === 0) {
+                UIManager.hideLoadingModal();
+                alert(QuizEngine.state.currentLang === 'vi'
+                    ? 'Không tìm thấy câu hỏi hợp lệ trong file PDF. Vui lòng kiểm tra lại định dạng file!'
+                    : 'No valid questions found in this PDF file.');
+                return;
+            }
+
+            UIManager.updateLoadingProgress(46, `Đã nhận diện ${parsedQuestions.length} câu hỏi. Đang quét hình ảnh & code...`);
+
+            // Phase 3: Auto-Crop visual gaps (screenshots of code, diagrams, graphs, circuits)
+            const autoCroppedImages = {};
+            let detectedImagesCount = 0;
+
+            for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+                const pct = 46 + Math.round((pageNum / totalPages) * 48);
+                UIManager.updateLoadingProgress(
+                    pct, 
+                    `Đang quét & tự động cắt ảnh minh họa / code (Trang ${pageNum}/${totalPages})...`,
+                    detectedImagesCount > 0 ? `Đã tìm thấy ${detectedImagesCount} ảnh minh họa` : ''
+                );
+
+                const pageData = pageLinesMap[pageNum - 1];
+                if (!pageData || !pageData.lines || pageData.lines.length === 0) continue;
+                const lines = pageData.lines;
+
+                const gapsToCrop = [];
+                let activeQNum = null;
+
+                for (let i = 0; i < lines.length; i++) {
+                    const cur = lines[i];
+                    const next = lines[i + 1];
+
+                    const qMatch = cur.text.match(/^(?:Câu\s*|Q\s*)?(\d+)[\.\:]\s*(.*)/i);
+                    if (qMatch) {
+                        activeQNum = parseInt(qMatch[1], 10);
+                    }
+
+                    if (next) {
+                        const gap = cur.y - next.y;
+                        if (gap > 45 && activeQNum !== null) {
+                            const isNextOption = /^[A-D][\.\:\)]/i.test(next.text) || /^\d+\s*\:/.test(next.text);
+                            const isNextQuestion = /^(?:Câu\s*|Q\s*)?(\d+)[\.\:]/i.test(next.text);
+
+                            if (isNextOption || (!isNextQuestion && gap > 60)) {
+                                gapsToCrop.push({
+                                    questionNum: activeQNum,
+                                    yTop: cur.y,
+                                    yBottom: next.y
+                                });
+                            }
+                        }
+                    } else {
+                        // Gap to bottom of page
+                        if (activeQNum !== null && cur.y > 110) {
+                            const gapToBottom = cur.y - 40;
+                            if (gapToBottom > 65) {
+                                gapsToCrop.push({
+                                    questionNum: activeQNum,
+                                    yTop: cur.y,
+                                    yBottom: 40
+                                });
+                            }
+                        }
+                    }
+                }
+
+                if (gapsToCrop.length > 0) {
+                    const page = await pdfDoc.getPage(pageNum);
+                    const scale = 1.6;
+                    const viewport = page.getViewport({ scale });
+                    const pageCanvas = document.createElement('canvas');
+                    pageCanvas.width = viewport.width;
+                    pageCanvas.height = viewport.height;
+                    const pageCtx = pageCanvas.getContext('2d');
+
+                    await page.render({ canvasContext: pageCtx, viewport }).promise;
+
+                    for (const gapItem of gapsToCrop) {
+                        const qIndex = gapItem.questionNum - 1;
+                        if (qIndex < 0 || qIndex >= parsedQuestions.length) continue;
+                        if (autoCroppedImages[qIndex]) continue;
+
+                        const [, vyTop] = viewport.convertToViewportPoint(0, gapItem.yTop);
+                        const [, vyBottom] = viewport.convertToViewportPoint(0, gapItem.yBottom);
+
+                        const cropY = Math.max(0, Math.round(vyTop + (4 * scale)));
+                        const cropHeight = Math.max(10, Math.round(vyBottom - vyTop - (8 * scale)));
+                        const cropX = Math.max(0, Math.round(viewport.width * 0.04));
+                        const cropWidth = Math.min(viewport.width - cropX, Math.round(viewport.width * 0.92));
+
+                        if (cropHeight < 20 || cropWidth < 50) continue;
+
+                        const cropCanvas = document.createElement('canvas');
+                        cropCanvas.width = cropWidth;
+                        cropCanvas.height = cropHeight;
+                        const cropCtx = cropCanvas.getContext('2d');
+
+                        cropCtx.drawImage(
+                            pageCanvas,
+                            cropX, cropY, cropWidth, cropHeight,
+                            0, 0, cropWidth, cropHeight
+                        );
+
+                        if (!isCanvasBlank(cropCanvas)) {
+                            autoCroppedImages[qIndex] = cropCanvas.toDataURL('image/png');
+                            detectedImagesCount++;
+                        }
+                    }
+                }
+            }
+
+            // Phase 4: Finalize
+            UIManager.updateLoadingProgress(
+                100, 
+                'Hoàn tất! Đang khởi tạo bài thi...', 
+                `Tổng cộng: ${parsedQuestions.length} câu hỏi • ${detectedImagesCount} ảnh minh họa`
+            );
+
+            setTimeout(() => {
+                UIManager.hideLoadingModal();
+                document.getElementById('upload-section').style.display = 'none';
+                setupQuiz(fullExtractedText, true, autoCroppedImages);
+
+                if (detectedImagesCount > 0) {
+                    UIManager.showToast(`✓ Đã tự động nhận diện & cắt ${detectedImagesCount} ảnh/code từ PDF!`);
+                }
+            }, 450);
+
+        } catch (err) {
+            UIManager.hideLoadingModal();
+            alert(QuizEngine.state.currentLang === 'vi'
+                ? 'Lỗi xử lý file PDF: ' + err.message
+                : 'Error processing PDF file: ' + err.message);
+        }
+    }
+
     function handleUploadedFile(file) {
         if (!file) return;
         const fileName = file.name.toLowerCase();
 
         if (fileName.endsWith('.pdf')) {
-            if (!window.pdfjsLib) {
+            handlePdfUpload(file);
+        } else if (fileName.endsWith('.docx')) {
+            if (!window.mammoth) {
                 alert(QuizEngine.state.currentLang === 'vi'
-                    ? 'Thư viện đọc file PDF (PDF.js) chưa sẵn sàng.'
-                    : 'PDF parsing library (PDF.js) not ready.');
+                    ? 'Thư viện đọc file Word (Mammoth.js) chưa sẵn sàng.'
+                    : 'Word parsing library (Mammoth.js) not ready.');
                 return;
             }
 
-            const reader = new FileReader();
-            reader.onload = async function(loadEvent) {
-                try {
-                    const typedArray = new Uint8Array(loadEvent.target.result);
-                    const loadingTask = pdfjsLib.getDocument({ data: typedArray });
-                    const pdfDoc = await loadingTask.promise;
-                    let fullExtractedText = '';
+            UIManager.showLoadingModal('Đang đọc file Word (.docx)...', 'Đang trích xuất nội dung và hình ảnh nhúng...');
+            UIManager.updateLoadingProgress(30, 'Đang giải nén tài liệu Word...');
 
-                    for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
-                        const page = await pdfDoc.getPage(pageNum);
-                        const textContent = await page.getTextContent();
-                        let pageText = '';
-                        let lastY;
-
-                        for (const item of textContent.items) {
-                            if (!item.str) continue;
-                            if (lastY !== undefined && Math.abs(item.transform[5] - lastY) > 5) {
-                                pageText += '\n';
-                            } else if (pageText.length > 0 && !pageText.endsWith(' ') && !pageText.endsWith('\n')) {
-                                pageText += ' ';
-                            }
-                            pageText += item.str;
-                            lastY = item.transform[5];
-                        }
-
-                        fullExtractedText += pageText + '\n\n';
-                    }
-
-                    if (!fullExtractedText.trim()) {
-                        alert(QuizEngine.state.currentLang === 'vi'
-                            ? 'Không thể trích xuất văn bản từ file PDF này (có thể do file scan dạng hình ảnh). Vui lòng sử dụng file Word hoặc text!'
-                            : 'Could not extract text from this PDF file (it might be a scanned image). Please use a Word or text file!');
-                        return;
-                    }
-
-                    document.getElementById('upload-section').style.display = 'none';
-                    setupQuiz(fullExtractedText, true);
-                } catch (err) {
-                    alert(QuizEngine.state.currentLang === 'vi' 
-                        ? 'Lỗi xử lý file PDF: ' + err.message
-                        : 'Error processing PDF file: ' + err.message);
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        } else if (fileName.endsWith('.docx')) {
             const reader = new FileReader();
             reader.onload = function(loadEvent) {
                 const arrayBuffer = loadEvent.target.result;
-                if (window.mammoth) {
-                    mammoth.convertToHtml(
-                        { arrayBuffer: arrayBuffer },
-                        {
-                            convertImage: mammoth.images.imgElement(function(image) {
-                                return image.read("base64").then(function(imageBuffer) {
-                                    return {
-                                        src: "data:" + image.contentType + ";base64," + imageBuffer
-                                    };
-                                });
-                            })
-                        }
-                    )
-                    .then(function(result) {
+                UIManager.updateLoadingProgress(60, 'Đang chuyển đổi định dạng và hình ảnh...');
+                mammoth.convertToHtml(
+                    { arrayBuffer: arrayBuffer },
+                    {
+                        convertImage: mammoth.images.imgElement(function(image) {
+                            return image.read("base64").then(function(imageBuffer) {
+                                return {
+                                    src: "data:" + image.contentType + ";base64," + imageBuffer
+                                };
+                            });
+                        })
+                    }
+                )
+                .then(function(result) {
+                    UIManager.updateLoadingProgress(100, 'Hoàn tất!');
+                    setTimeout(() => {
+                        UIManager.hideLoadingModal();
                         let text = result.value
                             .replace(/<br\s*\/?>/gi, '\n')
                             .replace(/<\/(?:p|div|h[1-6]|li)>/gi, '\n')
@@ -387,17 +582,14 @@
                             .replace(/<(?!(?:\/?img\b))[^>]+>/gi, '');
                         document.getElementById('upload-section').style.display = 'none';
                         setupQuiz(text.trim(), true);
-                    })
-                    .catch(function(err) {
-                        alert(QuizEngine.state.currentLang === 'vi' 
-                            ? 'Lỗi đọc file .docx: ' + err.message
-                            : 'Error reading .docx file: ' + err.message);
-                    });
-                } else {
-                    alert(QuizEngine.state.currentLang === 'vi'
-                        ? 'Thư viện đọc file Word (Mammoth.js) chưa sẵn sàng.'
-                        : 'Word parsing library (Mammoth.js) not ready.');
-                }
+                    }, 350);
+                })
+                .catch(function(err) {
+                    UIManager.hideLoadingModal();
+                    alert(QuizEngine.state.currentLang === 'vi' 
+                        ? 'Lỗi đọc file .docx: ' + err.message
+                        : 'Error reading .docx file: ' + err.message);
+                });
             };
             reader.readAsArrayBuffer(file);
         } else if (fileName.endsWith('.doc')) {
@@ -415,7 +607,7 @@
         }
     }
 
-    function setupQuiz(rawText, isNewExam = false) {
+    function setupQuiz(rawText, isNewExam = false, initialCustomImages = null) {
         const parsed = QuestionParser.parse(rawText);
         if (parsed.length === 0) {
             alert(QuizEngine.state.currentLang === 'vi' 
@@ -434,10 +626,13 @@
             StorageManager.clearState();
             QuizEngine.state.userAnswers = {};
             QuizEngine.state.flaggedQuestions = new Set();
-            QuizEngine.state.customImages = {};
+            QuizEngine.state.customImages = (initialCustomImages && Object.keys(initialCustomImages).length > 0)
+                ? Object.assign({}, initialCustomImages)
+                : {};
             QuizEngine.state.isSubmitted = false;
             QuizEngine.state.timeLeft = 3600;
             QuizEngine.state.incorrectQData = [];
+            StorageManager.saveState(QuizEngine.state);
         } else {
             // Restore saved progress ONLY if available, not submitted, and question count matches
             const saved = StorageManager.loadState();
@@ -451,10 +646,13 @@
                 StorageManager.clearState();
                 QuizEngine.state.userAnswers = {};
                 QuizEngine.state.flaggedQuestions = new Set();
-                QuizEngine.state.customImages = {};
+                QuizEngine.state.customImages = (initialCustomImages && Object.keys(initialCustomImages).length > 0)
+                    ? Object.assign({}, initialCustomImages)
+                    : {};
                 QuizEngine.state.isSubmitted = false;
                 QuizEngine.state.timeLeft = 3600;
                 QuizEngine.state.incorrectQData = [];
+                StorageManager.saveState(QuizEngine.state);
             }
         }
 

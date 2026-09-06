@@ -607,6 +607,50 @@ const UIManager = (() => {
         });
     }
 
+    function showLoadingModal(title, initialStep = '') {
+        const modal = document.getElementById('loading-modal');
+        if (!modal) return;
+        const titleEl = document.getElementById('loading-modal-title');
+        const stepEl = document.getElementById('loading-modal-step');
+        const barEl = document.getElementById('loading-progress-bar');
+        const numEl = document.getElementById('loading-progress-num');
+        const badgeEl = document.getElementById('loading-details-badge');
+
+        if (titleEl) titleEl.innerText = title || 'Đang xử lý đề thi...';
+        if (stepEl) stepEl.innerText = initialStep;
+        if (barEl) barEl.style.width = '0%';
+        if (numEl) numEl.innerText = '0%';
+        if (badgeEl) badgeEl.style.display = 'none';
+
+        modal.style.display = 'flex';
+    }
+
+    function updateLoadingProgress(percent, stepText, detailsBadge = '') {
+        const stepEl = document.getElementById('loading-modal-step');
+        const barEl = document.getElementById('loading-progress-bar');
+        const numEl = document.getElementById('loading-progress-num');
+        const badgeEl = document.getElementById('loading-details-badge');
+
+        const rounded = Math.min(100, Math.max(0, Math.round(percent)));
+        if (barEl) barEl.style.width = rounded + '%';
+        if (numEl) numEl.innerText = rounded + '%';
+        if (stepText && stepEl) stepEl.innerText = stepText;
+
+        if (badgeEl) {
+            if (detailsBadge) {
+                badgeEl.innerText = detailsBadge;
+                badgeEl.style.display = 'inline-block';
+            } else {
+                badgeEl.style.display = 'none';
+            }
+        }
+    }
+
+    function hideLoadingModal() {
+        const modal = document.getElementById('loading-modal');
+        if (modal) modal.style.display = 'none';
+    }
+
     function getActiveQuestionIndex() {
         return activeViewingQuestionIndex;
     }
@@ -629,6 +673,9 @@ const UIManager = (() => {
         showToast,
         openLightbox,
         closeLightbox,
-        initGlobalUI
+        initGlobalUI,
+        showLoadingModal,
+        updateLoadingProgress,
+        hideLoadingModal
     };
 })();
