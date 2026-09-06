@@ -506,7 +506,7 @@
                         );
 
                         if (!isCanvasBlank(cropCanvas)) {
-                            autoCroppedImages[qIndex] = cropCanvas.toDataURL('image/png');
+                            autoCroppedImages[qIndex] = cropCanvas.toDataURL('image/jpeg', 0.86);
                             detectedImagesCount++;
                         }
                     }

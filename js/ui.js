@@ -42,40 +42,11 @@ const UIManager = (() => {
             title.innerHTML = `Q${qIndex + 1}. ${safeQText}`;
             header.appendChild(title);
 
-            const actionsDiv = document.createElement('div');
-            actionsDiv.className = 'q-header-actions';
-
-            const attachBtn = document.createElement('button');
-            attachBtn.className = 'attach-img-btn';
-            attachBtn.title = 'Đính kèm ảnh minh hoạ / sơ đồ / code (hoặc bấm Ctrl+V)';
-            attachBtn.innerHTML = '📷 + Ảnh';
-            attachBtn.onclick = () => {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = 'image/*';
-                input.onchange = (e) => {
-                    const file = e.target.files && e.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (evt) => {
-                            if (typeof onAttachImage === 'function') {
-                                onAttachImage(qIndex, evt.target.result);
-                            }
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                };
-                input.click();
-            };
-            actionsDiv.appendChild(attachBtn);
-
             const flagBtn = document.createElement('button');
             flagBtn.className = 'flag-btn' + (isFlagged ? ' active' : '');
             flagBtn.innerHTML = (isFlagged ? '🚩 ' : '🏳️ ') + t('reviewFlag');
             flagBtn.onclick = () => onFlagClick(qIndex);
-            actionsDiv.appendChild(flagBtn);
-
-            header.appendChild(actionsDiv);
+            header.appendChild(flagBtn);
             block.appendChild(header);
 
             // Custom Attached Image

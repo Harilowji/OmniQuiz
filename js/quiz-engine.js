@@ -99,11 +99,27 @@ const QuizEngine = (() => {
     function shuffle() {
         if (state.isSubmitted) return;
 
-        // Shuffle questions
-        for (let i = state.questions.length - 1; i > 0; i--) {
+        // Pair each question with its custom image so they never get disconnected
+        const paired = state.questions.map((q, idx) => ({
+            question: q,
+            image: (state.customImages && state.customImages[idx]) || q.image || null
+        }));
+
+        // Fisher-Yates shuffle
+        for (let i = paired.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [state.questions[i], state.questions[j]] = [state.questions[j], state.questions[i]];
+            [paired[i], paired[j]] = [paired[j], paired[i]];
         }
+
+        // Reconstruct questions & re-map customImages
+        state.questions = paired.map(p => p.question);
+        state.customImages = {};
+        paired.forEach((p, idx) => {
+            if (p.image) {
+                state.customImages[idx] = p.image;
+                p.question.image = p.image;
+            }
+        });
 
         // Reset answers
         state.userAnswers = {};

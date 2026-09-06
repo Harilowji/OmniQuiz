@@ -76,8 +76,10 @@ const QuestionParser = (() => {
         });
 
         // 2. Convert markdown code blocks ```lang\ncode\n```
-        processed = processed.replace(/```(?:[a-zA-Z0-9_\-]+)?\s*([\s\S]*?)```/g, (match, code) => {
-            return `<pre class="quiz-code-block" style="background: rgba(15, 23, 42, 0.92); color: #38bdf8; padding: 12px 16px; border-radius: 8px; font-family: 'Courier New', Consolas, monospace; font-size: 0.9em; overflow-x: auto; margin: 10px 0; border: 1px solid rgba(56, 189, 248, 0.25); text-align: left;"><code>${code.trim()}</code></pre>`;
+        processed = processed.replace(/```([a-zA-Z0-9_\-]*)\s*([\s\S]*?)```/g, (match, lang, code) => {
+            const cleanCode = code.trim();
+            const langLabel = lang ? `<span class="code-lang-tag">${lang}</span>` : '<span class="code-lang-tag">CODE</span>';
+            return `<div class="quiz-code-block-wrap"><div class="quiz-code-header">${langLabel}<button type="button" class="btn-copy-code" data-code="${encodeURIComponent(cleanCode)}">📋 Chép mã</button></div><pre class="quiz-code-block"><code>${cleanCode}</code></pre></div>`;
         });
 
         // 3. Convert inline code `code`
