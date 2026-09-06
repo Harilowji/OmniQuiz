@@ -7,11 +7,11 @@
 
 <p align="center">
   <a href="https://harilowji.github.io/OmniQuiz/"><img src="https://img.shields.io/badge/Live_Demo-GitHub_Pages-22c55e?style=for-the-badge&logo=github&logoColor=white" alt="Live Demo" /></a>
-  <img src="https://img.shields.io/badge/Version-2.5_Pro-6366f1?style=for-the-badge" alt="Version 2.5 Pro" />
+  <img src="https://img.shields.io/badge/Version-3.0_CBT_Pro-6366f1?style=for-the-badge" alt="Version 3.0 Pro" />
+  <img src="https://img.shields.io/badge/PWA-100%25_Offline-0284c7?style=for-the-badge&logo=pwa&logoColor=white" alt="PWA Offline" />
+  <img src="https://img.shields.io/badge/WCAG-2.1_AA_Compliant-10b981?style=for-the-badge" alt="WCAG 2.1 AA" />
+  <img src="https://img.shields.io/badge/Anti--Cheat-Protected-ef4444?style=for-the-badge" alt="Anti-Cheat Protected" />
   <img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker Ready" />
-  <img src="https://img.shields.io/badge/MathJax-3.2_%2B_mhchem-008080?style=for-the-badge" alt="MathJax 3.2" />
-  <img src="https://img.shields.io/badge/Vanilla_JS-ES6+-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="Vanilla JS" />
-  <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="License MIT" />
 </p>
 
 ---
@@ -75,6 +75,17 @@
 ### 🔀 8. Thuật toán Đảo đề Fisher-Yates Đồng bộ Tuyệt đối
 - Đảo ngẫu nhiên thứ tự câu hỏi và thứ tự các đáp án A-B-C-D chỉ bằng một nút bấm.
 - Cơ chế ghép cặp câu hỏi và ảnh đính kèm đồng bộ, đảm bảo hình vẽ sơ đồ luôn gắn chặt với đúng nội dung câu hỏi sau khi đảo.
+
+### 🛡️ 9. Liêm chính Phòng thi (Anti-Cheat & Fullscreen Enforcement)
+- **Giám sát chuyển Tab/Cửa sổ:** Hệ thống tự động ghi nhận khi thí sinh rời tab thi, phát âm thanh cảnh báo lỗi và tự động thu nộp bài nếu vi phạm quá 3 lần.
+- **Khóa sao chép & Chuột phải:** Ngăn chặn thao tác sao chép đề thi (`copy`, `cut`) và khóa chuột phải trong vùng làm bài thi.
+- **Chế độ Toàn màn hình (Fullscreen API):** Khóa không gian trải nghiệm tối đa giúp thí sinh tập trung làm bài thi chuẩn hóa.
+
+### ♿ 10. Tiếp cận (WCAG 2.1 AA), PWA Offline & Tối ưu Lazy MathJax
+- **Chuẩn tiếp cận WCAG 2.1 AA:** Các đáp án hỗ trợ đầy đủ `tabindex="0"`, `role="radio/checkbox"`, `aria-checked`, cho phép kích hoạt nhanh bằng phím `Space` và `Enter`.
+- **Progressive Lazy MathJax 3:** Ứng dụng `IntersectionObserver` chỉ biên dịch công thức khi câu hỏi cuộn vào màn hình, giúp nạp đề 100+ câu mượt mà 60fps không giật đơ.
+- **Luyện lại câu sai (Retake Mistakes):** Tạo ngay phiên ôn tập tập trung từ các câu làm sai chỉ với 1-chạm.
+- **PWA Service Worker (`sw.js`):** Cache toàn diện tài nguyên nội bộ và CDN ngoài, cho phép thi ngoại tuyến 100% khi mất kết nối Internet.
 
 ---
 
