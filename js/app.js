@@ -226,6 +226,7 @@
 
             // 2. Fallback to fetch paths
             const pathMap = {
+                chem_40_pdf: 'question_banks/12_hoa_hoc_40_cau_pdf_trac_nghiem.txt',
                 math_50: 'question_banks/questions.txt',
                 physics_12: 'question_banks/08_vat_ly_12_dao_dong_co.txt',
                 chem_12: 'question_banks/09_hoa_hoc_12_este_lipit.txt',
@@ -306,7 +307,59 @@
         if (!file) return;
         const fileName = file.name.toLowerCase();
 
-        if (fileName.endsWith('.docx')) {
+        if (fileName.endsWith('.pdf')) {
+            if (!window.pdfjsLib) {
+                alert(QuizEngine.state.currentLang === 'vi'
+                    ? 'Thư viện đọc file PDF (PDF.js) chưa sẵn sàng.'
+                    : 'PDF parsing library (PDF.js) not ready.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = async function(loadEvent) {
+                try {
+                    const typedArray = new Uint8Array(loadEvent.target.result);
+                    const loadingTask = pdfjsLib.getDocument({ data: typedArray });
+                    const pdfDoc = await loadingTask.promise;
+                    let fullExtractedText = '';
+
+                    for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+                        const page = await pdfDoc.getPage(pageNum);
+                        const textContent = await page.getTextContent();
+                        let pageText = '';
+                        let lastY;
+
+                        for (const item of textContent.items) {
+                            if (!item.str) continue;
+                            if (lastY !== undefined && Math.abs(item.transform[5] - lastY) > 5) {
+                                pageText += '\n';
+                            } else if (pageText.length > 0 && !pageText.endsWith(' ') && !pageText.endsWith('\n')) {
+                                pageText += ' ';
+                            }
+                            pageText += item.str;
+                            lastY = item.transform[5];
+                        }
+
+                        fullExtractedText += pageText + '\n\n';
+                    }
+
+                    if (!fullExtractedText.trim()) {
+                        alert(QuizEngine.state.currentLang === 'vi'
+                            ? 'Không thể trích xuất văn bản từ file PDF này (có thể do file scan dạng hình ảnh). Vui lòng sử dụng file Word hoặc text!'
+                            : 'Could not extract text from this PDF file (it might be a scanned image). Please use a Word or text file!');
+                        return;
+                    }
+
+                    document.getElementById('upload-section').style.display = 'none';
+                    setupQuiz(fullExtractedText, true);
+                } catch (err) {
+                    alert(QuizEngine.state.currentLang === 'vi' 
+                        ? 'Lỗi xử lý file PDF: ' + err.message
+                        : 'Error processing PDF file: ' + err.message);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        } else if (fileName.endsWith('.docx')) {
             const reader = new FileReader();
             reader.onload = function(loadEvent) {
                 const arrayBuffer = loadEvent.target.result;

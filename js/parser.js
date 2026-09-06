@@ -115,42 +115,125 @@ const QuestionParser = (() => {
     }
 
     /**
-     * Extract trailing answer tables such as:
-     * BẢNG ĐÁP ÁN: 1. A  2. B  3. C ...
+     * Clean common PDF noise artifacts, page breaks, and watermarks (e.g. Studocu headers, "Trang 1/10").
+     */
+    function cleanPdfNoise(text) {
+        if (!text || typeof text !== 'string') return '';
+        return text
+            // Studocu and standard document headers/footers
+            .replace(/--\s*\d+\s+of\s+\d+\s*--/gi, '')
+            .replace(/lOMoARcPSD\|\d+/gi, '')
+            .replace(/Downloaded by .+/gi, '')
+            // Page markers like Trang 1/10 or Page 1 of 10
+            .replace(/(?:^|\n)\s*(?:Trang|Page)\s+\d+(?:\s*(?:\/|of)\s*\d+)?\s*(?=\n|$)/gi, '\n')
+            .replace(/\n{3,}/g, '\n\n');
+    }
+
+    /**
+     * Extract trailing answer tables (BẢNG ĐÁP ÁN, ĐÁP ÁN, ANSWER KEY, grid tables, or end-of-file answer keys).
      */
     function extractTrailingAnswerTable(rawText) {
-        const tableMatch = rawText.match(/(?:^|\n+)\s*(?:BẢNG\s+ĐÁP\s*ÁN|ĐÁP\s*ÁN\s+(?:TRẮC\s+NGHIỆM|CÁC\s+CÂU)|ANSWER\s+KEY|KEY\s+TABLE)[\s\:\-]+([\s\S]+)$/i);
-        if (!tableMatch) return { cleanText: rawText, keyMap: {} };
+        if (!rawText || typeof rawText !== 'string') return { cleanText: rawText, keyMap: {} };
 
-        const tableText = tableMatch[1];
-        const pairRegex = /(\d+)[\s.:\-\)\=]+([A-E])\b/gi;
+        // 1. Explicit answer table headers
+        const tableHeaderRegex = /(?:^|\n+)\s*(?:BẢNG\s+(?:TRA\s+|TỔNG\s+HỢP\s+)?ĐÁP\s*ÁN|ĐÁP\s*ÁN(?:\s+(?:CHI\s+TIẾT|TRẮC\s+NGHIỆM|CÁC\s+CÂU|THAM\s+KHẢO|ĐỀ\s+THI))?|HƯỚNG\s+DẪN\s+CHẤM(?:\s+VÀ\s+ĐÁP\s*ÁN)?|ANSWER\s+KEY|KEY\s+(?:ĐÁP\s*ÁN|TABLE|ANSWERS?))[\s\:\-\—\–]*(?:\n+|$)([\s\S]+)$/i;
+
+        let tableMatch = rawText.match(tableHeaderRegex);
+        let tableText = '';
+        let matchIndex = -1;
+
+        if (tableMatch) {
+            tableText = tableMatch[1];
+            matchIndex = tableMatch.index;
+        } else {
+            // 2. Grid table e.g. "Câu | 1 | 2" followed by "Đ/A | C | B"
+            const gridTableMatch = rawText.match(/(?:^|\n)\s*([|\s]*(?:Câu|Q|No)[\s|]*\d+[\s\d|]*\r?\n[|\s]*(?:Đ\/?A|Đáp\s*án|Key|Ans)[\s\S]*)$/i);
+            if (gridTableMatch) {
+                tableText = gridTableMatch[1];
+                matchIndex = gridTableMatch.index;
+            }
+        }
+
+        // 3. Fallback: Dense cluster of answer pairs towards the bottom of the document
+        if (!tableText) {
+            const lines = rawText.split(/\r?\n/);
+            let answerBlockStartIndex = -1;
+            let answerPairCount = 0;
+
+            for (let i = lines.length - 1; i >= Math.max(0, lines.length - 60); i--) {
+                const line = lines[i].trim();
+                const pairsInLine = (line.match(/(?:Câu\s*)?\b\d+[\s.:\-\)\=]+[A-E]\b/gi) || []).length;
+                if (pairsInLine >= 2 || (pairsInLine === 1 && line.length < 25)) {
+                    answerPairCount += pairsInLine;
+                    answerBlockStartIndex = i;
+                } else if (answerPairCount >= 4) {
+                    break;
+                }
+            }
+
+            if (answerPairCount >= 4 && answerBlockStartIndex !== -1) {
+                tableText = lines.slice(answerBlockStartIndex).join('\n');
+                matchIndex = rawText.lastIndexOf(lines[answerBlockStartIndex]);
+            }
+        }
+
+        if (!tableText) return { cleanText: rawText, keyMap: {} };
+
         const keyMap = {};
         let count = 0;
+
+        // Parse row-based grids e.g.:
+        // Câu | 1 | 2 | 3
+        // Đ/A | A | B | C
+        const gridRows = tableText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+        for (let r = 0; r < gridRows.length - 1; r++) {
+            const row1 = gridRows[r];
+            const row2 = gridRows[r + 1];
+            if (/(?:^|[|\s])(?:Câu|Q|No)\b/i.test(row1) && /(?:^|[|\s])(?:Đ\/?A|Đáp\s*án|Key|Ans)\b/i.test(row2)) {
+                const cleanRow1 = row1.replace(/^[|\s]*(?:câu|question|q|no)[\s|:.]*/i, '');
+                const cleanRow2 = row2.replace(/^[|\s]*(?:đ\/?a|đáp\s*án|key|ans)[\s|:.]*/i, '');
+                const qNums = (cleanRow1.match(/\b\d+\b/g) || []).map(Number);
+                const answers = cleanRow2.match(/\b[A-E]\b/g) || [];
+                if (qNums.length > 0 && qNums.length === answers.length) {
+                    for (let k = 0; k < qNums.length; k++) {
+                        keyMap[qNums[k]] = answers[k].toUpperCase().charCodeAt(0) - 65;
+                        count++;
+                    }
+                    r++;
+                }
+            }
+        }
+
+        // Parse standard pairs: 1.A, 1-A, 1: A, Câu 1: A, 1. A, 1) A
+        const pairRegex = /(?:Câu\s*)?\b(\d+)[\s.:\-\)\=]+([A-E])\b/gi;
         let p;
         while ((p = pairRegex.exec(tableText)) !== null) {
             const qNum = parseInt(p[1], 10);
             const letter = p[2].toUpperCase();
-            keyMap[qNum] = letter.charCodeAt(0) - 65;
-            count++;
+            if (keyMap[qNum] === undefined) {
+                keyMap[qNum] = letter.charCodeAt(0) - 65;
+                count++;
+            }
         }
 
-        if (count >= 2) {
-            const cleanText = rawText.substring(0, tableMatch.index).trim();
+        if (count >= 2 && matchIndex !== -1) {
+            const cleanText = rawText.substring(0, matchIndex).trim();
             return { cleanText, keyMap };
         }
         return { cleanText: rawText, keyMap: {} };
     }
 
     /**
-     * Parse natural exam format commonly found in Word (.docx) and school exam papers
+     * Parse natural exam format commonly found in Word (.docx), PDF, and school exam papers
      * (Câu 1: ... A. ... B. ... C. ... D. ... Đáp án: ... Lời giải: ...).
      */
     function parseNatural(rawText) {
+        const cleaned = cleanPdfNoise(rawText);
         const questions = [];
-        const { cleanText, keyMap } = extractTrailingAnswerTable(rawText);
+        const { cleanText, keyMap } = extractTrailingAnswerTable(cleaned);
 
-        // Match start of question headers: Câu 1, Bài 1, Question 1, or 1.
-        const qHeaderRegex = /(?:^|\n+)\s*(?:(?:Câu|Question|Bài)\s*(\d+)[\s:.]+|(\d+)[\s.:]\s+(?=[A-ZÀ-Ỹ\$\\\*]))/gi;
+        // Match start of question headers: Câu 1, Bài 1, Question 1, Q1, or 1.
+        const qHeaderRegex = /(?:^|\n+)\s*(?:(?:Câu|Question|Bài|Q)\s*(\d+)[\s:.]+|(\d+)[\s.:]\s+(?=[A-ZÀ-Ỹ\$\\\*]))/gi;
 
         const matches = [];
         let match;
@@ -189,11 +272,13 @@ const QuestionParser = (() => {
         let readingState = 'q'; // 'q', 'exp'
 
         const optRegex = /^(?:[\*\-\s]*[\(\[]?([A-E])[\)\]\.\:\*]+\s*)(.+)$/i;
-        const ansRegex = /^\s*[\*\-\>\•]?\s*\[?\s*(?:Đáp\s*án(?:\s*đúng)?(?:\s*là)?|Đ\/?A|Chọn(?:\s*đáp\s*án)?|Answer|Key|Ans)[\s\:\=\]\.]*\s*([A-E](?:\s*,\s*[A-E])*)/i;
+        const ansRegex = /^\s*(?:=>|->|⇒|→|[\*\-\>\•])?\s*\[?\s*(?:(?:Đáp\s*án(?:\s*đúng)?(?:\s*là)?|Đ\/?A|Chọn(?:\s*đáp\s*án)?|Answer|Key|Ans)[\s\:\=\]\.]*)\s*([A-E](?:\s*,\s*[A-E])*)/i;
+        const arrowOrBracketAnsRegex = /^\s*(?:=>|->|⇒|→)?\s*[\(\[]?\s*([A-E])\s*[\)\]\.]?\s*$/i;
         const expRegex = /^\s*[\*\-\>\•]?\s*\[?\s*(?:Lời\s*giải(?:\s*chi\s*tiết)?|Hướng\s*dẫn(?:\s*giải)?|Giải(?:\s*chi\s*tiết)?|Explanation|Solution)[\]\s\:\.]*(.*)$/i;
+        const expInlineAnsRegex = /(?:chọn(?:\s*đáp\s*án)?|đáp\s*án(?:\s*(?:đúng|là))?|key|answer)[\s\:\=]*([A-E])\b/i;
 
         // Remove initial header like "Câu 1:" from first line
-        let firstLine = lines[0].replace(/^(?:(?:Câu|Question|Bài)\s*\d+[\s:.]*|\d+[\s:.]*)/i, '').trim();
+        let firstLine = lines[0].replace(/^(?:(?:Câu|Question|Bài|Q)\s*\d+[\s:.]*|\d+[\s:.]*)/i, '').trim();
 
         // Check if inline answer exists in header e.g. "Câu 1: (Đáp án A) Cho hàm số..."
         const headerAnsMatch = firstLine.match(/[\(\[]\s*(?:Đáp\s*án(?:\s*đúng)?|Chọn|Answer|Key)[\s\:\=]*([A-E])\s*[\)\]]/i);
@@ -205,7 +290,7 @@ const QuestionParser = (() => {
 
         function cleanOptionText(text) {
             return text
-                .replace(/\s*\((?:đáp\s*án\s*đúng|đúng|correct)\)\s*$/gi, '')
+                .replace(/\s*\((?:đáp\s*án\s*đúng|đúng|correct|đ\/a|da)\)\s*$/gi, '')
                 .replace(/\s*\*+\s*$/, '')
                 .trim();
         }
@@ -220,16 +305,22 @@ const QuestionParser = (() => {
             const expMatch = line.match(expRegex);
             if (expMatch) {
                 readingState = 'exp';
-                if (expMatch[1]) explanation += (explanation ? ' ' : '') + expMatch[1].trim();
+                if (expMatch[1]) {
+                    explanation += (explanation ? ' ' : '') + expMatch[1].trim();
+                    const inline = expMatch[1].match(expInlineAnsRegex);
+                    if (inline && answers.length === 0) {
+                        answers.push(inline[1].toUpperCase().charCodeAt(0) - 65);
+                    }
+                }
                 continue;
             }
 
             if (readingState === 'exp') {
                 explanation += (explanation ? ' ' : '') + line;
                 if (answers.length === 0) {
-                    const m = line.match(ansRegex);
-                    if (m) {
-                        const letters = m[1].toUpperCase().match(/[A-E]/g);
+                    const inline = line.match(expInlineAnsRegex) || line.match(ansRegex);
+                    if (inline) {
+                        const letters = (inline[1] || '').toUpperCase().match(/[A-E]/g);
                         if (letters) answers = letters.map(ch => ch.charCodeAt(0) - 65);
                     }
                 }
@@ -246,6 +337,15 @@ const QuestionParser = (() => {
                 continue;
             }
 
+            // Standalone arrow or bracket answer after options e.g. "=> D", "[C]"
+            if (options.length >= 2) {
+                const standaloneMatch = line.match(arrowOrBracketAnsRegex);
+                if (standaloneMatch && (!line.startsWith('A') && !line.startsWith('B') && !line.startsWith('C') && !line.startsWith('D') && !line.startsWith('E') || line.length <= 3)) {
+                    answers = [standaloneMatch[1].toUpperCase().charCodeAt(0) - 65];
+                    continue;
+                }
+            }
+
             // Check for multiple options on a single horizontal line (e.g. "A. 1   B. 2   C. 3   D. 4")
             const inlineOpts = line.split(/(?=(?:^|\s{2,}|\t)[\*\-\s]*[\(\[]?[A-E][\)\]\.\:\*])/i)
                 .map(s => s.trim())
@@ -255,7 +355,7 @@ const QuestionParser = (() => {
                 for (const item of inlineOpts) {
                     const m = item.match(optRegex);
                     if (m) {
-                        const isMarked = item.includes('*') || /\((?:đáp\s*án\s*đúng|đúng|correct)\)/i.test(item);
+                        const isMarked = item.includes('*') || /\((?:đáp\s*án\s*đúng|đúng|correct|đ\/a|da)\)/i.test(item);
                         if (isMarked && !answers.includes(options.length)) {
                             answers.push(options.length);
                         }
@@ -268,7 +368,7 @@ const QuestionParser = (() => {
             // Check single line option
             const optMatch = line.match(optRegex);
             if (optMatch) {
-                const isMarked = line.includes('*') || /\((?:đáp\s*án\s*đúng|đúng|correct)\)/i.test(line);
+                const isMarked = line.includes('*') || /\((?:đáp\s*án\s*đúng|đúng|correct|đ\/a|da)\)/i.test(line);
                 if (isMarked && !answers.includes(options.length)) {
                     answers.push(options.length);
                 }

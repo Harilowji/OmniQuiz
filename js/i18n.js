@@ -6,8 +6,8 @@ const I18N = {
     vi: {
         appTitle: "OmniQuiz - Nền tảng thi trắc nghiệm",
         uploadTitle: "Kéo thả file đề thi hoặc tải lên từ máy tính",
-        uploadPrompt: "Hỗ trợ định dạng <strong>.docx (Word)</strong> và <strong>.txt</strong> (Định dạng chuẩn hoặc đề thi tự nhiên)",
-        btnBrowse: "Chọn file từ máy",
+        uploadPrompt: "Hỗ trợ định dạng <strong>.docx (Word)</strong>, <strong>.pdf</strong> và <strong>.txt</strong> (Toán, Lý, Hóa, Ngoại ngữ, KHXH...)",
+        btnBrowse: "Chọn file từ máy (.docx, .pdf, .txt)",
         btnSample: "Nạp đề thi mẫu (50 câu)",
         lblAnswered: "Đã làm:",
         lblCorrect: "Đúng:",
@@ -60,8 +60,8 @@ const I18N = {
     en: {
         appTitle: "OmniQuiz - Multi-Subject CBT Platform",
         uploadTitle: "Drag & drop quiz file or browse from computer",
-        uploadPrompt: "Supports <strong>.docx (Word)</strong> and <strong>.txt</strong> (Standard CBT or natural exam format)",
-        btnBrowse: "Browse file",
+        uploadPrompt: "Supports <strong>.docx (Word)</strong>, <strong>.pdf</strong> and <strong>.txt</strong> (Math, Science, Languages, SAT...)",
+        btnBrowse: "Browse file (.docx, .pdf, .txt)",
         btnSample: "Load Demo Exam (50 Questions)",
         lblAnswered: "Answered:",
         lblCorrect: "Correct:",
