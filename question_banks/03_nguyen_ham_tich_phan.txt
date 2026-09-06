@@ -1,0 +1,81 @@
+ĐỀ THI CHUYÊN ĐỀ 3: NGUYÊN HÀM, TÍCH PHÂN VÀ ỨNG DỤNG HÌNH HỌC
+
+Câu 1: Họ nguyên hàm của hàm số $ f(x) = \cos x $ là:
+A. $ \sin x + C $
+B. $ -\sin x + C $
+C. $ \cos x + C $
+D. $ -\cos x + C $
+Đáp án: A
+Lời giải: Ta có đạo hàm $ (\sin x)' = \cos x $, do đó $ \int \cos x dx = \sin x + C $.
+
+Câu 2: Tích phân $ I = \int_0^1 e^x dx $ có giá trị bằng:
+A. $ e - 1 $
+B. $ e $
+C. $ e + 1 $
+D. $ 1 - e $
+Đáp án: A
+Lời giải: Nguyên hàm của $ e^x $ là $ e^x $. Thay cận từ 0 đến 1: $ I = [e^x]_0^1 = e^1 - e^0 = e - 1 $.
+
+Câu 3: Cho $ \int_1^2 f(x)dx = 3 $ và $ \int_1^2 g(x)dx = 4 $. Giá trị của tích phân $ \int_1^2 [2f(x) - g(x)] dx $ bằng:
+A. 2
+B. 10
+C. -1
+D. 6
+Đáp án: A
+Lời giải: Áp dụng tính chất tuyến tính của tích phân: $ \int_1^2 [2f(x) - g(x)] dx = 2\int_1^2 f(x)dx - \int_1^2 g(x)dx = 2(3) - 4 = 6 - 4 = 2 $.
+
+Câu 4: Họ nguyên hàm của hàm số $ f(x) = \frac{1}{2x + 1} $ là:
+A. $ \frac{1}{2} \ln|2x + 1| + C $
+B. $ \ln|2x + 1| + C $
+C. $ 2\ln|2x + 1| + C $
+D. $ -\frac{1}{(2x+1)^2} + C $
+Đáp án: A
+Lời giải: Áp dụng công thức $ \int \frac{1}{ax + b} dx = \frac{1}{a} \ln|ax + b| + C $ với $ a = 2 $, ta có $ \int \frac{1}{2x+1} dx = \frac{1}{2} \ln|2x+1| + C $.
+
+Câu 5: Diện tích hình phẳng giới hạn bởi đồ thị hàm số $ y = x^2 - 4x + 3 $, trục hoành và hai đường thẳng $ x = 1, x = 3 $ được tính bởi công thức:
+A. $ S = \int_1^3 -(x^2 - 4x + 3) dx $
+B. $ S = \int_1^3 (x^2 - 4x + 3) dx $
+C. $ S = \pi \int_1^3 (x^2 - 4x + 3)^2 dx $
+D. $ S = \int_1^3 |x^2 - 4x + 3| dx $
+Đáp án: D
+Lời giải: Diện tích hình phẳng giới hạn bởi đồ thị $ y = f(x) $, trục $ Ox $ và hai cận $ x = a, x = b $ luôn bằng $ S = \int_a^b |f(x)| dx $.
+
+Câu 6: Tính giá trị của tích phân $ \int_0^{\frac{\pi}{2}} \sin x dx $.
+A. 1
+B. 0
+C. -1
+D. 2
+Đáp án: A
+Lời giải: Ta có nguyên hàm của $ \sin x $ là $ -\cos x $. Thay cận từ 0 đến $ \frac{\pi}{2} $: $ [-\cos x]_0^{\frac{\pi}{2}} = -\cos\frac{\pi}{2} - (-\cos 0) = 0 - (-1) = 1 $.
+
+Câu 7: Biết $ F(x) = x^2 $ là một nguyên hàm của hàm số $ f(x) $. Khi đó $ \int_1^2 [2 + f(x)] dx $ bằng:
+A. 5
+B. 3
+C. 7
+D. 1
+Đáp án: A
+Lời giải: Ta có $ \int_1^2 [2 + f(x)] dx = \int_1^2 2 dx + \int_1^2 f(x) dx = [2x]_1^2 + [F(x)]_1^2 = (4 - 2) + (F(2) - F(1)) = 2 + (4 - 1) = 5 $.
+
+Câu 8: Thể tích khối tròn xoay tạo thành khi quay hình phẳng giới hạn bởi đường cong $ y = \sqrt{x} $, trục hoành và hai đường thẳng $ x = 0, x = 4 $ quanh trục hoành là:
+A. $ 8\pi $
+B. $ 4\pi $
+C. $ 16\pi $
+D. $ \frac{8\pi}{3} $
+Đáp án: A
+Lời giải: Thể tích khối tròn xoay được tính theo công thức $ V = \pi \int_0^4 y^2 dx = \pi \int_0^4 (\sqrt{x})^2 dx = \pi \int_0^4 x dx = \pi \left[\frac{x^2}{2}\right]_0^4 = \pi \left(\frac{16}{2} - 0\right) = 8\pi $.
+
+Câu 9: Bằng phương pháp tích phân từng phần với $ \int x e^x dx $, nếu đặt $ u = x $ và $ dv = e^x dx $ thì ta có:
+A. $ du = dx, v = e^x $
+B. $ du = dx, v = -e^x $
+C. $ du = x dx, v = e^x $
+D. $ du = 1, v = e^x $
+Đáp án: A
+Lời giải: Lấy vi phân $ du = (x)' dx = dx $ và nguyên hàm $ v = \int e^x dx = e^x $. Vậy $ du = dx, v = e^x $.
+
+Câu 10: Tích phân $ \int_1^e \frac{1}{x} dx $ có giá trị bằng:
+A. 1
+B. $ e $
+C. 0
+D. $ \ln 2 $
+Đáp án: A
+Lời giải: Ta có $ \int_1^e \frac{1}{x} dx = [\ln|x|]_1^e = \ln e - \ln 1 = 1 - 0 = 1 $.

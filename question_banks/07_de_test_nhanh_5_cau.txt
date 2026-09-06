@@ -1,0 +1,43 @@
+[TIÊU ĐỀ]: ĐỀ KIỂM TRA NHANH (5 CÂU)
+[MÔ TẢ]: Bộ câu hỏi trắc nghiệm nhanh 5 câu dành cho việc kiểm thử tính năng nộp bài, chấm điểm và xem lời giải chi tiết.
+[THỜI GIAN]: 5 phút
+
+Câu 1: Giá trị của biểu thức $P = \sqrt{16} + \sqrt{25}$ bằng:
+A. 9
+B. 7
+C. 41
+D. $\sqrt{41}$
+Đáp án: A
+Lời giải: $P = \sqrt{16} + \sqrt{25} = 4 + 5 = 9$.
+
+Câu 2: Nghiệm của phương trình $2x - 6 = 0$ là:
+A. $x = 3$
+B. $x = -3$
+C. $x = 2$
+D. $x = 0$
+Đáp án: A
+Lời giải: $2x - 6 = 0 \Leftrightarrow 2x = 6 \Leftrightarrow x = 3$.
+
+Câu 3: Đạo hàm của hàm số $y = x^3 - 3x + 1$ là:
+A. $y' = 3x^2 - 3$
+B. $y' = 3x^2 + 3$
+C. $y' = x^2 - 3$
+D. $y' = 3x^2$
+Đáp án: A
+Lời giải: Áp dụng quy tắc đạo hàm: $(x^3)' = 3x^2$, $(-3x)' = -3$, $(1)' = 0$. Do đó $y' = 3x^2 - 3$.
+
+Câu 4: Diện tích hình tròn có bán kính $R = 5$ là:
+A. $25\pi$
+B. $10\pi$
+C. $5\pi$
+D. $50\pi$
+Đáp án: A
+Lời giải: Diện tích hình tròn được tính bởi công thức $S = \pi R^2 = \pi \cdot 5^2 = 25\pi$.
+
+Câu 5: Trong mặt phẳng tọa độ $Oxy$, khoảng cách giữa hai điểm $A(0; 0)$ và $B(3; 4)$ bằng:
+A. 5
+B. 7
+C. 25
+D. 1
+Đáp án: A
+Lời giải: Khoảng cách $AB = \sqrt{(3 - 0)^2 + (4 - 0)^2} = \sqrt{9 + 16} = \sqrt{25} = 5$.

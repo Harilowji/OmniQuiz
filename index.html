@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Nền tảng thi trắc nghiệm Toán học trực tuyến hỗ trợ công thức LaTeX MathJax 3, đa giao diện và nhập đề Word .docx">
+    <title>Math Quiz CBT Platform</title>
+
+    <!-- Favicon & PWA Manifest -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📐</text></svg>">
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@500;700;900&family=Quicksand:wght@500;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- External Libraries: html2pdf & mammoth.js (for DOCX parsing) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+
+    <!-- MathJax 3 Configuration (Crucial for inline $ ... $ formulas & reactive typesetting) -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+            },
+            startup: {
+                pageReady: () => {
+                    return MathJax.startup.defaultPageReady().then(() => {
+                        window.isMathJaxReady = true;
+                        if (typeof window.onMathJaxReady === 'function') {
+                            window.onMathJaxReady();
+                        }
+                    });
+                }
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- Modular Stylesheets -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+<body class="theme-academic">
+    <canvas id="confetti-canvas"></canvas>
+
+    <div class="app-container">
+        <!-- TOP NAVIGATION BAR -->
+        <header class="top-navbar">
+            <div class="brand-title">
+                <span>📐</span> <span id="txt-app-title">Hệ thống thi trắc nghiệm Toán</span>
+            </div>
+            <div class="controls-group">
+                <select class="custom-select" id="lang-selector" aria-label="Select Language">
+                    <option value="vi">🇻🇳 Tiếng Việt</option>
+                    <option value="en">🇬🇧 English</option>
+                </select>
+                <select class="custom-select" id="mode-selector" aria-label="Select Mode">
+                    <option value="practice">🎯 Luyện tập (Practice)</option>
+                    <option value="exam">⏱️ Thi thử (Exam)</option>
+                </select>
+                <select class="custom-select" id="theme-selector" aria-label="Select Theme">
+                    <option value="academic">Academic (Math)</option>
+                    <option value="minimalist">Minimalist</option>
+                    <option value="cyberpunk">Cyberpunk</option>
+                    <option value="playful">Playful</option>
+                </select>
+                <button class="btn-action" id="btn-shuffle" title="Đảo câu hỏi và đáp án">🔀 Đảo đề</button>
+                <button class="btn-action btn-danger" id="btn-reset" title="Xóa tiến độ và làm lại">🔄 Làm mới</button>
+            </div>
+        </header>
+
+        <!-- MAIN LAYOUT -->
+        <div class="app-layout">
+            <!-- LEFT COLUMN: QUIZ CONTENT -->
+            <main class="quiz-main">
+                <div id="upload-section">
+                    <div class="upload-icon">📂</div>
+                    <p id="txt-upload-title" style="font-size: 1.15em; font-weight: 700; margin-bottom: 6px;">
+                        Kéo thả file đề thi hoặc tải lên từ máy tính
+                    </p>
+                    <p id="txt-upload-prompt" style="font-size: 0.9em; opacity: 0.8; margin-bottom: 18px;">
+                        Hỗ trợ định dạng <strong>.docx (Word)</strong> và <strong>.txt</strong> (Định dạng chuẩn hoặc đề thi tự nhiên)
+                    </p>
+                    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                        <label class="btn-action btn-primary" style="cursor: pointer;">
+                            📁 <span id="txt-btn-browse">Chọn file từ máy</span>
+                            <input type="file" id="file-input" accept=".txt,.docx,.doc" style="display: none;">
+                        </label>
+                        <button class="btn-action" id="btn-load-sample" style="background: var(--option-bg);">
+                            🚀 <span id="txt-btn-sample">Nạp đề thi mẫu (50 câu)</span>
+                        </button>
+                    </div>
+                    <div style="font-size: 0.82em; opacity: 0.65; margin-top: 14px;">
+                        * Định dạng Word .doc (97-2003) cũ: Vui lòng dùng "Save As" sang .docx để ứng dụng đọc tốt nhất
+                    </div>
+                </div>
+
+                <div class="sticky-stats-bar" id="stats-section" style="display: none;">
+                    <div class="progress-track">
+                        <div class="progress-fill" id="quiz-progress-bar"></div>
+                    </div>
+                    <div class="stats-content">
+                        <div class="stats-numbers">
+                            <span id="lbl-answered">Đã làm:</span> <strong id="total-answered">0</strong>/<strong id="total-questions">0</strong>
+                            <span style="margin: 0 6px; opacity: 0.4;">|</span>
+                            <span id="lbl-correct" style="color: #22c55e;">Đúng: <strong id="correct-count">0</strong></span>
+                            <span style="margin: 0 6px; opacity: 0.4;">|</span>
+                            <span id="lbl-incorrect" style="color: #ef4444;">Sai: <strong id="incorrect-count">0</strong></span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="timer-badge">
+                                <span>⏱️</span> <span id="time-remaining">60:00</span>
+                            </div>
+                            <button class="btn-action btn-danger" id="finish-btn">Nộp bài</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="quiz-container">
+                    <div style="text-align: center; padding: 40px; font-weight: 600; opacity: 0.7;">
+                        Đang tải dữ liệu câu hỏi...
+                    </div>
+                </div>
+            </main>
+
+            <!-- RIGHT COLUMN: QUESTION PALETTE -->
+            <aside class="palette-sidebar" id="palette-section" style="display: none;">
+                <div class="palette-header">
+                    <span class="palette-title" id="txt-palette-title">
+                        <span>📋</span> <span>Bản đồ câu hỏi</span>
+                    </span>
+                    <div class="palette-progress-wrapper" title="Tiến độ hoàn thành">
+                        <svg class="progress-ring" width="34" height="34" viewBox="0 0 34 34">
+                            <circle class="progress-ring-circle-bg" stroke="rgba(0,0,0,0.08)" stroke-width="3.2" fill="transparent" r="13" cx="17" cy="17"/>
+                            <circle class="progress-ring-circle" id="palette-progress-circle" stroke="var(--primary-color)" stroke-width="3.2" stroke-linecap="round" fill="transparent" r="13" cx="17" cy="17" style="stroke-dasharray: 81.68; stroke-dashoffset: 81.68;"/>
+                        </svg>
+                        <span id="palette-completion-badge">0%</span>
+                        <button class="btn-action" id="btn-close-palette-drawer" style="display: none; padding: 4px 8px; font-size: 0.85em; margin-left: 6px;" title="Đóng">✕</button>
+                    </div>
+                </div>
+
+                <div class="palette-filters">
+                    <button class="filter-chip active" id="flt-all">Tất cả (0)</button>
+                    <button class="filter-chip" id="flt-answered">Đã làm (0)</button>
+                    <button class="filter-chip" id="flt-flagged">Cần xem 🚩 (0)</button>
+                    <button class="filter-chip" id="flt-unanswered">Chưa làm (0)</button>
+                </div>
+
+                <div class="palette-grid" id="palette-grid"></div>
+
+                <div class="palette-legend">
+                    <div class="legend-item"><div class="legend-dot" style="background:#10b981;"></div> <span id="txt-leg-correct">Đúng</span></div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#ef4444;"></div> <span id="txt-leg-incorrect">Sai</span></div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#3b82f6;"></div> <span id="txt-leg-answered">Đã chọn</span></div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#eab308;"></div> <span id="txt-leg-flagged">Đánh dấu 🚩</span></div>
+                </div>
+
+                <button class="btn-action btn-danger" id="txt-btn-submit-aside" style="width: 100%; padding: 12px; font-size: 1em; justify-content: center;">
+                    Nộp bài & Chấm điểm
+                </button>
+            </aside>
+        </div>
+    </div>
+
+    <!-- AZOTA FLOATING QUICK PALETTE TRIGGER (FOR MOBILE & TABLET) -->
+    <button id="btn-mobile-palette-toggle" class="floating-palette-fab" style="display: none;" title="Mở bản đồ câu hỏi">
+        📋 <span id="txt-mobile-fab-lbl">Bản đồ</span> (<span id="fab-answered-count">0</span>/<span id="fab-total-count">0</span>)
+    </button>
+
+    <!-- SUMMARY SCORE MODAL -->
+    <div class="modal-overlay" id="summary-modal">
+        <div class="modal-content">
+            <h2 id="modal-title" style="color: var(--heading-color); margin-bottom: 5px;">Hoàn thành bài thi!</h2>
+            <p id="modal-subtitle" style="font-size: 0.9em; opacity: 0.8;">Kết quả chi tiết bài làm của bạn</p>
+            
+            <div class="score-circle">
+                <div id="modal-score">0</div>
+                <span>/ 100</span>
+            </div>
+
+            <div class="modal-stats-grid">
+                <div class="modal-box">
+                    <div class="num" id="modal-correct" style="color: #22c55e;">0</div>
+                    <div class="lbl" id="txt-modal-correct">Câu đúng</div>
+                </div>
+                <div class="modal-box">
+                    <div class="num" id="modal-incorrect" style="color: #ef4444;">0</div>
+                    <div class="lbl" id="txt-modal-incorrect">Câu sai</div>
+                </div>
+                <div class="modal-box">
+                    <div class="num" id="modal-unattempted" style="color: #64748b;">0</div>
+                    <div class="lbl" id="txt-modal-unattempted">Chưa làm</div>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-action" id="txt-modal-review">Xem lại bài làm</button>
+                <button class="btn-action btn-success" id="txt-modal-export">Xuất PDF câu sai</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modular JavaScript Files -->
+    <script src="js/i18n.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/confetti.js"></script>
+    <script src="js/parser.js"></script>
+    <script src="js/quiz-engine.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

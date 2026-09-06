@@ -1,0 +1,75 @@
+ĐỀ THI CHUYÊN ĐỀ 1: HÀM SỐ, ĐẠO HÀM VÀ KHẢO SÁT HÀM SỐ
+
+Câu 1: Cho hàm số $ y = f(x) $ có bảng biến thiên với $ f'(x) > 0 $ trên khoảng $ (-\infty; 1) $ và $ f'(x) < 0 $ trên khoảng $ (1; +\infty) $. Mệnh đề nào sau đây đúng?
+A. Hàm số đồng biến trên khoảng $ (1; +\infty) $.
+B. Hàm số nghịch biến trên khoảng $ (-\infty; 1) $.
+C. Hàm số đạt cực đại tại điểm $ x = 1 $.
+D. Hàm số đạt cực tiểu tại điểm $ x = 1 $.
+Đáp án: C
+Lời giải: Đạo hàm $ f'(x) $ đổi dấu từ dương sang âm khi qua điểm $ x = 1 $, do đó hàm số đạt cực đại tại $ x = 1 $.
+
+Câu 2: Cho hàm số $ y = x^3 - 3x + 2 $. Điểm cực tiểu của đồ thị hàm số là:
+A. $ (1; 0) $
+B. $ (-1; 4) $
+C. $ x = 1 $
+D. $ y = 0 $
+Đáp án: A
+Lời giải: Ta có $ y' = 3x^2 - 3 = 0 \iff x = \pm 1 $. Với $ x = 1 $, ta có $ y = 0 $ và $ y'' = 6x \implies y''(1) = 6 > 0 $. Vậy điểm cực tiểu của đồ thị là $ (1; 0) $.
+
+Câu 3: Đường tiệm cận đứng của đồ thị hàm số $ y = \frac{2x - 1}{x + 3} $ là:
+A. $ x = 2 $
+B. $ x = -3 $
+C. $ y = 2 $
+D. $ y = -3 $
+Đáp án: B
+Lời giải: Nghiệm của mẫu số là $ x + 3 = 0 \iff x = -3 $. Do tử số tại $ x = -3 $ bằng $ 2(-3) - 1 = -7 \ne 0 $ nên đường tiệm cận đứng là $ x = -3 $.
+
+Câu 4: Đường tiệm cận ngang của đồ thị hàm số $ y = \frac{3x + 5}{x - 2} $ là:
+A. $ y = 3 $
+B. $ x = 2 $
+C. $ y = -2 $
+D. $ y = -\frac{5}{2} $
+Đáp án: A
+Lời giải: Ta có $ \lim_{x \to \pm\infty} \frac{3x + 5}{x - 2} = 3 $. Vậy tiệm cận ngang là đường thẳng $ y = 3 $.
+
+Câu 5: Giá trị lớn nhất của hàm số $ f(x) = x^4 - 2x^2 + 3 $ trên đoạn $ [0; 2] $ là:
+A. 2
+B. 3
+C. 11
+D. 19
+Đáp án: C
+Lời giải: Ta có $ f'(x) = 4x^3 - 4x = 4x(x^2 - 1) = 0 \iff x = 0, x = 1, x = -1 $. Trên đoạn $ [0; 2] $, xét các điểm $ x = 0, 1, 2 $: có $ f(0) = 3 $, $ f(1) = 2 $, $ f(2) = 16 - 8 + 3 = 11 $. Vậy giá trị lớn nhất là 11 tại $ x = 2 $.
+
+Câu 6: Cho hàm số $ y = f(x) $ có đồ thị cắt trục hoành tại 3 điểm phân biệt. Số nghiệm thực của phương trình $ f(x) = 0 $ là:
+A. 1        B. 2        C. 3        D. 4
+Đáp án: C
+Lời giải: Số nghiệm của phương trình $ f(x) = 0 $ chính là số giao điểm của đồ thị $ y = f(x) $ với trục hoành. Do đó phương trình có đúng 3 nghiệm thực phân biệt.
+
+Câu 7: Hàm số $ y = \frac{x - 1}{x + 1} $ đồng biến trên các khoảng nào sau đây?
+A. $ (-\infty; -1) $ và $ (-1; +\infty) $
+B. $ \mathbb{R} \setminus \{-1\} $
+C. $ (-\infty; +\infty) $
+D. $ (-1; 1) $
+Đáp án: A
+Lời giải: Tập xác định $ D = \mathbb{R} \setminus \{-1\} $. Ta có $ y' = \frac{1(1) - (-1)(1)}{(x+1)^2} = \frac{2}{(x+1)^2} > 0, \forall x \ne -1 $. Vậy hàm số đồng biến trên từng khoảng xác định $ (-\infty; -1) $ và $ (-1; +\infty) $.
+
+Câu 8: Điểm uốn của đồ thị hàm số bậc ba $ y = x^3 - 3x^2 + 1 $ có tọa độ là:
+A. $ (1; -1) $
+B. $ (0; 1) $
+C. $ (2; -3) $
+D. $ (1; 0) $
+Đáp án: A
+Lời giải: Ta có $ y' = 3x^2 - 6x $, $ y'' = 6x - 6 = 0 \iff x = 1 $. Thay $ x = 1 $ vào hàm số: $ y(1) = 1 - 3 + 1 = -1 $. Vậy điểm uốn là $ (1; -1) $.
+
+Câu 9: Cho hàm số $ y = ax^4 + bx^2 + c $ có đồ thị dạng chữ W. Dấu của các hệ số $ a $ và $ b $ là:
+A. $ a > 0, b < 0 $
+B. $ a > 0, b > 0 $
+C. $ a < 0, b > 0 $
+D. $ a < 0, b < 0 $
+Đáp án: A
+Lời giải: Đồ thị có bề lõm hướng lên trên khi $ x \to \pm\infty \implies a > 0 $. Hàm số có 3 điểm cực trị khi $ ab < 0 \implies b < 0 $. Do đó $ a > 0, b < 0 $.
+
+Câu 10: Số điểm cực trị của hàm số $ y = x^4 + 2x^2 + 1 $ là:
+A. 1        B. 2        C. 3        D. 0
+Đáp án: A
+Lời giải: Ta có $ y' = 4x^3 + 4x = 4x(x^2 + 1) = 0 \iff x = 0 $ (vì $ x^2 + 1 > 0 $ với mọi $ x $). Phương trình $ y' = 0 $ chỉ có 1 nghiệm duy nhất và đổi dấu qua $ x = 0 $ nên hàm số có đúng 1 điểm cực trị.

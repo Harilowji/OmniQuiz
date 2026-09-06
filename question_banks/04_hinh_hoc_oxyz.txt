@@ -1,0 +1,81 @@
+ĐỀ THI CHUYÊN ĐỀ 4: PHƯƠNG PHÁP TỌA ĐỘ TRONG KHÔNG GIAN OXYZ
+
+Câu 1: Trong không gian Oxyz, cho điểm $ M(1; -2; 3) $. Hình chiếu vuông góc của điểm $ M $ lên trục $ Ox $ có tọa độ là:
+A. $ (1; 0; 0) $
+B. $ (0; -2; 0) $
+C. $ (0; 0; 3) $
+D. $ (1; -2; 0) $
+Đáp án: A
+Lời giải: Điểm chiếu vuông góc lên trục $ Ox $ thì giữ nguyên hoành độ $ x $, còn tung độ $ y $ và cao độ $ z $ đều bằng 0. Do đó tọa độ điểm là $ (1; 0; 0) $.
+
+Câu 2: Trong không gian Oxyz, cho hai điểm $ A(1; 1; -2) $ và $ B(3; -1; 0) $. Tọa độ vectơ $ \vec{AB} $ là:
+A. $ (2; -2; 2) $
+B. $ (-2; 2; -2) $
+C. $ (4; 0; -2) $
+D. $ (2; 0; -1) $
+Đáp án: A
+Lời giải: Tọa độ vectơ $ \vec{AB} = (x_B - x_A; y_B - y_A; z_B - z_A) = (3 - 1; -1 - 1; 0 - (-2)) = (2; -2; 2) $.
+
+Câu 3: Trong không gian Oxyz, mặt cầu $ (S): (x - 2)^2 + (y + 1)^2 + (z - 4)^2 = 9 $ có tâm $ I $ và bán kính $ R $ là:
+A. $ I(2; -1; 4) $ và $ R = 3 $
+B. $ I(-2; 1; -4) $ và $ R = 3 $
+C. $ I(2; -1; 4) $ và $ R = 9 $
+D. $ I(-2; 1; -4) $ và $ R = 9 $
+Đáp án: A
+Lời giải: Phương trình mặt cầu dạng $ (x-a)^2 + (y-b)^2 + (z-c)^2 = R^2 $ có tâm $ I(a; b; c) = (2; -1; 4) $ và bán kính $ R = \sqrt{9} = 3 $.
+
+Câu 4: Vectơ nào sau đây là một vectơ pháp tuyến của mặt phẳng $ (P): 2x - 3y + z - 7 = 0 $?
+A. $ \vec{n} = (2; -3; 1) $
+B. $ \vec{n} = (2; 3; 1) $
+C. $ \vec{n} = (2; -3; -7) $
+D. $ \vec{n} = (-2; -3; 1) $
+Đáp án: A
+Lời giải: Mặt phẳng $ Ax + By + Cz + D = 0 $ có một vectơ pháp tuyến là $ \vec{n} = (A; B; C) = (2; -3; 1) $.
+
+Câu 5: Trong không gian Oxyz, mặt phẳng đi qua điểm $ M(1; 2; -1) $ và nhận $ \vec{n} = (3; 1; 2) $ làm vectơ pháp tuyến có phương trình là:
+A. $ 3x + y + 2z - 3 = 0 $
+B. $ 3x + y + 2z + 3 = 0 $
+C. $ 3x + y + 2z - 5 = 0 $
+D. $ x + 2y - z - 3 = 0 $
+Đáp án: A
+Lời giải: Phương trình mặt phẳng: $ 3(x - 1) + 1(y - 2) + 2(z - (-1)) = 0 \iff 3x - 3 + y - 2 + 2z + 2 = 0 \iff 3x + y + 2z - 3 = 0 $.
+
+Câu 6: Khoảng cách từ điểm $ A(1; 0; 2) $ đến mặt phẳng $ (P): 2x - 2y + z + 5 = 0 $ là:
+A. 3
+B. 1
+C. 2
+D. 9
+Đáp án: A
+Lời giải: Áp dụng công thức khoảng cách: $ d(A, (P)) = \frac{|2(1) - 2(0) + 1(2) + 5|}{\sqrt{2^2 + (-2)^2 + 1^2}} = \frac{|2 - 0 + 2 + 5|}{\sqrt{9}} = \frac{9}{3} = 3 $.
+
+Câu 7: Trong không gian Oxyz, đường thẳng $ d: \frac{x - 1}{2} = \frac{y + 2}{-3} = \frac{z - 5}{4} $ đi qua điểm nào dưới đây?
+A. $ M(1; -2; 5) $
+B. $ N(-1; 2; -5) $
+C. $ P(2; -3; 4) $
+D. $ Q(1; 2; 5) $
+Đáp án: A
+Lời giải: Dạng chính tắc của đường thẳng qua $ M(x_0; y_0; z_0) $ là $ \frac{x - x_0}{a} = \frac{y - y_0}{b} = \frac{z - z_0}{c} $. Do đó đường thẳng đi qua điểm $ M(1; -2; 5) $.
+
+Câu 8: Vectơ nào dưới đây là một vectơ chỉ phương của đường thẳng $ \Delta: \begin{cases} x = 1 + 2t \\ y = -1 + 3t \\ z = 4 - t \end{cases} $?
+A. $ \vec{u} = (2; 3; -1) $
+B. $ \vec{u} = (1; -1; 4) $
+C. $ \vec{u} = (2; 3; 1) $
+D. $ \vec{u} = (-2; 3; -1) $
+Đáp án: A
+Lời giải: Từ phương trình tham số, các hệ số của tham số $ t $ cho ta tọa độ vectơ chỉ phương $ \vec{u} = (2; 3; -1) $.
+
+Câu 9: Trong không gian Oxyz, cho hai vectơ $ \vec{u} = (1; 2; 3) $ và $ \vec{v} = (2; 1; 0) $. Tích vô hướng $ \vec{u} \cdot \vec{v} $ bằng:
+A. 4
+B. 0
+C. 5
+D. 6
+Đáp án: A
+Lời giải: Áp dụng công thức tích vô hướng: $ \vec{u} \cdot \vec{v} = x_1 x_2 + y_1 y_2 + z_1 z_2 = 1(2) + 2(1) + 3(0) = 2 + 2 + 0 = 4 $.
+
+Câu 10: Phương trình mặt cầu có tâm là gốc tọa độ $ O(0; 0; 0) $ và bán kính $ R = 5 $ là:
+A. $ x^2 + y^2 + z^2 = 25 $
+B. $ x^2 + y^2 + z^2 = 5 $
+C. $ (x - 5)^2 + (y - 5)^2 + (z - 5)^2 = 25 $
+D. $ x^2 + y^2 + z^2 = 50 $
+Đáp án: A
+Lời giải: Mặt cầu tâm $ O(0; 0; 0) $ bán kính $ R $ có phương trình $ x^2 + y^2 + z^2 = R^2 = 5^2 = 25 $.

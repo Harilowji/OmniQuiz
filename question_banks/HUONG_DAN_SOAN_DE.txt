@@ -1,0 +1,57 @@
+================================================================================
+  HƯỚNG DẪN SOẠN ĐỀ THI TRẮC NGHIỆM TRONG THƯ MỤC QUESTION_BANKS
+================================================================================
+
+Bạn có thể tạo thêm bao nhiêu file .txt tùy thích trong thư mục này.
+Hệ thống hỗ trợ 2 CÁCH SOẠN ĐỀ:
+
+--------------------------------------------------------------------------------
+CÁCH 1: ĐỊNH DẠNG ĐỀ THI VIỆT NAM TỰ NHIÊN (Khuyên dùng - Rất nhanh & dễ soạn)
+--------------------------------------------------------------------------------
+Bạn có thể copy trực tiếp từ đề Word, tài liệu ôn thi của trường học:
+
+Câu 1: Cho hàm số y = f(x) có đạo hàm f'(x) = x^2 - 4. Điểm cực tiểu là:
+A. x = 2
+B. x = -2
+C. x = 0
+D. Không có cực tiểu
+Đáp án: A
+Lời giải: Ta có f'(x) = 0 <=> x = ±2. Đạo hàm đổi dấu từ âm sang dương khi qua x = 2 nên x = 2 là điểm cực tiểu.
+
+Câu 2: Tính tích phân $ I = \int_0^1 (2x + 1) dx $.
+A. 1        B. 2        C. 3        D. 4
+Đáp án: B
+Lời giải: Nguyên hàm là x^2 + x. Thay cận từ 0 đến 1: (1 + 1) - 0 = 2.
+
+* Mẹo:
+- Hỗ trợ cả 4 đáp án nằm trên 1 dòng như: A. 1   B. 2   C. 3   D. 4
+- Hỗ trợ các kiểu ghi đáp án: "Đáp án: A", "Đáp án đúng: B", "Chọn C", "Answer: D"
+- Hỗ trợ công thức toán học LaTeX đặt giữa hai dấu dollar, ví dụ: $ \frac{a}{b} $, $ \sqrt{x^2 + 1} $, $ \int_0^1 f(x)dx $
+
+--------------------------------------------------------------------------------
+CÁCH 2: ĐỊNH DẠNG CBT TIÊU CHUẨN
+--------------------------------------------------------------------------------
+Q: Tiêu đề câu hỏi...
+T: single (hoặc multiple cho câu hỏi chọn nhiều đáp án)
+O: Phương án A (chỉ số 0)
+O: Phương án B (chỉ số 1)
+O: Phương án C (chỉ số 2)
+O: Phương án D (chỉ số 3)
+A: 0 (hoặc A: 0,2 nếu chọn nhiều đáp án)
+E: Lời giải chi tiết câu hỏi...
+
+Ví dụ:
+Q: Đạo hàm của hàm số $ f(x) = x^4 $ là:
+T: single
+O: $ 4x^4 $
+O: $ 4x^3 $
+O: $ 5x^4 $
+O: $ x^3 $
+A: 1
+E: Áp dụng công thức (x^n)' = n*x^(n-1), ta có (x^4)' = 4x^3.
+
+--------------------------------------------------------------------------------
+LƯU Ý KHI LƯU FILE:
+- Chọn Encoding là UTF-8 trong Notepad để không bị lỗi dấu tiếng Việt.
+- Kéo thả file bất kỳ từ thư mục này vào trình duyệt hoặc chọn file để thi ngay!
+================================================================================
