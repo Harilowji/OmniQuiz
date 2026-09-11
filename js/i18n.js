@@ -66,6 +66,8 @@ const I18N = {
         mobileFab: "Bản đồ",
         modePractice: "🎯 Luyện tập (Practice)",
         modeExam: "⏱️ Thi thử (Exam)",
+        modeFlashcard: "🎴 Thẻ ghi nhớ (Flashcard)",
+        askAiTutor: "Hỏi Gia sư AI (Phân tích bẫy & Mẹo giải nhanh)",
         welcomeTitle: "Chào mừng bạn đến với OmniQuiz!",
         welcomeSubtitle: "Vui lòng tải lên file đề thi của bạn ở khung phía trên, hoặc chọn một đề mẫu đa môn học để bắt đầu ôn luyện.",
         subjects: {
@@ -191,6 +193,8 @@ const I18N = {
         mobileFab: "Map",
         modePractice: "🎯 Practice Mode",
         modeExam: "⏱️ Exam Mode",
+        modeFlashcard: "🎴 Flashcard Mode",
+        askAiTutor: "Ask AI Tutor (Trap Analysis & Speed Tips)",
         welcomeTitle: "Welcome to OmniQuiz!",
         welcomeSubtitle: "Please upload your exam file in the area above, or choose a curated multi-subject test to begin practicing.",
         subjects: {
@@ -328,6 +332,8 @@ function updateUILanguage(lang) {
         if (optPractice) optPractice.innerText = trans.modePractice;
         const optExam = modeSelect.querySelector('option[value="exam"]');
         if (optExam) optExam.innerText = trans.modeExam;
+        const optFlashcard = modeSelect.querySelector('option[value="flashcard"]');
+        if (optFlashcard) optFlashcard.innerText = trans.modeFlashcard;
     }
 
     // Update Subject Select options

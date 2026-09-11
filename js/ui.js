@@ -178,17 +178,38 @@ const UIManager = (() => {
                 : q.explanation;
             const hasExpText = explanationText && explanationText.trim().length > 0;
 
-            if (isEvaluated && hasExpText) {
-                const safeExpText = (typeof QuestionParser !== 'undefined' && QuestionParser.formatMathText) 
-                    ? QuestionParser.formatMathText(explanationText) 
-                    : explanationText;
-                expDiv.innerHTML = `<strong>${t('explanation')}</strong> ${safeExpText}`;
-                expDiv.style.display = 'block';
+            if (isEvaluated) {
+                if (hasExpText) {
+                    const safeExpText = (typeof QuestionParser !== 'undefined' && QuestionParser.formatMathText) 
+                        ? QuestionParser.formatMathText(explanationText) 
+                        : explanationText;
+                    expDiv.innerHTML = `<strong>${t('explanation')}</strong> ${safeExpText}`;
+                    expDiv.style.display = 'block';
+                } else {
+                    expDiv.innerHTML = '';
+                    expDiv.style.display = 'none';
+                }
+                block.appendChild(expDiv);
+
+                // AI Tutor Button (Direct Analysis & Fast Solving Tips)
+                const aiBtn = document.createElement('button');
+                aiBtn.type = 'button';
+                aiBtn.className = 'btn-ask-ai-inline';
+                aiBtn.innerHTML = '🤖 ' + (t('askAiTutor') || 'Hỏi Gia sư AI (Phân tích bẫy tư duy & Mẹo giải nhanh)');
+                const correctAnswers = (typeof QuizEngine !== 'undefined' && QuizEngine.getCorrectAnswers)
+                    ? QuizEngine.getCorrectAnswers(q)
+                    : (q.answers || []);
+                aiBtn.onclick = () => {
+                    if (typeof AITutor !== 'undefined' && AITutor.askTutorForQuestion) {
+                        AITutor.askTutorForQuestion(qIndex, q, selected, correctAnswers, block);
+                    }
+                };
+                block.appendChild(aiBtn);
             } else {
                 expDiv.innerHTML = '';
                 expDiv.style.display = 'none';
+                block.appendChild(expDiv);
             }
-            block.appendChild(expDiv);
 
             // Azota Question Navigation Footer (Previous / Counter / Next)
             const navFooter = document.createElement('div');

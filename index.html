@@ -82,20 +82,20 @@
                     <div class="brand-tagline" id="txt-app-title">Nền tảng thi trắc nghiệm đa môn học</div>
                 </div>
             </div>
+            
+            <!-- Streamlined Primary Controls -->
             <div class="controls-group">
+                <!-- 1. Mode Selector (Practice, Exam, Flashcard) -->
                 <div class="pill-select-wrap">
-                    <select class="custom-select" id="lang-selector" aria-label="Select Language">
-                        <option value="vi">🇻🇳 Tiếng Việt</option>
-                        <option value="en">🇬🇧 English</option>
+                    <select class="custom-select mode-select-pill" id="mode-selector" aria-label="Select Mode">
+                        <option value="practice">🎯 Luyện tập</option>
+                        <option value="exam">⏱️ Thi thử</option>
+                        <option value="flashcard">🎴 Flashcard</option>
                     </select>
                 </div>
-                <div class="pill-select-wrap">
-                    <select class="custom-select" id="mode-selector" aria-label="Select Mode">
-                        <option value="practice">🎯 Luyện tập (Practice)</option>
-                        <option value="exam">⏱️ Thi thử (Exam)</option>
-                    </select>
-                </div>
-                <div class="pill-select-wrap" id="wrap-duration-selector" title="Thời gian làm bài thi">
+
+                <!-- 2. Exam Duration Picker (Visible only during Exam Mode) -->
+                <div class="pill-select-wrap" id="wrap-duration-selector" title="Thời gian làm bài thi" style="display: none;">
                     <select class="custom-select" id="duration-selector" aria-label="Thời gian làm bài">
                         <option value="15">⏱️ 15 phút</option>
                         <option value="30">⏱️ 30 phút</option>
@@ -106,23 +106,88 @@
                         <option value="0">♾️ Không giới hạn</option>
                     </select>
                 </div>
-                <div class="pill-select-wrap">
-                    <select class="custom-select" id="theme-selector" aria-label="Select Theme">
-                        <option value="academic" selected>🎯 Slate Focus (Tập trung)</option>
-                        <option value="sepia">📖 Warm Sepia (Giấy êm mắt)</option>
-                        <option value="emerald">🌿 Sage Calm (Thảo mộc dịu)</option>
-                        <option value="cyberpunk">🌌 Nordic Dark (Đêm dịu mắt)</option>
-                        <option value="minimalist">⚪ Clean Minimalist (Tối giản)</option>
-                        <option value="playful">🍑 Soft Peach (Gam ấm nhẹ)</option>
-                    </select>
+
+                <!-- 3. Smart AI Tutor CTA Button -->
+                <button class="btn-action btn-ai-glow" id="btn-open-ai-tutor" title="Trợ lý Gia sư AI & Trích xuất đề thi từ ảnh (Gemini OCR)">
+                    🤖 <span class="btn-ai-text">Gia sư AI</span>
+                </button>
+
+                <!-- 4. Tools & Settings Menu (Progressive Disclosure Dropdown) -->
+                <div class="tools-dropdown-wrapper" id="tools-dropdown-wrap">
+                    <button class="btn-action btn-tools-trigger" id="btn-tools-toggle" title="Tiện ích & Cài đặt hệ thống" aria-haspopup="true" aria-expanded="false">
+                        ⚙️ <span class="btn-tools-text">Tiện ích</span> <span class="tools-chevron">▾</span>
+                    </button>
+
+                    <div class="tools-dropdown-menu" id="tools-dropdown-menu" role="menu">
+                        <!-- Group 1: Appearance & Locale -->
+                        <div class="tools-menu-group">
+                            <div class="tools-group-label">Giao diện & Ngôn ngữ</div>
+                            <div class="tools-menu-item">
+                                <span class="tools-item-icon">🎨</span>
+                                <div style="flex: 1;">
+                                    <label for="theme-selector" class="tools-item-title">Giao diện màu</label>
+                                    <select class="custom-select tools-subselect" id="theme-selector" aria-label="Chọn giao diện">
+                                        <option value="academic" selected>🎯 Slate Focus (Tập trung)</option>
+                                        <option value="sepia">📖 Warm Sepia (Giấy êm mắt)</option>
+                                        <option value="emerald">🌿 Sage Calm (Thảo mộc dịu)</option>
+                                        <option value="cyberpunk">🌌 Nordic Dark (Đêm dịu mắt)</option>
+                                        <option value="minimalist">⚪ Clean Minimalist (Tối giản)</option>
+                                        <option value="playful">🍑 Soft Peach (Gam ấm nhẹ)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="tools-menu-item">
+                                <span class="tools-item-icon">🌐</span>
+                                <div style="flex: 1;">
+                                    <label for="lang-selector" class="tools-item-title">Ngôn ngữ hiển thị</label>
+                                    <select class="custom-select tools-subselect" id="lang-selector" aria-label="Chọn ngôn ngữ">
+                                        <option value="vi">🇻🇳 Tiếng Việt</option>
+                                        <option value="en">🇬🇧 English</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Group 2: Exam & Question Tools -->
+                        <div class="tools-menu-group">
+                            <div class="tools-group-label">Công cụ & Soạn thảo</div>
+                            <button type="button" class="tools-menu-btn" id="btn-open-studio">
+                                <span>✏️</span> <span>Soạn & Sửa đề thi (Studio)</span>
+                            </button>
+                            <button type="button" class="tools-menu-btn" id="btn-shuffle">
+                                <span>🔀</span> <span>Đảo ngẫu nhiên đề & đáp án</span>
+                            </button>
+                            <button type="button" class="tools-menu-btn" id="btn-history-toggle">
+                                <span>📜</span> <span>Lịch sử bài thi & Đồng bộ Cloud</span>
+                            </button>
+                        </div>
+
+                        <!-- Group 3: Online Room -->
+                        <div class="tools-menu-group">
+                            <div class="tools-group-label">Phòng thi trực tuyến</div>
+                            <button type="button" class="tools-menu-btn" id="btn-host-room">
+                                <span>🌐</span> <span>Khởi tạo phòng thi (Mã PIN)</span>
+                            </button>
+                            <button type="button" class="tools-menu-btn" id="btn-room-leaderboard">
+                                <span>🏆</span> <span>Bảng xếp hạng phòng thi</span>
+                            </button>
+                        </div>
+
+                        <!-- Group 4: AI Settings -->
+                        <div class="tools-menu-group">
+                            <div class="tools-group-label">Trí tuệ nhân tạo (AI)</div>
+                            <button type="button" class="tools-menu-btn" id="btn-config-ai-key">
+                                <span>🔑</span> <span>Cài đặt Gemini API Key</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <button class="btn-action" id="btn-open-studio" title="Soạn thảo & Chỉnh sửa đề thi (Question Studio)">✏️ Soạn đề</button>
-                <button class="btn-action" id="btn-host-room" title="Khởi tạo phòng thi trực tuyến theo mã PIN">🌐 Mở phòng</button>
-                <button class="btn-action" id="btn-room-leaderboard" title="Xem Bảng Xếp Hạng phòng thi">🏆 BXH</button>
-                <button class="btn-action" id="btn-fullscreen-toggle" title="Toàn màn hình">⛶ Toàn màn hình</button>
-                <button class="btn-action" id="btn-history-toggle" title="Lịch sử bài thi & Đồng bộ">📜 Lịch sử</button>
-                <button class="btn-action" id="btn-shuffle" title="Đảo câu hỏi và đáp án">🔀 Đảo đề</button>
-                <button class="btn-action btn-danger" id="btn-reset" title="Làm mới và quay về trang nhập đề thi">🔄 Làm mới</button>
+
+                <!-- 5. Fullscreen Toggle -->
+                <button class="btn-action" id="btn-fullscreen-toggle" title="Toàn màn hình">⛶</button>
+
+                <!-- 6. Reset / New Quiz Button -->
+                <button class="btn-action btn-danger" id="btn-reset" title="Làm mới và quay về trang nhập đề thi">🔄</button>
             </div>
         </header>
 
@@ -161,6 +226,9 @@
                                     📁 <span id="txt-btn-browse">Chọn file từ thiết bị</span>
                                     <input type="file" id="file-input" accept=".txt,.docx,.doc,.pdf" style="display: none;">
                                 </label>
+                                <button type="button" class="btn-action btn-ai-ocr-trigger" id="btn-hero-ocr" style="font-weight: 600;">
+                                    📸 Quét ảnh đề (OCR AI)
+                                </button>
                                 <button type="button" class="btn-action" id="btn-open-studio-hero" style="font-weight: 600;">
                                     ✏️ Tự soạn đề thi
                                 </button>
@@ -261,6 +329,11 @@
                         <h3 style="margin-bottom: 6px; font-weight: 700;">Chào mừng bạn đến với OmniQuiz!</h3>
                         <p style="font-size: 0.95em; opacity: 0.8;">Vui lòng tải lên file đề thi của bạn ở khung phía trên, hoặc chọn một đề mẫu đa môn học để bắt đầu ôn luyện.</p>
                     </div>
+                </div>
+
+                <!-- PHASE 5: 3D FLASHCARD & SPACED REPETITION SECTION -->
+                <div id="flashcard-section" style="display: none;">
+                    <!-- Rendered by flashcard.js -->
                 </div>
             </main>
 
@@ -743,6 +816,8 @@
     <script src="js/sample-banks.js"></script>
     <script src="js/parser.js"></script>
     <script src="js/quiz-engine.js"></script>
+    <script src="js/ai-tutor.js"></script>
+    <script src="js/flashcard.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/app.js"></script>
 </body>

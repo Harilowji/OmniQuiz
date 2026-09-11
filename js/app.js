@@ -59,6 +59,11 @@
         if (selLang) selLang.value = savedLang;
         if (selMode) selMode.value = savedMode;
 
+        const wrapDur = document.getElementById('wrap-duration-selector');
+        if (wrapDur) {
+            wrapDur.style.display = savedMode === 'exam' ? 'block' : 'none';
+        }
+
         applyTheme(savedTheme);
         updateUILanguage(savedLang);
         updateResetButtonState();
@@ -124,6 +129,13 @@
         const fab = document.getElementById('btn-mobile-palette-toggle');
         if (fab) fab.style.display = 'none';
 
+        // Hide flashcard section and deactivate
+        const fcSec = document.getElementById('flashcard-section');
+        if (fcSec) fcSec.style.display = 'none';
+        if (typeof FlashcardEngine !== 'undefined') {
+            FlashcardEngine.setActive(false);
+        }
+
         // Show clean empty welcome state
         const container = document.getElementById('quiz-container');
         if (container) {
@@ -164,6 +176,62 @@
             refreshUI();
         });
 
+        // Tools Dropdown Menu toggle
+        const toolsWrap = document.getElementById('tools-dropdown-wrap');
+        const btnToolsToggle = document.getElementById('btn-tools-toggle');
+        btnToolsToggle?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toolsWrap?.classList.toggle('open');
+            const isExp = toolsWrap?.classList.contains('open');
+            btnToolsToggle.setAttribute('aria-expanded', isExp ? 'true' : 'false');
+        });
+        document.addEventListener('click', (e) => {
+            if (toolsWrap && !toolsWrap.contains(e.target)) {
+                toolsWrap.classList.remove('open');
+                btnToolsToggle?.setAttribute('aria-expanded', 'false');
+            }
+        });
+        toolsWrap?.querySelectorAll('.tools-menu-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                toolsWrap.classList.remove('open');
+                btnToolsToggle?.setAttribute('aria-expanded', 'false');
+            });
+        });
+
+        // Smart AI Tutor Trigger Buttons
+        document.getElementById('btn-open-ai-tutor')?.addEventListener('click', () => {
+            if (typeof AITutor !== 'undefined') {
+                if (!AITutor.hasApiKey()) {
+                    AITutor.openApiKeySettingsModal('Vui lòng nhập Google Gemini API Key để kích hoạt Trợ lý Gia sư AI và OCR quét đề thi.');
+                } else {
+                    AITutor.openImageOcrModal();
+                }
+            }
+        });
+
+        document.getElementById('btn-hero-ocr')?.addEventListener('click', () => {
+            if (typeof AITutor !== 'undefined') {
+                AITutor.openImageOcrModal();
+            }
+        });
+
+        document.getElementById('btn-config-ai-key')?.addEventListener('click', () => {
+            if (typeof AITutor !== 'undefined') {
+                AITutor.openApiKeySettingsModal();
+            }
+        });
+
+        // Hook when questions are generated from AI OCR
+        window.onQuestionsLoadedFromAI = (questions) => {
+            if (questions && questions.length > 0) {
+                loadExamFromQuestions(questions, 'Đề thi trích xuất từ ảnh (AI OCR)');
+                UIManager.showToast(`✓ Đã trích xuất và nạp thành công ${questions.length} câu hỏi từ ảnh!`);
+                if (QuizEngine.state.currentMode === 'flashcard' && typeof FlashcardEngine !== 'undefined') {
+                    FlashcardEngine.init(questions);
+                }
+            }
+        };
+
         // Mode selector (locked while exam is in progress to maintain test integrity)
         document.getElementById('mode-selector')?.addEventListener('change', (e) => {
             if (isExamActiveUnsubmitted()) {
@@ -177,6 +245,44 @@
             QuizEngine.setMode(mode);
             StorageManager.savePreference('mode', mode);
 
+            // Update duration selector visibility
+            const wrapDur = document.getElementById('wrap-duration-selector');
+            if (wrapDur) {
+                wrapDur.style.display = (mode === 'exam') ? 'block' : 'none';
+            }
+
+            const fcSection = document.getElementById('flashcard-section');
+            const quizContainer = document.getElementById('quiz-container');
+            const statsSection = document.getElementById('stats-section');
+            const paletteSection = document.getElementById('palette-section');
+            const fab = document.getElementById('btn-mobile-palette-toggle');
+
+            if (mode === 'flashcard') {
+                // Switch to 3D Flashcard Mode
+                if (quizContainer) quizContainer.style.display = 'none';
+                if (statsSection) statsSection.style.display = 'none';
+                if (paletteSection) paletteSection.style.display = 'none';
+                if (fab) fab.style.display = 'none';
+                if (fcSection) fcSection.style.display = 'block';
+
+                if (typeof FlashcardEngine !== 'undefined') {
+                    FlashcardEngine.init(QuizEngine.state.questions || []);
+                }
+                return;
+            } else {
+                // Switch back to Practice or Exam Mode
+                if (fcSection) fcSection.style.display = 'none';
+                if (typeof FlashcardEngine !== 'undefined') {
+                    FlashcardEngine.setActive(false);
+                }
+                if (QuizEngine.state.questions && QuizEngine.state.questions.length > 0) {
+                    if (quizContainer) quizContainer.style.display = 'block';
+                    if (statsSection) statsSection.style.display = 'block';
+                    if (paletteSection) paletteSection.style.display = 'block';
+                    if (fab) fab.style.display = 'inline-flex';
+                }
+            }
+
             // Enforced Fullscreen Prompt for Exam Mode
             if (mode === 'exam' && !document.fullscreenElement) {
                 UIManager.showFullscreenExamPrompt(
@@ -187,6 +293,7 @@
                         QuizEngine.setMode('practice');
                         StorageManager.savePreference('mode', 'practice');
                         e.target.value = 'practice';
+                        if (wrapDur) wrapDur.style.display = 'none';
                         refreshUI();
                     }
                 );
@@ -1100,21 +1207,45 @@
         if (durSelect) durSelect.value = String(dur);
 
         document.getElementById('upload-section').style.display = 'none';
-        document.getElementById('stats-section').style.display = 'block';
-        document.getElementById('palette-section').style.display = 'block';
-        const fab = document.getElementById('btn-mobile-palette-toggle');
-        if (fab) fab.style.display = 'inline-flex';
 
-        if (QuizEngine.state.currentMode === 'exam') {
-            document.body.classList.add('focus-mode');
+        if (QuizEngine.state.currentMode === 'flashcard') {
+            document.getElementById('stats-section').style.display = 'none';
+            document.getElementById('palette-section').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'none';
+            const fab = document.getElementById('btn-mobile-palette-toggle');
+            if (fab) fab.style.display = 'none';
+
+            const fcSection = document.getElementById('flashcard-section');
+            if (fcSection) fcSection.style.display = 'block';
+
+            if (typeof FlashcardEngine !== 'undefined') {
+                FlashcardEngine.init(QuizEngine.state.questions);
+            }
         } else {
-            document.body.classList.remove('focus-mode');
+            const fcSection = document.getElementById('flashcard-section');
+            if (fcSection) fcSection.style.display = 'none';
+            if (typeof FlashcardEngine !== 'undefined') {
+                FlashcardEngine.setActive(false);
+            }
+
+            document.getElementById('quiz-container').style.display = 'block';
+            document.getElementById('stats-section').style.display = 'block';
+            document.getElementById('palette-section').style.display = 'block';
+            const fab = document.getElementById('btn-mobile-palette-toggle');
+            if (fab) fab.style.display = 'inline-flex';
+
+            if (QuizEngine.state.currentMode === 'exam') {
+                document.body.classList.add('focus-mode');
+            } else {
+                document.body.classList.remove('focus-mode');
+            }
+
+            refreshUI();
+            startTimer();
         }
 
         StorageManager.saveState(QuizEngine.state);
         updateResetButtonState();
-        refreshUI();
-        startTimer();
     }
 
     function setupQuiz(rawText, isNewExam = false, initialCustomImages = null) {
@@ -1187,19 +1318,43 @@
 
         UIManager.hideSummaryModal();
 
-        document.getElementById('stats-section').style.display = 'block';
-        document.getElementById('palette-section').style.display = 'block';
-        const fab = document.getElementById('btn-mobile-palette-toggle');
-        if (fab) fab.style.display = 'inline-flex';
+        if (QuizEngine.state.currentMode === 'flashcard') {
+            document.getElementById('upload-section').style.display = 'none';
+            document.getElementById('stats-section').style.display = 'none';
+            document.getElementById('palette-section').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'none';
+            const fab = document.getElementById('btn-mobile-palette-toggle');
+            if (fab) fab.style.display = 'none';
 
-        if (QuizEngine.state.currentMode === 'exam' && !QuizEngine.state.isSubmitted) {
-            document.body.classList.add('focus-mode');
+            const fcSection = document.getElementById('flashcard-section');
+            if (fcSection) fcSection.style.display = 'block';
+
+            if (typeof FlashcardEngine !== 'undefined') {
+                FlashcardEngine.init(QuizEngine.state.questions);
+            }
         } else {
-            document.body.classList.remove('focus-mode');
+            const fcSection = document.getElementById('flashcard-section');
+            if (fcSection) fcSection.style.display = 'none';
+            if (typeof FlashcardEngine !== 'undefined') {
+                FlashcardEngine.setActive(false);
+            }
+
+            document.getElementById('quiz-container').style.display = 'block';
+            document.getElementById('stats-section').style.display = 'block';
+            document.getElementById('palette-section').style.display = 'block';
+            const fab = document.getElementById('btn-mobile-palette-toggle');
+            if (fab) fab.style.display = 'inline-flex';
+
+            if (QuizEngine.state.currentMode === 'exam' && !QuizEngine.state.isSubmitted) {
+                document.body.classList.add('focus-mode');
+            } else {
+                document.body.classList.remove('focus-mode');
+            }
+
+            refreshUI();
+            startTimer();
         }
 
-        refreshUI();
-        startTimer();
         updateResetButtonState();
     }
 
