@@ -107,13 +107,17 @@
                 </div>
                 <div class="pill-select-wrap">
                     <select class="custom-select" id="theme-selector" aria-label="Select Theme">
-                        <option value="academic">Academic Pro</option>
-                        <option value="minimalist">Minimalist</option>
-                        <option value="cyberpunk">🌌 Midnight Cyber</option>
-                        <option value="emerald">🌿 Emerald Forest</option>
-                        <option value="playful">🍭 Playful</option>
+                        <option value="academic" selected>🎯 Slate Focus (Tập trung)</option>
+                        <option value="sepia">📖 Warm Sepia (Giấy êm mắt)</option>
+                        <option value="emerald">🌿 Sage Calm (Thảo mộc dịu)</option>
+                        <option value="cyberpunk">🌌 Nordic Dark (Đêm dịu mắt)</option>
+                        <option value="minimalist">⚪ Clean Minimalist (Tối giản)</option>
+                        <option value="playful">🍑 Soft Peach (Gam ấm nhẹ)</option>
                     </select>
                 </div>
+                <button class="btn-action" id="btn-open-studio" title="Soạn thảo & Chỉnh sửa đề thi (Question Studio)">✏️ Soạn đề</button>
+                <button class="btn-action" id="btn-host-room" title="Khởi tạo phòng thi trực tuyến theo mã PIN">🌐 Mở phòng</button>
+                <button class="btn-action" id="btn-room-leaderboard" title="Xem Bảng Xếp Hạng phòng thi">🏆 BXH</button>
                 <button class="btn-action" id="btn-fullscreen-toggle" title="Toàn màn hình">⛶ Toàn màn hình</button>
                 <button class="btn-action" id="btn-history-toggle" title="Lịch sử bài thi & Đồng bộ">📜 Lịch sử</button>
                 <button class="btn-action" id="btn-shuffle" title="Đảo câu hỏi và đáp án">🔀 Đảo đề</button>
@@ -151,10 +155,15 @@
                                 <span class="fmt-badge txt">.TXT</span>
                             </div>
 
-                            <label class="btn-action btn-primary btn-upload-cta">
-                                📁 <span id="txt-btn-browse">Chọn file từ thiết bị</span>
-                                <input type="file" id="file-input" accept=".txt,.docx,.doc,.pdf" style="display: none;">
-                            </label>
+                            <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; justify-content: center;">
+                                <label class="btn-action btn-primary btn-upload-cta">
+                                    📁 <span id="txt-btn-browse">Chọn file từ thiết bị</span>
+                                    <input type="file" id="file-input" accept=".txt,.docx,.doc,.pdf" style="display: none;">
+                                </label>
+                                <button type="button" class="btn-action" id="btn-open-studio-hero" style="font-weight: 600;">
+                                    ✏️ Tự soạn đề thi
+                                </button>
+                            </div>
                             
                             <div class="dropzone-note">
                                 * File .doc cũ: Vui lòng lưu thành .docx để đọc tốt nhất
@@ -196,6 +205,25 @@
                                 <button type="button" class="subj-pill" data-subj="math_50">📐 Toán học</button>
                                 <button type="button" class="subj-pill" data-subj="physics_12">⚡ Vật lý</button>
                                 <button type="button" class="subj-pill" data-subj="sat_math">🎓 SAT Math</button>
+                            </div>
+                        </div>
+
+                        <!-- Zone 3: Join Room PIN -->
+                        <div class="join-pin-box">
+                            <div class="join-pin-header">
+                                <span class="join-pin-icon">🔑</span>
+                                <div>
+                                    <h3 class="join-pin-title">Phòng thi trực tuyến</h3>
+                                    <p class="join-pin-subtitle">Nhập mã PIN 6 số để vào thi ngay</p>
+                                </div>
+                            </div>
+                            <div class="join-pin-form">
+                                <input type="text" class="custom-select join-pin-input-big" id="input-join-pin" placeholder="MÃ PIN 6 SỐ" maxlength="10" autocomplete="off">
+                                <input type="text" class="custom-select" id="input-join-name" placeholder="Họ và tên thí sinh..." maxlength="50">
+                                <input type="text" class="custom-select" id="input-join-sbd" placeholder="Số báo danh / Lớp (tùy chọn)..." maxlength="30">
+                                <button type="button" class="btn-action btn-primary" id="btn-join-room" style="justify-content: center; padding: 10px; font-weight: 700; margin-top: 4px;">
+                                    🎯 Vào phòng thi
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -501,11 +529,214 @@
         </div>
     </div>
 
+    <!-- PHASE 3: QUESTION STUDIO MODAL -->
+    <div class="modal-overlay" id="question-studio-modal" style="display: none; z-index: 99996;">
+        <div class="modal-content studio-modal-card">
+            <!-- Studio Header -->
+            <div class="studio-header-bar">
+                <div class="studio-header-left">
+                    <span style="font-size: 1.6em;">✨</span>
+                    <div>
+                        <div class="studio-header-title">Question Studio - Biên Tập & Soạn Thảo Đề Thi</div>
+                        <div style="font-size: 0.82em; opacity: 0.75;" id="studio-total-count">0 câu hỏi</div>
+                    </div>
+                </div>
+                <div class="studio-header-actions">
+                    <button type="button" class="btn-action" id="btn-studio-quick-paste" title="Dán nhanh câu hỏi dạng văn bản hoặc OCR">📸 Dán nhanh / OCR</button>
+                    <button type="button" class="btn-action" id="btn-studio-export-json" title="Tải về file JSON">📥 Xuất JSON</button>
+                    <button type="button" class="btn-action" id="btn-studio-export-txt" title="Tải về file TXT">📄 Xuất TXT</button>
+                    <button type="button" class="btn-action btn-primary" id="btn-studio-apply" style="font-weight: 700;">💾 Áp dụng & Bắt đầu thi</button>
+                    <button type="button" class="btn-action btn-history-action btn-del" id="btn-close-studio" style="padding: 6px 12px;">✕</button>
+                </div>
+            </div>
+
+            <!-- Studio Body Split -->
+            <div class="studio-body-split">
+                <!-- Left: Question List -->
+                <div class="studio-qlist-pane">
+                    <div class="studio-qlist-tools">
+                        <input type="text" class="custom-select" id="studio-search-q" placeholder="🔍 Tìm câu hỏi...">
+                        <div style="display: flex; gap: 6px;">
+                            <button type="button" class="btn-action btn-primary" id="btn-studio-add-q" style="flex: 1; justify-content: center; font-size: 0.85em;">➕ Thêm câu mới</button>
+                        </div>
+                    </div>
+                    <div class="studio-qlist-items" id="studio-qlist">
+                        <!-- Rendered by editor.js -->
+                    </div>
+                </div>
+
+                <!-- Right: Question Detail Editor & Live Preview -->
+                <div class="studio-form-pane">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 id="studio-current-q-index" style="color: var(--heading-color); font-size: 1.15em;">Câu 1</h3>
+                        <div style="display: flex; gap: 6px;">
+                            <button type="button" class="btn-action" id="btn-studio-move-up" title="Di chuyển lên trên">▲ Lên</button>
+                            <button type="button" class="btn-action" id="btn-studio-move-down" title="Di chuyển xuống dưới">▼ Xuống</button>
+                            <button type="button" class="btn-action btn-danger" id="btn-studio-del-q" title="Xóa câu hỏi này">🗑️ Xóa câu</button>
+                        </div>
+                    </div>
+
+                    <!-- Question Content -->
+                    <div>
+                        <div class="studio-form-section-title">Nội dung câu hỏi (Hỗ trợ công thức Toán/Hóa KaTeX $...$):</div>
+                        <textarea id="studio-input-q" class="custom-select" style="width: 100%; min-height: 90px; resize: vertical; font-family: inherit; font-size: 0.95em; line-height: 1.5; padding: 10px;"></textarea>
+                    </div>
+
+                    <!-- Type & Image -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                        <div>
+                            <div class="studio-form-section-title">Loại câu hỏi:</div>
+                            <select id="studio-select-type" class="custom-select" style="width: 100%;">
+                                <option value="single">Single Choice (1 đáp án đúng)</option>
+                                <option value="multiple">Multiple Choice (Nhiều đáp án đúng)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <div class="studio-form-section-title">Ảnh minh họa (Tùy chọn):</div>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="studio-input-imgurl" class="custom-select" placeholder="URL ảnh hoặc tải file..." style="flex: 1;">
+                                <label class="btn-action" style="cursor: pointer;">
+                                    📁 Duyệt
+                                    <input type="file" id="studio-file-img" accept="image/*" style="display: none;">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Options Editor -->
+                    <div>
+                        <div class="studio-form-section-title">
+                            <span>Các phương án lựa chọn (Tick chọn đáp án đúng):</span>
+                            <button type="button" class="btn-action" id="btn-studio-add-opt" style="font-size: 0.82em; padding: 4px 10px;">➕ Thêm phương án</button>
+                        </div>
+                        <div id="studio-options-container">
+                            <!-- Rendered by editor.js -->
+                        </div>
+                    </div>
+
+                    <!-- Explanation -->
+                    <div>
+                        <div class="studio-form-section-title">Lời giải chi tiết / Giải thích:</div>
+                        <textarea id="studio-input-exp" class="custom-select" style="width: 100%; min-height: 70px; resize: vertical; font-family: inherit; font-size: 0.9em; line-height: 1.5; padding: 10px;" placeholder="Nhập lời giải thích cho câu hỏi nếu có..."></textarea>
+                    </div>
+
+                    <!-- Live KaTeX Preview -->
+                    <div>
+                        <div class="studio-form-section-title">👁️ Xem trước trực tiếp (KaTeX & Markdown Live Preview):</div>
+                        <div id="studio-preview-box">
+                            <!-- Rendered by editor.js -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PHASE 4: HOST ROOM MODAL -->
+    <div class="modal-overlay" id="host-room-modal" style="display: none; z-index: 99998;">
+        <div class="modal-content host-room-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <h3 style="color: var(--heading-color); font-size: 1.3em;">🌐 Mở Phòng Thi Trực Tuyến</h3>
+                <button type="button" class="btn-action btn-history-action btn-del" id="btn-close-host-modal" style="padding: 4px 10px;">✕</button>
+            </div>
+
+            <div id="host-room-setup-box">
+                <p style="font-size: 0.9em; opacity: 0.8; margin-bottom: 14px;">
+                    Khởi tạo phòng thi với mã PIN để thí sinh truy cập đồng thời từ bất kỳ thiết bị nào.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div>
+                        <label style="font-size: 0.85em; font-weight: 700;">Tên đề / Tiêu đề phòng thi:</label>
+                        <input type="text" class="custom-select" id="host-input-title" style="width: 100%; margin-top: 4px;" placeholder="VD: Kiểm tra 15 phút - Tin học 10">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label style="font-size: 0.85em; font-weight: 700;">Số câu hỏi:</label>
+                            <div class="custom-select" id="host-q-count" style="width: 100%; margin-top: 4px; background: var(--option-bg);">0 câu</div>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.85em; font-weight: 700;">Thời gian làm bài:</label>
+                            <select class="custom-select" id="host-select-duration" style="width: 100%; margin-top: 4px;">
+                                <option value="15">⏱️ 15 phút</option>
+                                <option value="30">⏱️ 30 phút</option>
+                                <option value="45">⏱️ 45 phút</option>
+                                <option value="60" selected>⏱️ 60 phút</option>
+                                <option value="90">⏱️ 90 phút</option>
+                                <option value="0">♾️ Không giới hạn</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9em; cursor: pointer; margin-top: 6px;">
+                            <input type="checkbox" id="host-check-anticheat" checked style="width: 18px; height: 18px; accent-color: var(--primary-color);">
+                            <span>Bật chế độ Giám sát phòng thi (Bắt buộc Toàn màn hình & khóa khi vi phạm)</span>
+                        </label>
+                    </div>
+                    <button type="button" class="btn-action btn-primary" id="btn-confirm-host" style="width: 100%; justify-content: center; padding: 12px; font-weight: 700; margin-top: 10px;">
+                        🚀 Kích hoạt & Nhận mã PIN
+                    </button>
+                </div>
+            </div>
+
+            <div id="host-room-created-box" style="display: none;">
+                <div class="host-pin-display-box">
+                    <div style="font-size: 0.9em; opacity: 0.8;">MÃ PIN PHÒNG THI</div>
+                    <div class="host-display-pin" id="host-display-pin">------</div>
+                    <p style="font-size: 0.85em; opacity: 0.8;">Cung cấp mã PIN này cho thí sinh để vào làm bài thi</p>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 12px;">
+                    <button type="button" class="btn-action btn-primary" id="btn-copy-room-pin" style="flex: 1; justify-content: center;">
+                        📋 Sao chép mã PIN
+                    </button>
+                    <button type="button" class="btn-action" id="btn-view-hosted-leaderboard" style="flex: 1; justify-content: center;">
+                        🏆 Bảng xếp hạng
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PHASE 4: ROOM LEADERBOARD MODAL -->
+    <div class="modal-overlay" id="room-leaderboard-modal" style="display: none; z-index: 99998;">
+        <div class="modal-content leaderboard-modal-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div>
+                    <h3 style="color: var(--heading-color); font-size: 1.25em;">🏆 Bảng Xếp Hạng Phòng Thi</h3>
+                    <div style="font-size: 0.85em; opacity: 0.8;">Mã PIN: <strong id="leaderboard-room-pin" style="color: var(--primary-color);">------</strong></div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn-action" id="btn-refresh-leaderboard" title="Làm mới kết quả">🔄 Làm mới</button>
+                    <button type="button" class="btn-action btn-history-action btn-del" id="btn-close-leaderboard-modal" style="padding: 4px 10px;">✕</button>
+                </div>
+            </div>
+
+            <div style="overflow-x: auto; max-height: 60vh;">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center; width: 60px;">Hạng</th>
+                            <th>Thí sinh</th>
+                            <th>SBD / Lớp</th>
+                            <th>Điểm</th>
+                            <th>Thời gian</th>
+                            <th style="text-align: center;">Vi phạm</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-tbody">
+                        <!-- Populated by RoomManager -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <!-- Modular JavaScript Files -->
     <script src="js/i18n.js"></script>
     <script src="js/audio.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/supabase-client.js"></script>
+    <script src="js/room-manager.js"></script>
+    <script src="js/editor.js"></script>
     <script src="js/confetti.js"></script>
     <script src="js/sample-banks.js"></script>
     <script src="js/parser.js"></script>

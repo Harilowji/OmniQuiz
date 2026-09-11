@@ -93,6 +93,12 @@
         StorageManager.clearCurrentExam();
         StorageManager.clearState();
         if (timerInterval) clearInterval(timerInterval);
+        if (window.RoomManager) {
+            RoomManager.clearActiveSession();
+        }
+        const pinInp = document.getElementById('input-join-pin');
+        if (pinInp) pinInp.value = '';
+
         QuizEngine.state.questions = [];
         QuizEngine.state.userAnswers = {};
         QuizEngine.state.evaluatedQuestions = new Set();
@@ -370,6 +376,121 @@
                     document.getElementById('supabase-input-key').value = '';
                     UIManager.showToast('Đã gỡ cấu hình Supabase!');
                 }
+            }
+        });
+
+        // Phase 3: Question Studio (Interactive Preview & Editor)
+        const handleOpenStudio = () => {
+            const current = (QuizEngine.state.questions && QuizEngine.state.questions.length > 0)
+                ? QuizEngine.state.questions
+                : null;
+            if (window.QuestionStudio) {
+                QuestionStudio.open(current, (updatedQuestions) => {
+                    loadExamFromQuestions(updatedQuestions, 'Đề thi tùy chỉnh (Question Studio)');
+                });
+            }
+        };
+
+        document.getElementById('btn-open-studio')?.addEventListener('click', handleOpenStudio);
+        document.getElementById('btn-open-studio-hero')?.addEventListener('click', handleOpenStudio);
+
+        // Phase 4: Host Room & Leaderboard
+        document.getElementById('btn-host-room')?.addEventListener('click', () => {
+            if (!QuizEngine.state.questions || QuizEngine.state.questions.length === 0) {
+                alert(QuizEngine.state.currentLang === 'vi'
+                    ? 'Chưa có đề thi nào trong hệ thống! Vui lòng tải đề thi hoặc chọn đề mẫu trước khi mở phòng.'
+                    : 'No exam loaded! Please load a quiz first before hosting a room.');
+                return;
+            }
+            if (window.RoomManager) {
+                RoomManager.openHostModal(QuizEngine.state.questions);
+            }
+        });
+
+        document.getElementById('btn-confirm-host')?.addEventListener('click', async () => {
+            const title = document.getElementById('host-input-title')?.value;
+            const durVal = document.getElementById('host-select-duration')?.value || '60';
+            const isAnticheat = document.getElementById('host-check-anticheat')?.checked !== false;
+
+            if (window.RoomManager) {
+                const res = await RoomManager.hostExamRoom({
+                    title,
+                    questions: QuizEngine.state.questions,
+                    durationMinutes: parseInt(durVal, 10),
+                    isAnticheat
+                });
+
+                if (res) {
+                    const pinEl = document.getElementById('host-display-pin');
+                    if (pinEl) pinEl.innerText = res.roomPin;
+                    const setupBox = document.getElementById('host-room-setup-box');
+                    const createdBox = document.getElementById('host-room-created-box');
+                    if (setupBox) setupBox.style.display = 'none';
+                    if (createdBox) createdBox.style.display = 'block';
+                    UIManager.showToast(`✓ Đã kích hoạt phòng thi! Mã PIN: ${res.roomPin}`);
+                }
+            }
+        });
+
+        document.getElementById('btn-room-leaderboard')?.addEventListener('click', () => {
+            if (window.RoomManager) {
+                RoomManager.openLeaderboardModal();
+            }
+        });
+
+        document.getElementById('btn-view-hosted-leaderboard')?.addEventListener('click', () => {
+            const pinEl = document.getElementById('host-display-pin');
+            if (window.RoomManager && pinEl && pinEl.innerText) {
+                RoomManager.openLeaderboardModal(pinEl.innerText);
+            }
+        });
+
+        // Phase 4: Join Room PIN
+        document.getElementById('btn-join-room')?.addEventListener('click', async () => {
+            const pinInput = document.getElementById('input-join-pin')?.value?.trim();
+            const nameInput = document.getElementById('input-join-name')?.value?.trim();
+            const sbdInput = document.getElementById('input-join-sbd')?.value?.trim();
+
+            if (!pinInput) {
+                alert(QuizEngine.state.currentLang === 'vi' ? 'Vui lòng nhập Mã PIN phòng thi!' : 'Please enter Room PIN!');
+                return;
+            }
+            if (!nameInput) {
+                alert(QuizEngine.state.currentLang === 'vi' ? 'Vui lòng nhập Họ và tên thí sinh!' : 'Please enter student name!');
+                return;
+            }
+
+            UIManager.showLoadingModal('Đang kết nối vào phòng thi...', `Mã PIN: ${pinInput}`);
+            UIManager.updateLoadingProgress(40, 'Đang xác thực phòng thi...');
+
+            if (window.RoomManager) {
+                const room = await RoomManager.fetchRoomByPin(pinInput);
+                UIManager.hideLoadingModal();
+
+                if (!room || !room.questions || room.questions.length === 0) {
+                    alert(QuizEngine.state.currentLang === 'vi'
+                        ? `Không tìm thấy phòng thi với mã PIN "${pinInput}". Vui lòng kiểm tra lại!`
+                        : `Room not found with PIN "${pinInput}". Please try again!`);
+                    return;
+                }
+
+                RoomManager.setActiveSession({
+                    roomPin: room.id,
+                    studentName: nameInput,
+                    studentId: sbdInput,
+                    title: room.title
+                });
+
+                // Load questions into exam
+                loadExamFromQuestions(room.questions, room.title || `Phòng thi ${room.id}`, room.durationMinutes);
+
+                // Switch to exam mode
+                const modeSelect = document.getElementById('mode-selector');
+                if (modeSelect) modeSelect.value = 'exam';
+                QuizEngine.state.currentMode = 'exam';
+                document.body.classList.add('focus-mode');
+
+                UIManager.showToast(`🎯 Chào mừng ${nameInput} đã vào phòng thi ${room.id}!`);
             }
         });
 
@@ -949,6 +1070,50 @@
         }
     }
 
+    function loadExamFromQuestions(questions, title = 'Bài thi trắc nghiệm', customDuration = null) {
+        if (!Array.isArray(questions) || questions.length === 0) return;
+
+        let rawText = '';
+        questions.forEach((q, idx) => {
+            rawText += `Câu ${idx + 1}: ${q.q}\n`;
+            (q.options || []).forEach((opt, optIdx) => {
+                rawText += `${String.fromCharCode(65 + optIdx)}. ${opt}\n`;
+            });
+            if (q.answers && q.answers.length > 0) {
+                rawText += `Đáp án: ${q.answers.map(a => String.fromCharCode(65 + a)).join(', ')}\n`;
+            }
+            if (q.explanation) rawText += `Lời giải: ${q.explanation}\n`;
+            rawText += '\n';
+        });
+
+        StorageManager.saveCurrentExam(rawText);
+        StorageManager.clearState();
+
+        QuizEngine.setQuestions(questions);
+
+        const dur = customDuration !== null ? customDuration : (parseInt(document.getElementById('duration-selector')?.value || '60', 10));
+        QuizEngine.setExamDuration(dur);
+        const durSelect = document.getElementById('duration-selector');
+        if (durSelect) durSelect.value = String(dur);
+
+        document.getElementById('upload-section').style.display = 'none';
+        document.getElementById('stats-section').style.display = 'block';
+        document.getElementById('palette-section').style.display = 'block';
+        const fab = document.getElementById('btn-mobile-palette-toggle');
+        if (fab) fab.style.display = 'inline-flex';
+
+        if (QuizEngine.state.currentMode === 'exam') {
+            document.body.classList.add('focus-mode');
+        } else {
+            document.body.classList.remove('focus-mode');
+        }
+
+        StorageManager.saveState(QuizEngine.state);
+        updateResetButtonState();
+        refreshUI();
+        startTimer();
+    }
+
     function setupQuiz(rawText, isNewExam = false, initialCustomImages = null) {
         const parsed = QuestionParser.parse(rawText);
         if (parsed.length === 0) {
@@ -1290,6 +1455,12 @@
             };
 
             await StorageManager.saveExamToHistory(record);
+
+            // Phase 4: Submit to Online Exam Room if active room session
+            if (window.RoomManager && RoomManager.getActiveSession()) {
+                await RoomManager.submitRoomResult(record);
+                UIManager.showToast('✓ Điểm thi của bạn đã được lưu vào Bảng Xếp Hạng phòng thi!');
+            }
         } catch (e) {
             console.warn('[Storage] Error saving exam to history:', e);
         }

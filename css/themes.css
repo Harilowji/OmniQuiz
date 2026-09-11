@@ -1,6 +1,9 @@
-/* themes.css - Design Systems & Color Palettes */
+/* themes.css - Design Systems & Eye-Comfort Color Palettes
+ * Specifically engineered for prolonged cognitive focus, reduced eye fatigue,
+ * and ergonomic contrast compliance (WCAG AAA).
+ */
 
-/* Base Shared Pseudo-Element for Dynamic Animated Backgrounds */
+/* Base Shared Pseudo-Element for Calming Ambient Backgrounds */
 body {
     position: relative;
     min-height: 100vh;
@@ -15,236 +18,239 @@ body::before {
     height: 100vh;
     z-index: -1;
     pointer-events: none;
-    transition: opacity 0.5s ease;
-    will-change: background-position, transform;
+    transition: opacity 0.4s ease, background 0.4s ease;
 }
 
-/* Glassmorphism backdrop effect for all themes */
+/* Glassmorphism & Elevation for Core Panels */
 .top-navbar,
 .question-block,
 .palette-sidebar,
 .modal-content,
-.sticky-stats-bar {
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+.sticky-stats-bar,
+.upload-studio-card {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
-/* 1. Minimalist Theme (Clean, Monochromatic, Inter) */
-:root, body.theme-minimalist {
+/* ==========================================================================
+   1. Slate Focus Theme (Default: Modern Precision, Crisp Indigo, WCAG AAA)
+   ========================================================================== */
+:root, body.theme-academic {
     --bg-gradient: #f8fafc;
-    --text-color: #334155;
+    --text-color: #0f172a;
     --heading-color: #0f172a;
-    --card-bg: rgba(255, 255, 255, 0.90);
+    --card-bg: rgba(255, 255, 255, 0.96);
     --card-border: #e2e8f0;
-    --card-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
-    --option-bg: rgba(255, 255, 255, 0.85);
-    --option-hover-bg: #f8fafc;
+    --card-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.03);
+    --option-bg: #f8fafc;
+    --option-hover-bg: #f1f5f9;
     --option-border: #cbd5e1;
-    --primary-color: #3b82f6;
+    --primary-color: #2563eb;
     --primary-hover: #1d4ed8;
-    --exp-bg: rgba(241, 245, 249, 0.95);
-    --exp-border: #64748b;
-    --stats-bg: rgba(255, 255, 255, 0.92);
+    --exp-bg: #f8fafc;
+    --exp-border: #3b82f6;
+    --stats-bg: rgba(255, 255, 255, 0.95);
     --correct-bg: #f0fdf4;
-    --correct-border: #86efac;
+    --correct-border: #22c55e;
+    --correct-text: #15803d;
+    --incorrect-bg: #fef2f2;
+    --incorrect-border: #ef4444;
+    --incorrect-text: #b91c1c;
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --border-radius: 14px;
+}
+
+body.theme-academic::before {
+    background-color: #f8fafc;
+    background-image:
+        radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.05) 0px, transparent 50%);
+}
+
+/* ==========================================================================
+   2. Warm Sepia Theme (Kindle/Paper Book Inspiration: Eye Comfort for Long Sessions)
+   ========================================================================== */
+body.theme-sepia {
+    --bg-gradient: #fbf8f2;
+    --text-color: #292524;
+    --heading-color: #1c1917;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --card-border: #e7dfd5;
+    --card-shadow: 0 4px 18px -2px rgba(68, 58, 52, 0.06);
+    --option-bg: #fcfbf8;
+    --option-hover-bg: #f5f0e6;
+    --option-border: #dcd3c5;
+    --primary-color: #b45309;
+    --primary-hover: #92400e;
+    --exp-bg: #fcfbf8;
+    --exp-border: #d97706;
+    --stats-bg: rgba(255, 255, 255, 0.95);
+    --correct-bg: #f0fdf4;
+    --correct-border: #16a34a;
     --correct-text: #166534;
     --incorrect-bg: #fef2f2;
-    --incorrect-border: #fca5a5;
+    --incorrect-border: #dc2626;
     --incorrect-text: #991b1b;
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --border-radius: 14px;
+}
+
+body.theme-sepia::before {
+    background-color: #fbf8f2;
+    background-image:
+        radial-gradient(at 10% 10%, rgba(180, 83, 9, 0.04) 0px, transparent 50%),
+        radial-gradient(at 90% 90%, rgba(217, 119, 6, 0.04) 0px, transparent 50%);
+}
+
+/* ==========================================================================
+   3. Sage Calm Theme (Soft Herbal Mint: Stress Relief & Heart-Rate Calming)
+   ========================================================================== */
+body.theme-emerald {
+    --bg-gradient: #f3f6f4;
+    --text-color: #142820;
+    --heading-color: #0b1e16;
+    --card-bg: rgba(255, 255, 255, 0.96);
+    --card-border: #d1ded7;
+    --card-shadow: 0 4px 20px -2px rgba(20, 40, 32, 0.06);
+    --option-bg: #f7faf8;
+    --option-hover-bg: #eaf2ee;
+    --option-border: #bfd4c9;
+    --primary-color: #059669;
+    --primary-hover: #047857;
+    --exp-bg: #f7faf8;
+    --exp-border: #10b981;
+    --stats-bg: rgba(255, 255, 255, 0.95);
+    --correct-bg: #ecfdf5;
+    --correct-border: #10b981;
+    --correct-text: #065f46;
+    --incorrect-bg: #fff1f2;
+    --incorrect-border: #f43f5e;
+    --incorrect-text: #9f1239;
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --border-radius: 14px;
+}
+
+body.theme-emerald::before {
+    background-color: #f3f6f4;
+    background-image:
+        radial-gradient(at 15% 15%, rgba(5, 150, 105, 0.05) 0px, transparent 50%),
+        radial-gradient(at 85% 85%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+}
+
+/* ==========================================================================
+   4. Nordic Dark Theme (Deep Navy Slate: Soothing Low-Light Exam Mode)
+   ========================================================================== */
+body.theme-cyberpunk {
+    --bg-gradient: #0b0f19;
+    --text-color: #f1f5f9;
+    --heading-color: #38bdf8;
+    --card-bg: rgba(17, 24, 39, 0.94);
+    --card-border: rgba(56, 189, 248, 0.22);
+    --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+    --option-bg: rgba(31, 41, 55, 0.85);
+    --option-hover-bg: rgba(43, 56, 75, 0.95);
+    --option-border: rgba(148, 163, 184, 0.28);
+    --primary-color: #38bdf8;
+    --primary-hover: #0284c7;
+    --exp-bg: rgba(17, 24, 39, 0.96);
+    --exp-border: #6366f1;
+    --stats-bg: rgba(17, 24, 39, 0.94);
+    --correct-bg: rgba(6, 78, 59, 0.55);
+    --correct-border: #10b981;
+    --correct-text: #6ee7b7;
+    --incorrect-bg: rgba(127, 29, 29, 0.55);
+    --incorrect-border: #ef4444;
+    --incorrect-text: #fca5a5;
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --border-radius: 14px;
+}
+
+body.theme-cyberpunk::before {
+    background-color: #0b0f19;
+    background-image:
+        radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.10) 0px, transparent 40%),
+        radial-gradient(circle at 90% 90%, rgba(99, 102, 241, 0.10) 0px, transparent 40%);
+}
+
+body.theme-cyberpunk .top-navbar,
+body.theme-cyberpunk .question-block,
+body.theme-cyberpunk .palette-sidebar,
+body.theme-cyberpunk .upload-studio-card {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+body.theme-cyberpunk .option:hover {
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+    border-color: var(--primary-color);
+}
+
+/* ==========================================================================
+   5. Clean Minimalist Theme (Monochrome Studio, Pure Focus)
+   ========================================================================== */
+body.theme-minimalist {
+    --bg-gradient: #fafafa;
+    --text-color: #18181b;
+    --heading-color: #09090b;
+    --card-bg: rgba(255, 255, 255, 0.96);
+    --card-border: #e4e4e7;
+    --card-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    --option-bg: #fafafa;
+    --option-hover-bg: #f4f4f5;
+    --option-border: #d4d4d8;
+    --primary-color: #18181b;
+    --primary-hover: #27272a;
+    --exp-bg: #f4f4f5;
+    --exp-border: #71717a;
+    --stats-bg: rgba(255, 255, 255, 0.96);
+    --correct-bg: #f0fdf4;
+    --correct-border: #22c55e;
+    --correct-text: #15803d;
+    --incorrect-bg: #fef2f2;
+    --incorrect-border: #ef4444;
+    --incorrect-text: #b91c1c;
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --border-radius: 12px;
 }
 
 body.theme-minimalist::before {
-    background-color: #f8fafc;
+    background-color: #fafafa;
     background-image:
-        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(56, 189, 248, 0.12) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.10) 0px, transparent 50%),
-        radial-gradient(at 0% 100%, rgba(14, 165, 233, 0.10) 0px, transparent 50%);
-    background-size: 200% 200%;
-    animation: minimalistFlow 22s ease-in-out infinite alternate;
+        radial-gradient(at 0% 0%, rgba(24, 24, 27, 0.03) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(24, 24, 27, 0.03) 0px, transparent 50%);
 }
 
-/* 2. Academic Pro Theme (Modern Precision, Clean Sans, Elegant Indigo, Smooth Elevation) */
-body.theme-academic {
-    --bg-gradient: #f8fafc;
-    --text-color: #1e293b;
-    --heading-color: #0f172a;
-    --card-bg: rgba(255, 255, 255, 0.92);
-    --card-border: #e2e8f0;
-    --card-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.08);
-    --option-bg: rgba(255, 255, 255, 0.85);
-    --option-hover-bg: #f1f5f9;
-    --option-border: #cbd5e1;
-    --primary-color: #4f46e5;
-    --primary-hover: #4338ca;
-    --exp-bg: rgba(248, 250, 252, 0.95);
-    --exp-border: #6366f1;
-    --stats-bg: rgba(255, 255, 255, 0.94);
-    --correct-bg: #f0fdf4;
-    --correct-border: #4ade80;
-    --correct-text: #14532d;
-    --incorrect-bg: #fef2f2;
-    --incorrect-border: #f87171;
-    --incorrect-text: #7f1d1d;
+/* ==========================================================================
+   6. Soft Peach Theme (Warm Pastel Studio, Gentle & Welcoming)
+   ========================================================================== */
+body.theme-playful {
+    --bg-gradient: #fffbf8;
+    --text-color: #37302f;
+    --heading-color: #c2410c;
+    --card-bg: rgba(255, 255, 255, 0.96);
+    --card-border: #fed7aa;
+    --card-shadow: 0 4px 20px -2px rgba(234, 88, 12, 0.06);
+    --option-bg: #fffbf8;
+    --option-hover-bg: #ffedd5;
+    --option-border: #fdba74;
+    --primary-color: #ea580c;
+    --primary-hover: #c2410c;
+    --exp-bg: #fff7ed;
+    --exp-border: #ea580c;
+    --stats-bg: rgba(255, 255, 255, 0.95);
+    --correct-bg: #ecfdf5;
+    --correct-border: #10b981;
+    --correct-text: #065f46;
+    --incorrect-bg: #fff1f2;
+    --incorrect-border: #f43f5e;
+    --incorrect-text: #9f1239;
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --border-radius: 16px;
 }
 
-body.theme-academic::before {
-    background-color: #fafaf8;
-    background-image:
-        linear-gradient(rgba(30, 58, 138, 0.045) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(30, 58, 138, 0.045) 1px, transparent 1px),
-        radial-gradient(circle at 15% 20%, rgba(30, 58, 138, 0.06), transparent 50%),
-        radial-gradient(circle at 85% 80%, rgba(14, 165, 233, 0.06), transparent 50%);
-    background-size: 32px 32px, 32px 32px, 100% 100%, 100% 100%;
-    animation: academicGridDrift 45s linear infinite;
-}
-
-/* 3. Midnight Cyber Theme (Modern Deep Obsidian, Neon Cyan & Indigo Accents, Ultra-Readable Inter) */
-body.theme-cyberpunk {
-    --bg-gradient: #080c16;
-    --text-color: #f1f5f9;
-    --heading-color: #38bdf8;
-    --card-bg: rgba(15, 23, 42, 0.84);
-    --card-border: rgba(56, 189, 248, 0.28);
-    --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 16px rgba(56, 189, 248, 0.12);
-    --option-bg: rgba(30, 41, 59, 0.72);
-    --option-hover-bg: rgba(51, 65, 85, 0.85);
-    --option-border: rgba(100, 116, 139, 0.45);
-    --primary-color: #38bdf8;
-    --primary-hover: #0284c7;
-    --exp-bg: rgba(15, 23, 42, 0.95);
-    --exp-border: #6366f1;
-    --stats-bg: rgba(15, 23, 42, 0.88);
-    --correct-bg: rgba(6, 78, 59, 0.65);
-    --correct-border: #10b981;
-    --correct-text: #6ee7b7;
-    --incorrect-bg: rgba(127, 29, 29, 0.65);
-    --incorrect-border: #ef4444;
-    --incorrect-text: #fca5a5;
-    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --border-radius: 12px;
-}
-
-body.theme-cyberpunk::before {
-    background-color: #080c16;
-    background-image:
-        radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.18), transparent 45%),
-        radial-gradient(circle at 85% 85%, rgba(99, 102, 241, 0.18), transparent 45%),
-        radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.10), transparent 50%),
-        linear-gradient(rgba(56, 189, 248, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
-    background-size: 100% 100%, 100% 100%, 100% 100%, 36px 36px, 36px 36px;
-    animation: midnightDrift 30s ease-in-out infinite alternate;
-}
-
-body.theme-cyberpunk .top-navbar,
-body.theme-cyberpunk .question-block,
-body.theme-cyberpunk .palette-sidebar {
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-}
-
-body.theme-cyberpunk .option:hover {
-    box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
-    border-color: var(--primary-color);
-}
-
-/* 4. Emerald Forest Theme (Deep Forest Obsidian, Mint & Emerald, Relaxing Eye Comfort) */
-body.theme-emerald {
-    --bg-gradient: #04140e;
-    --text-color: #ecfdf5;
-    --heading-color: #34d399;
-    --card-bg: rgba(6, 32, 22, 0.85);
-    --card-border: rgba(16, 185, 129, 0.3);
-    --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 16px rgba(16, 185, 129, 0.1);
-    --option-bg: rgba(10, 46, 32, 0.72);
-    --option-hover-bg: rgba(16, 62, 44, 0.85);
-    --option-border: rgba(52, 211, 153, 0.35);
-    --primary-color: #10b981;
-    --primary-hover: #059669;
-    --exp-bg: rgba(6, 32, 22, 0.95);
-    --exp-border: #34d399;
-    --stats-bg: rgba(6, 32, 22, 0.88);
-    --correct-bg: rgba(6, 78, 59, 0.65);
-    --correct-border: #34d399;
-    --correct-text: #a7f3d0;
-    --incorrect-bg: rgba(127, 29, 29, 0.65);
-    --incorrect-border: #f87171;
-    --incorrect-text: #fecaca;
-    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --border-radius: 12px;
-}
-
-body.theme-emerald::before {
-    background-color: #04140e;
-    background-image:
-        radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.18), transparent 50%),
-        radial-gradient(circle at 90% 80%, rgba(5, 150, 105, 0.18), transparent 50%),
-        radial-gradient(circle at 50% 10%, rgba(52, 211, 153, 0.10), transparent 45%);
-    background-size: 150% 150%;
-    animation: emeraldFlow 25s ease-in-out infinite alternate;
-}
-
-body.theme-emerald .top-navbar,
-body.theme-emerald .question-block,
-body.theme-emerald .palette-sidebar {
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-}
-
-body.theme-emerald .option:hover {
-    box-shadow: 0 0 16px rgba(52, 211, 153, 0.25);
-    border-color: var(--primary-color);
-}
-
-/* 4. Playful Theme (Pastels, Rounded 3D, Quicksand) */
-body.theme-playful {
-    --bg-gradient: #fff1f5;
-    --text-color: #4a3834;
-    --heading-color: #f43f5e;
-    --card-bg: rgba(255, 255, 255, 0.92);
-    --card-border: #fecdd3;
-    --card-shadow: 0 8px 0px #fecdd3;
-    --option-bg: rgba(255, 255, 255, 0.95);
-    --option-hover-bg: #fff1f2;
-    --option-border: #fbcfe8;
-    --primary-color: #f43f5e;
-    --primary-hover: #e11d48;
-    --exp-bg: rgba(255, 241, 242, 0.95);
-    --exp-border: #f43f5e;
-    --stats-bg: rgba(255, 255, 255, 0.92);
-    --correct-bg: #ecfdf5;
-    --correct-border: #6ee7b7;
-    --correct-text: #065f46;
-    --incorrect-bg: #fff1f2;
-    --incorrect-border: #fda4af;
-    --incorrect-text: #9f1239;
-    --font-family: 'Quicksand', -apple-system, cursive, sans-serif;
-    --border-radius: 24px;
-}
-
 body.theme-playful::before {
-    background-color: #fff1f5;
+    background-color: #fffbf8;
     background-image:
-        radial-gradient(circle at 20% 20%, rgba(255, 182, 193, 0.55) 0%, transparent 45%),
-        radial-gradient(circle at 80% 80%, rgba(167, 243, 208, 0.55) 0%, transparent 45%),
-        radial-gradient(circle at 85% 20%, rgba(186, 230, 253, 0.55) 0%, transparent 45%),
-        radial-gradient(circle at 15% 85%, rgba(254, 215, 170, 0.55) 0%, transparent 45%);
-    background-size: 130% 130%;
-    animation: playfulFloat 14s ease-in-out infinite alternate;
-}
-
-body.theme-playful .option {
-    box-shadow: 0 4px 0 var(--option-border);
-}
-body.theme-playful .option:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 0 var(--primary-color);
-}
-body.theme-playful .option.selected {
-    transform: translateY(2px);
-    box-shadow: 0 2px 0 var(--primary-color);
+        radial-gradient(circle at 10% 10%, rgba(251, 146, 60, 0.06) 0px, transparent 45%),
+        radial-gradient(circle at 90% 90%, rgba(254, 215, 170, 0.06) 0px, transparent 45%);
 }

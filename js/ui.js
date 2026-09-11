@@ -800,12 +800,44 @@ const UIManager = (() => {
             });
         }
 
+        const studioModal = document.getElementById('question-studio-modal');
+        if (studioModal) {
+            studioModal.addEventListener('click', (e) => {
+                if (e.target === studioModal && window.QuestionStudio) {
+                    QuestionStudio.close();
+                }
+            });
+        }
+
+        const hostModal = document.getElementById('host-room-modal');
+        if (hostModal) {
+            hostModal.addEventListener('click', (e) => {
+                if (e.target === hostModal) {
+                    hostModal.style.display = 'none';
+                }
+            });
+        }
+
+        const lbModal = document.getElementById('room-leaderboard-modal');
+        if (lbModal) {
+            lbModal.addEventListener('click', (e) => {
+                if (e.target === lbModal) {
+                    lbModal.style.display = 'none';
+                }
+            });
+        }
+
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeLightbox();
                 hideSummaryModal();
                 hideHistoryModal();
                 hideSubmitConfirmModal();
+                if (window.QuestionStudio) QuestionStudio.close();
+                const hModal = document.getElementById('host-room-modal');
+                if (hModal) hModal.style.display = 'none';
+                const lModal = document.getElementById('room-leaderboard-modal');
+                if (lModal) lModal.style.display = 'none';
             }
         });
 
