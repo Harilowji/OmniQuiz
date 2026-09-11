@@ -26,7 +26,16 @@
         }
     </script>
 
-    <!-- MathJax 3 Configuration with mhchem for Chemistry & Physics -->
+    <!-- KaTeX Fast Math & Chemistry (mhchem) Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/mhchem.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Supabase BaaS Client for Cloud Sync & PostgreSQL -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- MathJax 3 Configuration with mhchem for Chemistry & Physics (Secondary Fallback) -->
     <script>
         window.MathJax = {
             loader: { load: ['[tex]/mhchem'] },
@@ -106,6 +115,7 @@
                     </select>
                 </div>
                 <button class="btn-action" id="btn-fullscreen-toggle" title="Toàn màn hình">⛶ Toàn màn hình</button>
+                <button class="btn-action" id="btn-history-toggle" title="Lịch sử bài thi & Đồng bộ">📜 Lịch sử</button>
                 <button class="btn-action" id="btn-shuffle" title="Đảo câu hỏi và đáp án">🔀 Đảo đề</button>
                 <button class="btn-action btn-danger" id="btn-reset" title="Làm mới và quay về trang nhập đề thi">🔄 Làm mới</button>
             </div>
@@ -348,10 +358,110 @@
         </div>
     </div>
 
+    <!-- ENFORCED FULLSCREEN LOCKOUT OVERLAY -->
+    <div class="fullscreen-lockout-backdrop" id="fullscreen-lockout-modal" style="display: none;">
+        <div class="fullscreen-lockout-card">
+            <div class="lockout-icon">🚨</div>
+            <h2 class="lockout-title">BẠN ĐÃ THOÁT TOÀN MÀN HÌNH!</h2>
+            <p class="lockout-desc">
+                Hệ thống phát hiện bạn vừa rời chế độ Toàn màn hình trong lúc làm bài thi.
+                Bài thi tạm thời bị tạm dừng để bảo vệ tính liêm chính. Vui lòng quay lại toàn màn hình ngay để tiếp tục!
+            </p>
+            <div class="lockout-badge-pill" id="lockout-violation-badge">Số lần vi phạm: 1/3</div>
+            <button class="btn-return-fullscreen" id="btn-lockout-return">
+                ⛶ Quay lại Toàn màn hình để tiếp tục làm bài
+            </button>
+        </div>
+    </div>
+
+    <!-- FULLSCREEN EXAM START PROMPT MODAL -->
+    <div class="modal-overlay" id="fullscreen-prompt-modal" style="display: none; z-index: 99999;">
+        <div class="modal-content anticheat-modal-card" style="max-width: 480px;">
+            <div style="font-size: 3.2em; margin-bottom: 8px;">🛡️</div>
+            <h2 style="color: var(--primary-color); margin-bottom: 10px;">Phòng Thi Chuẩn Hóa CBT</h2>
+            <p style="font-size: 0.95em; opacity: 0.9; margin-bottom: 16px; line-height: 1.6;">
+                Chế độ <strong>Thi Thử (Exam Mode)</strong> yêu cầu kích hoạt <strong>Toàn màn hình bắt buộc</strong>.
+                Mọi hành vi thoát màn hình, chuyển tab hoặc mở ứng dụng ngoài đều sẽ bị hệ thống ghi nhận vi phạm!
+            </p>
+            <div style="display: flex; gap: 10px; width: 100%;">
+                <button class="btn-action btn-primary" id="btn-prompt-start-fullscreen" style="flex: 1; padding: 12px; font-weight: 700; justify-content: center;">
+                    ⛶ Vào Toàn màn hình & Bắt đầu
+                </button>
+                <button class="btn-action" id="btn-prompt-cancel-fullscreen" style="padding: 12px;">
+                    Hủy bỏ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXAM HISTORY & BAAS MODAL -->
+    <div class="modal-overlay" id="history-modal" style="display: none; z-index: 99998;">
+        <div class="modal-content history-modal-card">
+            <div class="history-modal-header">
+                <div>
+                    <h2 style="margin: 0; color: var(--heading-color); font-size: 1.3em;">📜 Lịch Sử Bài Thi & Thống Kê</h2>
+                    <p style="margin: 4px 0 0; font-size: 0.85em; opacity: 0.75;">Lưu trữ bài thi cục bộ (IndexedDB) & Tự động đồng bộ Supabase Cloud</p>
+                </div>
+                <button class="btn-action btn-history-action btn-del" id="btn-close-history" style="border-radius: 50%; width: 34px; height: 34px; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 1.1em;">✕</button>
+            </div>
+
+            <div class="history-stats-bar">
+                <div class="history-stat-box">
+                    <div class="history-stat-num" id="hist-stat-total">0</div>
+                    <div class="history-stat-lbl">Bài thi đã làm</div>
+                </div>
+                <div class="history-stat-box">
+                    <div class="history-stat-num" id="hist-stat-avg">0.0</div>
+                    <div class="history-stat-lbl">Điểm trung bình (/10)</div>
+                </div>
+                <div class="history-stat-box">
+                    <div class="history-stat-num" id="hist-stat-best">0</div>
+                    <div class="history-stat-lbl">Điểm cao nhất (/100)</div>
+                </div>
+            </div>
+
+            <div class="history-tabs-nav">
+                <button class="history-tab-btn active" id="tab-btn-hist-list">📋 Danh sách bài thi (<span id="hist-count-pill">0</span>)</button>
+                <button class="history-tab-btn" id="tab-btn-hist-cloud">☁️ Supabase Cloud Sync (BaaS)</button>
+            </div>
+
+            <div id="hist-view-list" class="history-list-container">
+                <!-- Injected via JavaScript -->
+            </div>
+
+            <div id="hist-view-cloud" class="supabase-config-card" style="display: none;">
+                <h4 style="margin-top: 0; margin-bottom: 8px;">☁️ Tích Hợp Supabase BaaS (PostgreSQL Serverless)</h4>
+                <p style="font-size: 0.85em; opacity: 0.8; margin-bottom: 14px; line-height: 1.5;">
+                    Kết nối tài khoản Supabase để tự động sao lưu và đồng bộ toàn bộ lịch sử thi lên cơ sở dữ liệu đám mây.
+                </p>
+                <div class="supabase-form-group">
+                    <label>Supabase Project URL</label>
+                    <input type="text" id="supabase-input-url" class="supabase-input" placeholder="https://xyzcompany.supabase.co">
+                </div>
+                <div class="supabase-form-group">
+                    <label>Supabase Anon Public API Key</label>
+                    <input type="password" id="supabase-input-key" class="supabase-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap;">
+                    <button class="btn-action btn-primary" id="btn-save-supabase">💾 Lưu cấu hình & Kết nối</button>
+                    <button class="btn-action" id="btn-sync-all-supabase">☁️ Đồng bộ ngay lên Cloud</button>
+                    <button class="btn-action btn-history-action btn-del" id="btn-clear-supabase">✕ Gỡ kết nối</button>
+                </div>
+                <div id="supabase-status-pill" style="margin-top: 12px; font-size: 0.88em; font-weight: 600;"></div>
+            </div>
+
+            <div style="margin-top: 14px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--card-border); padding-top: 12px;">
+                <button class="btn-action btn-history-action btn-del" id="btn-clear-all-history">🗑️ Xóa toàn bộ lịch sử</button>
+                <button class="btn-action btn-primary" id="btn-history-modal-close" style="padding: 8px 18px;">Đóng</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modular JavaScript Files -->
     <script src="js/i18n.js"></script>
     <script src="js/audio.js"></script>
     <script src="js/storage.js"></script>
+    <script src="js/supabase-client.js"></script>
     <script src="js/confetti.js"></script>
     <script src="js/sample-banks.js"></script>
     <script src="js/parser.js"></script>

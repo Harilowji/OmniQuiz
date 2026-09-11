@@ -68,7 +68,7 @@ const UIManager = (() => {
 
             const flagBtn = document.createElement('button');
             flagBtn.className = 'flag-btn' + (isFlagged ? ' active' : '');
-            flagBtn.innerHTML = (isFlagged ? '🚩 ' : '🏳️ ') + t('reviewFlag');
+            flagBtn.innerHTML = (isFlagged ? '🚩 ' : '🏳️ ') + (isFlagged ? (t('flagActive') || 'Đã gắn cờ') : (t('reviewFlag') || 'Xem lại'));
             flagBtn.onclick = () => onFlagClick(qIndex);
             header.appendChild(flagBtn);
             block.appendChild(header);
@@ -216,11 +216,37 @@ const UIManager = (() => {
         // Initialize scroll spy after rendering
         setupScrollSpy(questions);
 
-        // Progressive MathJax Typesetting (eliminates main-thread freeze on large exams)
-        typesetMathJaxProgressively(container);
+        // Ultra-Fast KaTeX Math & Chemistry Rendering with Progressive MathJax Fallback
+        typesetMath(container);
     }
 
     let mathObserver = null;
+
+    function typesetMath(container) {
+        if (!container) return;
+
+        // 1. Fast Synchronous KaTeX rendering (Instantaneous, eliminates math freezing/broken formulas)
+        if (typeof renderMathInElement === 'function') {
+            try {
+                renderMathInElement(container, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false },
+                        { left: '\\(', right: '\\)', display: false },
+                        { left: '\\[', right: '\\]', display: true }
+                    ],
+                    throwOnError: false,
+                    ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+                });
+                return;
+            } catch (e) {
+                console.warn('[KaTeX] Render error, falling back to MathJax:', e);
+            }
+        }
+
+        // 2. Fallback to MathJax 3 Progressive Typesetting
+        typesetMathJaxProgressively(container);
+    }
 
     function typesetMathJaxProgressively(container) {
         if (!container || !window.MathJax || typeof MathJax.typesetPromise !== 'function') return;
@@ -258,7 +284,6 @@ const UIManager = (() => {
 
             blocks.slice(3).forEach(b => mathObserver.observe(b));
         } else {
-            // Fallback for older browsers: chunked typesetting in idle frames
             let idx = 3;
             function processNextChunk() {
                 if (idx >= blocks.length) return;
@@ -289,7 +314,7 @@ const UIManager = (() => {
         const flagBtn = block.querySelector('.flag-btn');
         if (flagBtn) {
             flagBtn.className = 'flag-btn' + (isFlagged ? ' active' : '');
-            flagBtn.innerHTML = (isFlagged ? '🚩 ' : '🏳️ ') + t('reviewFlag');
+            flagBtn.innerHTML = (isFlagged ? '🚩 ' : '🏳️ ') + (isFlagged ? (t('flagActive') || 'Đã gắn cờ') : (t('reviewFlag') || 'Xem lại'));
         }
 
         // Update Header Status Badge
@@ -875,6 +900,182 @@ const UIManager = (() => {
         if (modal) modal.style.display = 'none';
     }
 
+    function showHistoryModal(historyList, onReviewExam, onDeleteExam, onClearAll) {
+        const modal = document.getElementById('history-modal');
+        if (!modal) return;
+
+        const totalEl = document.getElementById('hist-stat-total');
+        const avgEl = document.getElementById('hist-stat-avg');
+        const bestEl = document.getElementById('hist-stat-best');
+        const listContainer = document.getElementById('hist-view-list');
+        const countPill = document.getElementById('hist-count-pill');
+
+        const count = historyList ? historyList.length : 0;
+        if (countPill) countPill.innerText = count;
+        if (totalEl) totalEl.innerText = count;
+
+        if (count > 0) {
+            const sumScore = historyList.reduce((acc, cur) => acc + (cur.score10 || 0), 0);
+            const avg = (sumScore / count).toFixed(1);
+            const maxScore = Math.max(...historyList.map(h => h.score100 || 0));
+            if (avgEl) avgEl.innerText = avg;
+            if (bestEl) bestEl.innerText = maxScore + '/100';
+        } else {
+            if (avgEl) avgEl.innerText = '0.0';
+            if (bestEl) bestEl.innerText = '0';
+        }
+
+        if (listContainer) {
+            if (!historyList || historyList.length === 0) {
+                listContainer.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px; opacity: 0.65;">
+                        <div style="font-size: 3em; margin-bottom: 8px;">📭</div>
+                        <p style="font-size: 1.05em; font-weight: 600;">Chưa có lịch sử làm bài thi nào</p>
+                        <p style="font-size: 0.85em;">Hãy hoàn thành một bài thi để kết quả được lưu trữ tại đây!</p>
+                    </div>
+                `;
+            } else {
+                listContainer.innerHTML = '';
+                historyList.forEach(item => {
+                    const row = document.createElement('div');
+                    row.className = 'history-item-row';
+
+                    let scoreBadgeClass = 'mid';
+                    if (item.score100 >= 80) scoreBadgeClass = 'high';
+                    else if (item.score100 < 50) scoreBadgeClass = 'low';
+
+                    row.innerHTML = `
+                        <div class="history-score-badge ${scoreBadgeClass}">
+                            ${item.score10}đ
+                            <div style="font-size: 0.7em; font-weight: 600; opacity: 0.8;">${item.score100}%</div>
+                        </div>
+                        <div class="history-item-info">
+                            <div class="history-item-title">${escapeHTML(item.title || 'Bài thi trắc nghiệm')}</div>
+                            <div class="history-item-meta">
+                                <span>📅 ${item.dateFormatted || new Date(item.timestamp).toLocaleDateString()}</span>
+                                <span>⏱️ ${item.durationSpent ? Math.round(item.durationSpent / 60) + ' phút' : 'Tự do'}</span>
+                                <span>✓ ${item.correctCount}/${item.totalQuestions} đúng</span>
+                                ${item.syncedToCloud ? '<span style="color: #38bdf8; font-weight: 700;">☁️ Supabase</span>' : ''}
+                            </div>
+                        </div>
+                        <div class="history-actions-cell">
+                            <button class="btn-history-action btn-del" title="Xóa bài thi này">🗑️ Xóa</button>
+                        </div>
+                    `;
+
+                    row.querySelector('.btn-del').onclick = async (e) => {
+                        e.stopPropagation();
+                        if (confirm('Bạn có chắc muốn xóa bản ghi thi này không?')) {
+                            if (typeof onDeleteExam === 'function') {
+                                await onDeleteExam(item.id);
+                            }
+                        }
+                    };
+
+                    listContainer.appendChild(row);
+                });
+            }
+        }
+
+        // Tab Switching
+        const tabListBtn = document.getElementById('tab-btn-hist-list');
+        const tabCloudBtn = document.getElementById('tab-btn-hist-cloud');
+        const viewList = document.getElementById('hist-view-list');
+        const viewCloud = document.getElementById('hist-view-cloud');
+
+        if (tabListBtn && tabCloudBtn && viewList && viewCloud) {
+            tabListBtn.onclick = () => {
+                tabListBtn.classList.add('active');
+                tabCloudBtn.classList.remove('active');
+                viewList.style.display = 'block';
+                viewCloud.style.display = 'none';
+            };
+            tabCloudBtn.onclick = () => {
+                tabCloudBtn.classList.add('active');
+                tabListBtn.classList.remove('active');
+                viewList.style.display = 'none';
+                viewCloud.style.display = 'block';
+                updateSupabaseConfigView();
+            };
+        }
+
+        modal.style.display = 'flex';
+    }
+
+    function hideHistoryModal() {
+        const modal = document.getElementById('history-modal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    function updateSupabaseConfigView() {
+        if (typeof SupabaseClient === 'undefined') return;
+        const cfg = SupabaseClient.getStoredConfig();
+        const urlInput = document.getElementById('supabase-input-url');
+        const keyInput = document.getElementById('supabase-input-key');
+        const statusEl = document.getElementById('supabase-status-pill');
+
+        if (urlInput) urlInput.value = cfg.url || '';
+        if (keyInput) keyInput.value = cfg.key || '';
+
+        if (statusEl) {
+            if (SupabaseClient.isConfigured()) {
+                statusEl.innerHTML = '<span style="color: #22c55e;">🟢 Đã kết nối Supabase Cloud Database</span>';
+            } else {
+                statusEl.innerHTML = '<span style="color: #94a3b8;">⚪ Chưa kết nối (Lịch sử lưu cục bộ IndexedDB)</span>';
+            }
+        }
+    }
+
+    function showFullscreenLockout(violationCount, maxViolations, onReturnToFullscreen) {
+        const modal = document.getElementById('fullscreen-lockout-modal');
+        if (!modal) return;
+        const badge = document.getElementById('lockout-violation-badge');
+        if (badge) {
+            badge.innerText = `Số lần vi phạm: ${violationCount}/${maxViolations}`;
+        }
+        const btn = document.getElementById('btn-lockout-return');
+        if (btn) {
+            btn.onclick = () => {
+                modal.style.display = 'none';
+                if (typeof onReturnToFullscreen === 'function') {
+                    onReturnToFullscreen();
+                }
+            };
+        }
+        modal.style.display = 'flex';
+    }
+
+    function hideFullscreenLockout() {
+        const modal = document.getElementById('fullscreen-lockout-modal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    function showFullscreenExamPrompt(onStartFullscreen, onCancel) {
+        const modal = document.getElementById('fullscreen-prompt-modal');
+        if (!modal) return;
+        const btnStart = document.getElementById('btn-prompt-start-fullscreen');
+        const btnCancel = document.getElementById('btn-prompt-cancel-fullscreen');
+
+        if (btnStart) {
+            btnStart.onclick = () => {
+                modal.style.display = 'none';
+                if (typeof onStartFullscreen === 'function') onStartFullscreen();
+            };
+        }
+        if (btnCancel) {
+            btnCancel.onclick = () => {
+                modal.style.display = 'none';
+                if (typeof onCancel === 'function') onCancel();
+            };
+        }
+        modal.style.display = 'flex';
+    }
+
+    function hideFullscreenExamPrompt() {
+        const modal = document.getElementById('fullscreen-prompt-modal');
+        if (modal) modal.style.display = 'none';
+    }
+
     function getActiveQuestionIndex() {
         return activeViewingQuestionIndex;
     }
@@ -903,6 +1104,13 @@ const UIManager = (() => {
         hideLoadingModal,
         showAntiCheatModal,
         hideAntiCheatModal,
-        typesetMathJaxProgressively
+        typesetMath,
+        typesetMathJaxProgressively,
+        showHistoryModal,
+        hideHistoryModal,
+        showFullscreenLockout,
+        hideFullscreenLockout,
+        showFullscreenExamPrompt,
+        hideFullscreenExamPrompt
     };
 })();

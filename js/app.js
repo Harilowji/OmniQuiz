@@ -162,6 +162,22 @@
             const mode = e.target.value;
             QuizEngine.state.currentMode = mode;
             StorageManager.savePreference('mode', mode);
+
+            // Enforced Fullscreen Prompt for Exam Mode
+            if (mode === 'exam' && !document.fullscreenElement) {
+                UIManager.showFullscreenExamPrompt(
+                    () => {
+                        document.documentElement.requestFullscreen().catch(() => {});
+                    },
+                    () => {
+                        QuizEngine.state.currentMode = 'practice';
+                        StorageManager.savePreference('mode', 'practice');
+                        e.target.value = 'practice';
+                        refreshUI();
+                    }
+                );
+            }
+
             refreshUI();
         });
 
@@ -220,7 +236,7 @@
             }
         });
 
-        // Fullscreen toggle
+        // Fullscreen toggle & Enforced Fullscreen Monitoring for Exam Mode
         document.getElementById('btn-fullscreen-toggle')?.addEventListener('click', () => {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(() => {});
@@ -233,6 +249,116 @@
             const btn = document.getElementById('btn-fullscreen-toggle');
             if (btn) {
                 btn.innerText = document.fullscreenElement ? t('btnExitFullscreen') : t('btnFullscreen');
+            }
+
+            // Enforced Fullscreen Check: If user drops out of fullscreen during active unsubmitted exam
+            if (!document.fullscreenElement && isExamActiveUnsubmitted() && QuizEngine.state.currentMode === 'exam') {
+                handleAntiCheatViolation(QuizEngine.state.currentLang === 'vi'
+                    ? 'Thoát chế độ Toàn màn hình (Exit Fullscreen)'
+                    : 'Exited Fullscreen exam mode');
+
+                // If violations not yet exceeded, display the Lockout overlay
+                if (QuizEngine.state.violationCount < (QuizEngine.MAX_VIOLATIONS || 3)) {
+                    UIManager.showFullscreenLockout(
+                        QuizEngine.state.violationCount,
+                        QuizEngine.MAX_VIOLATIONS || 3,
+                        () => {
+                            document.documentElement.requestFullscreen().catch(() => {});
+                        }
+                    );
+                }
+            }
+        });
+
+        // Exam History & Supabase BaaS Cloud Sync Handlers
+        async function refreshHistoryModalUI() {
+            const historyList = await StorageManager.getExamHistory();
+            UIManager.showHistoryModal(
+                historyList,
+                null,
+                async (id) => {
+                    await StorageManager.deleteExamHistory(id);
+                    refreshHistoryModalUI();
+                },
+                async () => {
+                    await StorageManager.clearAllHistory();
+                    refreshHistoryModalUI();
+                }
+            );
+        }
+
+        document.getElementById('btn-history-toggle')?.addEventListener('click', () => {
+            refreshHistoryModalUI();
+        });
+
+        document.getElementById('btn-close-history')?.addEventListener('click', () => {
+            UIManager.hideHistoryModal();
+        });
+
+        document.getElementById('btn-history-modal-close')?.addEventListener('click', () => {
+            UIManager.hideHistoryModal();
+        });
+
+        document.getElementById('btn-clear-all-history')?.addEventListener('click', async () => {
+            if (confirm('Bạn có chắc muốn xóa toàn bộ lịch sử thi đã lưu không?')) {
+                await StorageManager.clearAllHistory();
+                refreshHistoryModalUI();
+            }
+        });
+
+        document.getElementById('btn-save-supabase')?.addEventListener('click', () => {
+            const url = document.getElementById('supabase-input-url')?.value;
+            const key = document.getElementById('supabase-input-key')?.value;
+            const statusEl = document.getElementById('supabase-status-pill');
+
+            if (!url || !key) {
+                alert('Vui lòng nhập đầy đủ Supabase Project URL và Anon Key!');
+                return;
+            }
+
+            if (typeof SupabaseClient !== 'undefined') {
+                const ok = SupabaseClient.saveConfig(url, key);
+                if (ok) {
+                    if (statusEl) statusEl.innerHTML = '<span style="color: #22c55e;">🟢 Đã lưu cấu hình và kết nối thành công!</span>';
+                    UIManager.showToast('✓ Đã kết nối Supabase Cloud Database!');
+                } else {
+                    if (statusEl) statusEl.innerHTML = '<span style="color: #ef4444;">✗ Kết nối thất bại, vui lòng kiểm tra lại URL/Key!</span>';
+                }
+            }
+        });
+
+        document.getElementById('btn-sync-all-supabase')?.addEventListener('click', async () => {
+            if (typeof SupabaseClient === 'undefined' || !SupabaseClient.isConfigured()) {
+                alert('Vui lòng cấu hình Supabase Project URL và Anon Key trước khi đồng bộ!');
+                return;
+            }
+
+            const historyList = await StorageManager.getExamHistory();
+            if (historyList.length === 0) {
+                alert('Chưa có bài thi nào để đồng bộ!');
+                return;
+            }
+
+            let syncCount = 0;
+            for (const item of historyList) {
+                const res = await SupabaseClient.syncExamResult(item);
+                if (res) syncCount++;
+            }
+
+            UIManager.showToast(`✓ Đã đồng bộ thành công ${syncCount}/${historyList.length} bài thi lên Supabase Cloud!`);
+            refreshHistoryModalUI();
+        });
+
+        document.getElementById('btn-clear-supabase')?.addEventListener('click', () => {
+            if (confirm('Bạn có chắc muốn gỡ kết nối Supabase khỏi thiết bị này không?')) {
+                if (typeof SupabaseClient !== 'undefined') {
+                    SupabaseClient.saveConfig('', '');
+                    const statusEl = document.getElementById('supabase-status-pill');
+                    if (statusEl) statusEl.innerHTML = '<span style="color: #94a3b8;">⚪ Chưa kết nối (Lịch sử lưu cục bộ IndexedDB)</span>';
+                    document.getElementById('supabase-input-url').value = '';
+                    document.getElementById('supabase-input-key').value = '';
+                    UIManager.showToast('Đã gỡ cấu hình Supabase!');
+                }
             }
         });
 
@@ -322,6 +448,22 @@
 
             const currentPos = visibleButtons.findIndex(btn => btn.id === 'pbtn-' + currentIdx);
 
+            // DevTools and Cheat Key Suppression in Exam Mode
+            if (QuizEngine.state.currentMode === 'exam' && isExamActiveUnsubmitted()) {
+                if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && (e.key === 'u' || e.key === 'U'))) {
+                    e.preventDefault();
+                    UIManager.showToast('⚠️ Phím tắt bị vô hiệu hóa trong phòng thi!');
+                    return;
+                }
+            }
+
+            // Keyboard Shortcut: F key to toggle Flag / Bookmark
+            if (e.key === 'f' || e.key === 'F') {
+                e.preventDefault();
+                onFlagToggled(currentIdx);
+                return;
+            }
+
             if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
                 e.preventDefault();
                 const nextPos = (currentPos >= 0 && currentPos < visibleButtons.length - 1) ? currentPos + 1 : 0;
@@ -338,6 +480,13 @@
                 if (!isNaN(targetIdx)) {
                     UIManager.scrollToQuestion(targetIdx);
                 }
+            }
+        });
+
+        // Crash Prevention: Flush active state on window beforeunload or blur
+        window.addEventListener('beforeunload', () => {
+            if (isExamActiveUnsubmitted()) {
+                StorageManager.saveState(QuizEngine.state);
             }
         });
     }
@@ -438,11 +587,21 @@
             if (file) handleUploadedFile(file);
         });
 
-        // Restore active exam ONLY if user was already taking one
-        const savedExam = StorageManager.loadCurrentExam();
+        // Crash & Reload Recovery: Restore active exam and full state from IndexedDB
+        const savedExam = await StorageManager.loadCurrentExamAsync();
+        const savedSession = await StorageManager.loadActiveSessionAsync();
+
         if (savedExam && savedExam.rawText) {
             document.getElementById('upload-section').style.display = 'none';
-            setupQuiz(savedExam.rawText, false);
+            setupQuiz(savedExam.rawText, false, savedSession ? savedSession.customImages : null);
+
+            if (savedSession && !savedSession.isSubmitted) {
+                setTimeout(() => {
+                    UIManager.showToast(QuizEngine.state.currentLang === 'vi'
+                        ? '✓ Đã tự động khôi phục bài thi và tiến độ của bạn!'
+                        : '✓ Automatically restored your exam progress!');
+                }, 400);
+            }
         } else {
             // First time opening or clean visit: ALWAYS show upload section! DO NOT auto-load hardcoded exam!
             document.getElementById('upload-section').style.display = 'block';
@@ -1004,6 +1163,11 @@
             QuizEngine.state.timeLeft--;
             updateTimerDisplay();
 
+            // Periodic auto-save every 3 seconds to IndexedDB & localStorage
+            if (QuizEngine.state.timeLeft % 3 === 0) {
+                StorageManager.saveState(QuizEngine.state);
+            }
+
             if (QuizEngine.state.timeLeft <= 0) {
                 clearInterval(timerInterval);
                 finishQuiz(true);
@@ -1032,7 +1196,7 @@
         }
     }
 
-    function finishQuiz(isTimeout) {
+    async function finishQuiz(isTimeout) {
         if (timerInterval) clearInterval(timerInterval);
         QuizEngine.state.isSubmitted = true;
         StorageManager.saveState(QuizEngine.state);
@@ -1045,6 +1209,38 @@
 
         if (results.score100 >= 75) {
             Confetti.launch();
+        }
+
+        // Save to History (IndexedDB + localStorage + Supabase BaaS if configured)
+        try {
+            const firstQuestionText = QuizEngine.state.questions?.[0]?.q || '';
+            const cleanTitle = firstQuestionText 
+                ? (firstQuestionText.replace(/<[^>]+>/g, '').trim().substring(0, 50) + '...')
+                : 'Bài thi trắc nghiệm';
+
+            const durationSpent = (QuizEngine.state.durationMinutes > 0 && QuizEngine.state.timeLeft >= 0)
+                ? (QuizEngine.state.durationMinutes * 60 - QuizEngine.state.timeLeft)
+                : 0;
+
+            const record = {
+                title: cleanTitle,
+                timestamp: Date.now(),
+                durationSpent: durationSpent,
+                score10: parseFloat(results.score10) || 0,
+                score100: results.score100 || 0,
+                correctCount: results.correct || 0,
+                wrongCount: results.incorrect || 0,
+                unattemptedCount: results.unattempted || 0,
+                totalQuestions: results.total || 0,
+                mode: QuizEngine.state.currentMode || 'exam',
+                violationCount: results.violations || 0,
+                userAnswers: QuizEngine.state.userAnswers || {},
+                questionsSnapshot: QuizEngine.state.questions || []
+            };
+
+            await StorageManager.saveExamToHistory(record);
+        } catch (e) {
+            console.warn('[Storage] Error saving exam to history:', e);
         }
     }
 })();

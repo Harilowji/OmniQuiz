@@ -535,20 +535,25 @@
     animation: palettePop 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Flagged state */
+/* Flagged state (Prominent Bookmark/Flag for Exam Strategy) */
 .palette-btn.flagged::after {
-    content: '';
+    content: '🚩';
     position: absolute;
-    top: 3px;
-    right: 3px;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #eab308;
-    box-shadow: 0 0 0 1.5px #ffffff, 0 0 6px rgba(234, 179, 8, 0.8);
+    top: -6px;
+    right: -6px;
+    font-size: 12px;
+    line-height: 1;
+    z-index: 3;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+    animation: flagPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .palette-btn.flagged {
-    border-color: #eab308;
+    box-shadow: 0 0 0 2px #f59e0b, 0 0 10px rgba(245, 158, 11, 0.45) !important;
+    border-color: #f59e0b !important;
+}
+@keyframes flagPop {
+    0% { transform: scale(0) rotate(-20deg); }
+    100% { transform: scale(1) rotate(0deg); }
 }
 
 /* Answered in Exam */
@@ -1452,5 +1457,305 @@ body.theme-emerald .quiz-inline-code {
 .omni-toast.show {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+}
+
+/* ================= ENHANCED FLAG / BOOKMARK STYLES ================= */
+.flag-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 0.84em;
+    font-weight: 600;
+    background: var(--option-bg);
+    border: 1.5px solid var(--option-border);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    user-select: none;
+}
+.flag-btn:hover {
+    border-color: #f59e0b;
+    color: #f59e0b;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+}
+.flag-btn.active {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    border-color: #b45309;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.45);
+    font-weight: 700;
+}
+.flag-btn.active:hover {
+    transform: scale(1.04);
+}
+
+/* ================= KATEX MATH & CHEMISTRY STYLING ================= */
+.katex-display {
+    margin: 1em 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 4px 0;
+}
+.katex {
+    font-size: 1.05em;
+    line-height: 1.2;
+    text-rendering: auto;
+}
+.question-title .katex,
+.option-text .katex,
+.exp-content .katex {
+    color: inherit;
+}
+
+/* ================= FULLSCREEN ENFORCED LOCKOUT OVERLAY ================= */
+.fullscreen-lockout-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(11, 15, 25, 0.96);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    z-index: 1000000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    animation: fadeIn 0.25s ease-out;
+}
+.fullscreen-lockout-card {
+    background: #0f172a;
+    border: 2px solid #ef4444;
+    border-radius: 24px;
+    max-width: 520px;
+    width: 100%;
+    padding: 36px 28px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(239, 68, 68, 0.35);
+    animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.lockout-icon {
+    font-size: 4em;
+    margin-bottom: 12px;
+    animation: shakeIcon 0.8s infinite ease-in-out;
+}
+.lockout-title {
+    color: #ef4444;
+    font-size: 1.6em;
+    font-weight: 800;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+}
+.lockout-desc {
+    color: #cbd5e1;
+    font-size: 0.95em;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+.lockout-badge-pill {
+    display: inline-block;
+    padding: 6px 18px;
+    border-radius: 99px;
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid #ef4444;
+    color: #f87171;
+    font-weight: 700;
+    font-size: 0.9em;
+    margin-bottom: 24px;
+}
+.btn-return-fullscreen {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 1.05em;
+    font-weight: 700;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    transition: all 0.2s ease;
+}
+.btn-return-fullscreen:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.55);
+}
+
+/* ================= EXAM HISTORY & BAAS MODAL ================= */
+.history-modal-card {
+    max-width: 780px;
+    width: 95%;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+}
+.history-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 16px;
+    margin-bottom: 18px;
+}
+.history-stats-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.history-stat-box {
+    background: var(--option-bg);
+    border: 1px solid var(--option-border);
+    border-radius: 14px;
+    padding: 12px;
+    text-align: center;
+}
+.history-stat-num {
+    font-size: 1.5em;
+    font-weight: 800;
+    color: var(--primary-color);
+}
+.history-stat-lbl {
+    font-size: 0.8em;
+    opacity: 0.75;
+    font-weight: 500;
+}
+.history-tabs-nav {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 8px;
+}
+.history-tab-btn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.88em;
+    font-weight: 600;
+    border: none;
+    background: none;
+    color: var(--text-color);
+    opacity: 0.7;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.history-tab-btn.active {
+    background: var(--option-bg);
+    border: 1px solid var(--option-border);
+    opacity: 1;
+    color: var(--primary-color);
+}
+.history-list-container {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 48vh;
+    padding-right: 6px;
+}
+.history-item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--option-bg);
+    border: 1px solid var(--option-border);
+    border-radius: 14px;
+    margin-bottom: 10px;
+    gap: 12px;
+    transition: transform 0.2s ease;
+}
+.history-item-row:hover {
+    transform: translateY(-1px);
+    border-color: var(--primary-color);
+}
+.history-item-info {
+    flex: 1;
+}
+.history-item-title {
+    font-weight: 700;
+    font-size: 0.95em;
+    color: var(--heading-color);
+    margin-bottom: 4px;
+}
+.history-item-meta {
+    font-size: 0.8em;
+    opacity: 0.7;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.history-score-badge {
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-weight: 800;
+    font-size: 0.95em;
+    text-align: center;
+    min-width: 68px;
+}
+.history-score-badge.high {
+    background: rgba(34, 197, 94, 0.15);
+    color: #16a34a;
+    border: 1px solid #22c55e;
+}
+.history-score-badge.mid {
+    background: rgba(234, 179, 8, 0.15);
+    color: #ca8a04;
+    border: 1px solid #eab308;
+}
+.history-score-badge.low {
+    background: rgba(239, 68, 68, 0.15);
+    color: #dc2626;
+    border: 1px solid #ef4444;
+}
+.history-actions-cell {
+    display: flex;
+    gap: 6px;
+}
+.btn-history-action {
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.8em;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--option-border);
+    background: var(--card-bg);
+    color: var(--text-color);
+    transition: all 0.2s ease;
+}
+.btn-history-action:hover {
+    border-color: var(--primary-color);
+}
+.btn-history-action.btn-del:hover {
+    border-color: #ef4444;
+    color: #ef4444;
+}
+.supabase-config-card {
+    padding: 16px;
+    background: var(--option-bg);
+    border: 1px solid var(--option-border);
+    border-radius: 14px;
+    margin-top: 10px;
+}
+.supabase-form-group {
+    margin-bottom: 12px;
+}
+.supabase-form-group label {
+    display: block;
+    font-size: 0.85em;
+    font-weight: 600;
+    margin-bottom: 6px;
+    opacity: 0.85;
+}
+.supabase-input {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1.5px solid var(--card-border);
+    background: var(--card-bg);
+    color: var(--text-color);
+    font-size: 0.9em;
 }
 
