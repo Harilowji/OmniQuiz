@@ -374,6 +374,23 @@ const StorageManager = (() => {
                 localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
             }
         } catch (e) {}
+
+        getDB().then(db => {
+            if (!db) return;
+            try {
+                const tx = db.transaction('exam_history', 'readwrite');
+                const store = tx.objectStore('exam_history');
+                const req = store.get(id);
+                req.onsuccess = () => {
+                    if (req.result) {
+                        const updated = { ...req.result, syncedToCloud: synced };
+                        store.put(updated);
+                    }
+                };
+            } catch (err) {
+                console.warn('[Storage] Error updating sync status in IndexedDB:', err);
+            }
+        });
     }
 
     // ================= PREFERENCES =================

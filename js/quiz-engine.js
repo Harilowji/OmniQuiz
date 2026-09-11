@@ -104,6 +104,7 @@ const QuizEngine = (() => {
         state.violationCount = 0;
         state.violationLogs = [];
         state.timeLeft = state.durationMinutes > 0 ? state.durationMinutes * 60 : -1;
+        state.targetEndTime = state.timeLeft > 0 ? (Date.now() + state.timeLeft * 1000) : null;
 
         return {
             count: filteredQuestions.length

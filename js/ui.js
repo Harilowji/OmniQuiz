@@ -782,10 +782,30 @@ const UIManager = (() => {
             });
         }
 
+        const histModal = document.getElementById('history-modal');
+        if (histModal) {
+            histModal.addEventListener('click', (e) => {
+                if (e.target === histModal) {
+                    hideHistoryModal();
+                }
+            });
+        }
+
+        const subModal = document.getElementById('submit-confirm-modal');
+        if (subModal) {
+            subModal.addEventListener('click', (e) => {
+                if (e.target === subModal) {
+                    hideSubmitConfirmModal();
+                }
+            });
+        }
+
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeLightbox();
                 hideSummaryModal();
+                hideHistoryModal();
+                hideSubmitConfirmModal();
             }
         });
 

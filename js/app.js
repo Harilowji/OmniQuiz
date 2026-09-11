@@ -59,9 +59,15 @@
         if (selLang) selLang.value = savedLang;
         if (selMode) selMode.value = savedMode;
 
-        document.body.className = 'theme-' + savedTheme;
+        applyTheme(savedTheme);
         updateUILanguage(savedLang);
         updateResetButtonState();
+    }
+
+    function applyTheme(theme) {
+        const isFocus = document.body.classList.contains('focus-mode');
+        document.body.className = 'theme-' + theme;
+        if (isFocus) document.body.classList.add('focus-mode');
     }
 
     function isExamActiveUnsubmitted() {
@@ -138,7 +144,7 @@
         document.getElementById('theme-selector')?.addEventListener('change', (e) => {
             const theme = e.target.value;
             QuizEngine.state.currentTheme = theme;
-            document.body.className = 'theme-' + theme;
+            applyTheme(theme);
             StorageManager.savePreference('theme', theme);
         });
 
@@ -221,6 +227,9 @@
             const res = QuizEngine.createRetakeMistakesExam();
             UIManager.hideSummaryModal();
             if (res && res.count > 0) {
+                if (QuizEngine.state.currentMode === 'exam') {
+                    document.body.classList.add('focus-mode');
+                }
                 StorageManager.saveState(QuizEngine.state);
                 refreshUI();
                 startTimer();
@@ -447,6 +456,25 @@
         // Fast Question Keyboard Navigation (Arrow Keys with Filter Awareness)
         window.addEventListener('keydown', (e) => {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+
+            // DevTools and Cheat Key Suppression in Exam Mode (F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+P, F5, Ctrl+R)
+            if (QuizEngine.state.currentMode === 'exam' && isExamActiveUnsubmitted()) {
+                const isPrint = e.ctrlKey && (e.key === 'p' || e.key === 'P');
+                const isRefresh = e.key === 'F5' || (e.ctrlKey && (e.key === 'r' || e.key === 'R'));
+                const isDevTools = e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && (e.key === 'u' || e.key === 'U'));
+
+                if (isDevTools || isPrint || isRefresh) {
+                    e.preventDefault();
+                    UIManager.showToast('⚠️ Phím tắt bị vô hiệu hóa trong phòng thi!');
+                    return;
+                }
+            }
+
+            // Suppress Question Hotkeys (F, Arrows) when any modal/overlay is open
+            const isModalOpen = Array.from(document.querySelectorAll('.modal-overlay, .fullscreen-lockout-backdrop, .image-lightbox-overlay'))
+                .some(el => el.style.display && el.style.display !== 'none');
+            if (isModalOpen) return;
+
             if (!QuizEngine.state.questions || QuizEngine.state.questions.length === 0) return;
 
             // Get currently active question
@@ -463,19 +491,6 @@
             if (visibleButtons.length === 0) return;
 
             const currentPos = visibleButtons.findIndex(btn => btn.id === 'pbtn-' + currentIdx);
-
-            // DevTools and Cheat Key Suppression in Exam Mode (F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+P, F5, Ctrl+R)
-            if (QuizEngine.state.currentMode === 'exam' && isExamActiveUnsubmitted()) {
-                const isPrint = e.ctrlKey && (e.key === 'p' || e.key === 'P');
-                const isRefresh = e.key === 'F5' || (e.ctrlKey && (e.key === 'r' || e.key === 'R'));
-                const isDevTools = e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && (e.key === 'u' || e.key === 'U'));
-
-                if (isDevTools || isPrint || isRefresh) {
-                    e.preventDefault();
-                    UIManager.showToast('⚠️ Phím tắt bị vô hiệu hóa trong phòng thi!');
-                    return;
-                }
-            }
 
             // Keyboard Shortcut: F key to toggle Flag / Bookmark
             if (e.key === 'f' || e.key === 'F') {

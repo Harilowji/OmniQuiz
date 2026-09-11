@@ -3,7 +3,7 @@
  * Implements high-resilience Offline Caching & Stale-While-Revalidate strategy
  */
 
-const CACHE_NAME = 'omniquiz-pro-v1';
+const CACHE_NAME = 'omniquiz-pro-v2';
 
 const PRECACHE_ASSETS = [
     './',
@@ -18,6 +18,7 @@ const PRECACHE_ASSETS = [
     './css/animations.css',
     './js/i18n.js',
     './js/audio.js',
+    './js/supabase-client.js',
     './js/storage.js',
     './js/confetti.js',
     './js/sample-banks.js',
