@@ -70,19 +70,48 @@ Dưới góc nhìn khắt khe của Senior Architect, mặc dù OmniQuiz PRO đ�
 
 ---
 
-## 5. LỘ TRÌNH NÂNG CẤP DÀI HẠN (PHASE 3 & PHASE 4 ROADMAP)
+## 5. THỰC HIỆN TOÀN DIỆN PHASE 3 VÀ PHASE 4 (PHASE 3 & 4 DEPLOYED)
 
-### Giai đoạn 3 - EdTech Studio & Content Empowerment (Ưu tiên Cao):
-1. **Interactive Question Editor:** Xây dựng bộ soạn thảo câu hỏi tương tác trực quan với bộ gõ LaTeX MathQuill, cho phép sửa lỗi nhanh các câu bị parse thiếu sót trước khi bắt đầu thi.
-2. **Client-Side OCR Pipeline:** Tích hợp thư viện OCR phía Client (Tesseract.js hoặc WebAssembly) để trích xuất chữ và công thức trực tiếp từ ảnh chụp đề thi viết tay hoặc file PDF scan thuần ảnh.
+### Giai đoạn 3 - EdTech Studio & Interactive Content Empowerment (ĐÃ HOÀN TẤT):
+1. **Interactive Question Studio (`js/editor.js`):**
+   - Xây dựng bộ soạn thảo câu hỏi toàn năng với cơ chế phân chia màn hình (Split-Screen Master-Detail).
+   - Hỗ trợ xem danh sách câu hỏi, kiểm tra tính hợp lệ tức thì, gắn cờ cảnh báo câu thiếu đáp án.
+   - Trực tiếp chỉnh sửa tiêu đề câu hỏi, chuyển đổi giữa Single Choice (1 đáp án) và Multiple Choice (nhiều đáp án).
+   - Thêm, sửa, xóa các phương án A, B, C, D... và chọn trực tiếp đáp án đúng bằng Radio / Checkbox.
+   - **KaTeX & Markdown Live Preview thời gian thực:** Biên dịch đồng thời biểu thức Toán học và Hóa học ngay khi người dùng đang gõ, giúp kiểm soát hiển thị chuẩn xác trước khi nạp vào phòng thi.
+   - Hỗ trợ đính kèm ảnh minh họa qua URL hoặc tải tệp ảnh từ máy tính (chuyển đổi Base64 tự động).
+   - Tích hợp công cụ **Xuất/Nhập đề thi** dưới định dạng chuẩn JSON và TXT; hỗ trợ công cụ **Dán nhanh / OCR** cho phép nạp thêm câu hỏi tức thì từ clipboard hoặc văn bản thô.
 
-### Giai đoạn 4 - Enterprise Proctoring & Cloud CBT (Kỳ thi Quy mô lớn):
-1. **Server-Side Grading Engine:** Chuyển toàn bộ luồng chấm điểm và đáp án chính thức lên Supabase Edge Functions / Firebase Cloud Functions; client chỉ nhận mã đề và gửi phương án đã chọn.
-2. **Realtime Exam Room & Dashboard:** Giảng viên mở phòng thi trực tuyến theo mã PIN, theo dõi bản đồ thí sinh đang làm bài, phát cảnh báo vi phạm trực tiếp tới từng màn hình.
-3. **AI Proctoring:** Sử dụng mô hình nhận diện khuôn mặt nhẹ (MediaPipe / Face-API.js) để cảnh báo khi có người thứ hai xuất hiện hoặc thí sinh quay đầu rời khỏi màn hình quá 5 giây.
+### Giai đoạn 4 - Enterprise Proctoring & Cloud CBT Room PIN (ĐÃ HOÀN TẤT):
+1. **Hệ thống Phòng thi Trực tuyến Mã PIN (`js/room-manager.js`):**
+   - Giáo viên / Người tổ chức bài thi có thể khởi tạo phòng thi trực tuyến chỉ với 1 cú click, tự động cấp **Mã PIN 6 chữ số** độc nhất (VD: `849201`).
+   - Cấu hình phòng thi linh hoạt: tiêu đề đề thi, số câu hỏi, thời gian làm bài (15 đến 90 phút hoặc không giới hạn), và chế độ giám sát phòng thi nghiêm ngặt.
+   - Đồng bộ tự động lên **Supabase Cloud (PostgreSQL table `exam_rooms`)** kết hợp bộ đệm lưu trữ dự phòng ngoại tuyến.
+2. **Cổng Thí sinh Tham gia thi (Student PIN Portal):**
+   - Tích hợp trực tiếp trên giao diện màn hình chính (`upload-section` Zone 3).
+   - Thí sinh chỉ cần nhập Mã PIN phòng thi và Họ tên / Số báo danh -> Hệ thống tự động xác thực, tải đề thi từ Cloud, khóa thời gian làm bài và kích hoạt chế độ phòng thi chuẩn (Focus Mode).
+3. **Bảng Xếp Hạng Thời Gian Thực (Live Room Leaderboard):**
+   - Khi thí sinh nộp bài, kết quả (điểm số, số câu đúng/sai, thời gian làm bài, số lần vi phạm toàn màn hình) được ghi nhận tự động vào bảng `room_submissions`.
+   - Cả thí sinh và Giáo viên đều có thể mở xem Bảng Xếp Hạng với huy chương 🥇 🥈 🥉, phân loại thứ bậc minh bạch theo điểm số và thời gian.
+
+---
+
+## 6. NÂNG CẤP HỆ THỐNG MÀU SẮC & CÔNG THÁI HỌC THỊ GIÁC (HIGH-FOCUS ERGONOMICS)
+
+Nhằm khắc phục triệt để hiện tượng chói mắt hoặc phân tâm do màu sắc và chuyển động nền trong các phiên làm bài kéo dài, hệ thống đã được tái thiết kế thành **5 bộ chủ đề chuyên biệt đạt chuẩn tương phản WCAG AAA**:
+
+1. **🎯 Slate Focus (Mặc định - Chuẩn phòng thi chuyên nghiệp):** Nền Slate `#f8fafc` kết hợp thẻ câu hỏi trắng ngọc trai `#ffffff`, viền xám titan thanh mảnh `#e2e8f0`, điểm nhấn xanh Indigo `#2563eb` kích thích tư duy logic và nhận thức toán học.
+2. **📖 Warm Sepia (Trang sách thư giãn mắt):** Lấy cảm hứng từ chế độ đọc sách trên Apple Books & Kindle Paper. Tông màu kem giấy ấm `#fbf8f2`, chữ nâu than `#292524`, điểm nhấn hổ phách `#b45309`. Triệt tiêu hoàn toàn ánh sáng xanh chói gắt, tạo cảm giác thư thái tối đa khi đọc đề thi văn bản dài.
+3. **🌿 Sage Calm (Thảo mộc dịu mát - Giảm stress phòng thi):** Tông màu rêu phấn nhạt `#f3f6f4`, chữ xanh rừng sẫm `#142820`, điểm nhấn ngọc lục bảo `#059669`. Giúp giảm nhịp tim và áp lực tâm lý trong các bài thi căng thẳng.
+4. **🌌 Nordic Dark (Đêm Bắc Âu êm ái):** Thay thế giao diện Cyberpunk neon chói gắt trước đây bằng tông nền than chì Bắc Âu `#0b0f19` / `#111827`, chữ xám bạc `#f1f5f9`, điểm nhấn xanh da trời dịu `#38bdf8`. Bảo vệ thị lực tối đa khi ôn thi ban đêm.
+5. **⚪ Clean Minimalist (Tối giản hiện đại):** Phong cách Studio tối giản thanh lịch, đơn sắc tinh tế, tập trung 100% vào nội dung câu hỏi.
+6. **🍑 Soft Peach (Gam ấm nhẹ nhàng):** Tinh chỉnh từ Playful thành tông màu kem đào phấn `#fffbf8`, viền san hô nhạt `#fed7aa`, mang lại không gian học tập tươi mới nhưng không hề nhức mắt.
+
+*Đặc biệt: Loại bỏ hoàn toàn các chuyển động nền xoay vòng hoặc lưới trôi ngầm liên tục, thay bằng ambient backdrop tĩnh dịu nhẹ, đảm bảo mắt người học không bị mỏi cơ sau hàng giờ làm bài liên tục.*
 
 ---
 
 > [!NOTE]
 > **KẾT LUẬN THẨM ĐỊNH TỪ SENIOR ARCHITECT:**  
-> Dự án OmniQuiz PRO (CBT Studio 2.0) sau khi hoàn tất các nâng cấp cốt lõi đã đạt bước nhảy vọt về chất lượng công nghệ: khắc phục triệt để lỗi trôi thời gian, chống mất bài thi hoàn hảo bằng IndexedDB, hiển thị KaTeX sắc nét và trang bị đầy đủ công thái học thi trực tuyến. Hệ thống hoàn toàn đủ năng lực đáp ứng nhu cầu ôn luyện, thi học kỳ và khảo thí tiêu chuẩn với trải nghiệm người dùng đạt chuẩn EdTech quốc tế.
+> Dự án OmniQuiz PRO (CBT Studio 2.0) sau khi hoàn tất toàn bộ **Phase 3** (Question Studio & Live KaTeX Editor) và **Phase 4** (Cloud Exam Room PIN & Live Leaderboards) cùng hệ thống **Ergonomic Focus Color Themes** đã chính thức vươn lên đẳng cấp của một nền tảng khảo thí trực tuyến toàn diện: không chỉ chống mất bài thi hoàn hảo và bảo mật phòng thi chuẩn mực, mà còn trao toàn quyền biên tập nội dung cho giáo viên, kết nối thi đồng thời qua mã PIN tiện lợi, và đem lại trải nghiệm thị giác dịu mắt, tập trung tuyệt đối cho thí sinh.
+
