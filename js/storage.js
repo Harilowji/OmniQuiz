@@ -12,6 +12,36 @@ const StorageManager = (() => {
 
     let dbPromise = null;
 
+    // SEC-04: Reversible XOR-based obfuscator for sensitive exam state in LocalStorage & IndexedDB
+    const MASK_SALT = 'OmniQuizSecuredExamVault_2026';
+
+    function maskPayload(str) {
+        if (!str || typeof str !== 'string') return '';
+        let res = '';
+        for (let i = 0; i < str.length; i++) {
+            res += String.fromCharCode(str.charCodeAt(i) ^ MASK_SALT.charCodeAt(i % MASK_SALT.length));
+        }
+        try {
+            return btoa(encodeURIComponent(res));
+        } catch (e) {
+            return res;
+        }
+    }
+
+    function unmaskPayload(str) {
+        if (!str || typeof str !== 'string') return '';
+        try {
+            const raw = decodeURIComponent(atob(str));
+            let res = '';
+            for (let i = 0; i < raw.length; i++) {
+                res += String.fromCharCode(raw.charCodeAt(i) ^ MASK_SALT.charCodeAt(i % MASK_SALT.length));
+            }
+            return res;
+        } catch (e) {
+            return str;
+        }
+    }
+
     // Initialize IndexedDB
     function getDB() {
         if (!('indexedDB' in window)) return Promise.resolve(null);
@@ -67,6 +97,7 @@ const StorageManager = (() => {
             lang: state.currentLang || 'vi',
             questionCount: state.questions ? state.questions.length : 0,
             violationCount: state.violationCount || 0,
+            questionTimeSpent: state.questionTimeSpent || {},
             updatedAt: Date.now()
         };
 
@@ -89,11 +120,36 @@ const StorageManager = (() => {
             try {
                 const tx = db.transaction('active_session', 'readwrite');
                 const store = tx.objectStore('active_session');
+
+                // SEC-04: If exam is active and unsubmitted, mask answer keys in storage snapshot
+                let questionsToStore = [];
+                if (Array.isArray(state.questions)) {
+                    if (state.currentMode === 'exam' && !state.isSubmitted) {
+                        questionsToStore = state.questions.map(q => {
+                            const realAnswers = (typeof QuizEngine !== 'undefined' && QuizEngine.getCorrectAnswers)
+                                ? QuizEngine.getCorrectAnswers(q)
+                                : (q.answers || []);
+                            const realExp = (typeof QuizEngine !== 'undefined' && QuizEngine.getExplanation)
+                                ? QuizEngine.getExplanation(q)
+                                : (q.explanation || '');
+                            return {
+                                ...q,
+                                answers: [],
+                                explanation: '',
+                                _secVault: maskPayload(JSON.stringify(realAnswers)),
+                                _secExp: maskPayload(realExp)
+                            };
+                        });
+                    } else {
+                        questionsToStore = state.questions;
+                    }
+                }
+
                 store.put({
                     id: 'current_state',
                     ...data,
                     // If questions are present, store questions snapshot to guarantee 100% crash recovery
-                    questions: state.questions || []
+                    questions: questionsToStore
                 });
             } catch (err) {
                 console.warn('[Storage] IndexedDB save state error:', err);
@@ -120,6 +176,7 @@ const StorageManager = (() => {
                 lang: data.lang || 'vi',
                 questionCount: data.questionCount || 0,
                 violationCount: data.violationCount || 0,
+                questionTimeSpent: data.questionTimeSpent || {},
                 updatedAt: data.updatedAt || 0
             };
         } catch (e) {
@@ -140,6 +197,28 @@ const StorageManager = (() => {
                     req.onerror = () => resolve(null);
                 });
                 if (session) {
+                    // SEC-04: Restore masked answers and explanations if present
+                    if (Array.isArray(session.questions)) {
+                        session.questions = session.questions.map(q => {
+                            if (q._secVault) {
+                                try {
+                                    q.answers = JSON.parse(unmaskPayload(q._secVault));
+                                    delete q._secVault;
+                                } catch (e) {
+                                    q.answers = [];
+                                }
+                            }
+                            if (q._secExp) {
+                                try {
+                                    q.explanation = unmaskPayload(q._secExp);
+                                    delete q._secExp;
+                                } catch (e) {
+                                    q.explanation = '';
+                                }
+                            }
+                            return q;
+                        });
+                    }
                     return {
                         ...session,
                         evaluated: new Set(session.evaluated || []),
@@ -169,14 +248,16 @@ const StorageManager = (() => {
 
     // ================= EXAM RAW TEXT PERSISTENCE =================
 
-    function saveCurrentExam(rawText, title = '') {
+    function saveCurrentExam(rawText, title = '', isExamMode = false) {
         try {
             if (!rawText) {
                 localStorage.removeItem(EXAM_KEY);
                 return;
             }
+            const shouldMask = Boolean(isExamMode);
             const data = {
-                rawText: rawText,
+                rawText: shouldMask ? maskPayload(rawText) : rawText,
+                isMasked: shouldMask,
                 title: title,
                 timestamp: Date.now()
             };
@@ -188,10 +269,12 @@ const StorageManager = (() => {
         getDB().then(db => {
             if (!db) return;
             try {
+                const shouldMask = Boolean(isExamMode);
                 const tx = db.transaction('active_session', 'readwrite');
                 tx.objectStore('active_session').put({
                     id: 'current_exam_raw',
-                    rawText: rawText,
+                    rawText: shouldMask ? maskPayload(rawText) : rawText,
+                    isMasked: shouldMask,
                     title: title,
                     timestamp: Date.now()
                 });
@@ -203,7 +286,11 @@ const StorageManager = (() => {
         try {
             const raw = localStorage.getItem(EXAM_KEY);
             if (!raw) return null;
-            return JSON.parse(raw);
+            const data = JSON.parse(raw);
+            if (data.isMasked && data.rawText) {
+                data.rawText = unmaskPayload(data.rawText);
+            }
+            return data;
         } catch (e) {
             console.warn('[Storage] Exam load failed:', e);
             return null;
@@ -220,7 +307,12 @@ const StorageManager = (() => {
                     req.onsuccess = () => resolve(req.result || null);
                     req.onerror = () => resolve(null);
                 });
-                if (res && res.rawText) return res;
+                if (res && res.rawText) {
+                    if (res.isMasked) {
+                        res.rawText = unmaskPayload(res.rawText);
+                    }
+                    return res;
+                }
             } catch (e) {}
         }
         return loadCurrentExam();
@@ -423,6 +515,13 @@ const StorageManager = (() => {
         saveExamToHistory,
         getExamHistory,
         deleteExamHistory,
-        clearAllHistory
+        clearAllHistory,
+        maskPayload,
+        unmaskPayload
     };
 })();
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = StorageManager;
+}
+

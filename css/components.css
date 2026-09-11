@@ -483,6 +483,28 @@
     color: var(--primary-color);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
+.filter-chip.chip-incorrect {
+    color: #ef4444;
+}
+.filter-chip.chip-incorrect.active {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+}
+
+.q-pacing-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.82em;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    background: rgba(148, 163, 184, 0.18);
+    color: var(--text-color);
+    opacity: 0.9;
+    font-weight: 600;
+    margin-left: 6px;
+}
 
 .palette-grid {
     display: grid;

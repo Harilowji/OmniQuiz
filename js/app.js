@@ -174,7 +174,7 @@
                 return;
             }
             const mode = e.target.value;
-            QuizEngine.state.currentMode = mode;
+            QuizEngine.setMode(mode);
             StorageManager.savePreference('mode', mode);
 
             // Enforced Fullscreen Prompt for Exam Mode
@@ -184,7 +184,7 @@
                         document.documentElement.requestFullscreen().catch(() => {});
                     },
                     () => {
-                        QuizEngine.state.currentMode = 'practice';
+                        QuizEngine.setMode('practice');
                         StorageManager.savePreference('mode', 'practice');
                         e.target.value = 'practice';
                         refreshUI();
@@ -564,6 +564,9 @@
         });
         document.getElementById('flt-unanswered')?.addEventListener('click', () => {
             UIManager.setFilter('unanswered', refreshPalette);
+        });
+        document.getElementById('flt-incorrect')?.addEventListener('click', () => {
+            UIManager.setFilter('incorrect', refreshPalette);
         });
 
         // Azota Mobile Drawer Toggles
@@ -1086,7 +1089,7 @@
             rawText += '\n';
         });
 
-        StorageManager.saveCurrentExam(rawText);
+        StorageManager.saveCurrentExam(rawText, '', QuizEngine.state.currentMode === 'exam');
         StorageManager.clearState();
 
         QuizEngine.setQuestions(questions);
@@ -1123,8 +1126,8 @@
             return;
         }
 
-        // Save active exam text for refresh recovery
-        StorageManager.saveCurrentExam(rawText);
+        // Save active exam text for refresh recovery (SEC-04 masked in exam mode)
+        StorageManager.saveCurrentExam(rawText, '', QuizEngine.state.currentMode === 'exam');
 
         QuizEngine.setQuestions(parsed);
 
@@ -1367,7 +1370,6 @@
 
         QuizEngine.syncTimeLeft();
         updateTimerDisplay();
-        if (QuizEngine.state.timeLeft === -1) return;
 
         timerInterval = setInterval(() => {
             if (QuizEngine.state.isSubmitted) {
@@ -1375,18 +1377,32 @@
                 return;
             }
 
-            // Sync from TargetEndTime to prevent browser background tab CPU throttling skew
-            QuizEngine.syncTimeLeft();
-            updateTimerDisplay();
+            // Sync from TargetEndTime to prevent browser background tab CPU throttling skew (if timed exam)
+            if (QuizEngine.state.timeLeft !== -1) {
+                QuizEngine.syncTimeLeft();
+                updateTimerDisplay();
 
-            // Periodic auto-save every 3 seconds to IndexedDB & localStorage
-            if (QuizEngine.state.timeLeft % 3 === 0) {
-                StorageManager.saveState(QuizEngine.state);
+                // Periodic auto-save every 3 seconds to IndexedDB & localStorage
+                if (QuizEngine.state.timeLeft % 3 === 0) {
+                    StorageManager.saveState(QuizEngine.state);
+                }
+
+                if (QuizEngine.state.timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    finishQuiz(true);
+                    return;
+                }
+            } else {
+                // Unlimited practice: periodic auto-save every 10 seconds
+                if (Math.floor(Date.now() / 1000) % 10 === 0) {
+                    StorageManager.saveState(QuizEngine.state);
+                }
             }
 
-            if (QuizEngine.state.timeLeft <= 0) {
-                clearInterval(timerInterval);
-                finishQuiz(true);
+            // ANA-01: Record per-question pacing for active viewing question
+            if (typeof UIManager.getActiveQuestionIndex === 'function') {
+                const activeIdx = UIManager.getActiveQuestionIndex();
+                QuizEngine.recordQuestionTime(activeIdx, 1);
             }
         }, 1000);
     }

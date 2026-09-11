@@ -18,11 +18,82 @@ const QuizEngine = (() => {
         violationCount: 0,
         maxViolations: 3,
         violationLogs: [],
-        incorrectQData: []
+        incorrectQData: [],
+        questionTimeSpent: {} // ANA-01: { [qIndex]: seconds }
     };
 
+    // SEC-03: Isolated internal vault for sensitive answer keys and explanations during active exams
+    const _answerVault = new WeakMap();
+    const _explanationVault = new WeakMap();
+
+    function getCorrectAnswers(q) {
+        if (!q) return [];
+        if (_answerVault.has(q)) {
+            return _answerVault.get(q) || [];
+        }
+        return Array.isArray(q.answers) ? q.answers : [];
+    }
+
+    function getExplanation(q) {
+        if (!q) return '';
+        if (_explanationVault.has(q)) {
+            return _explanationVault.get(q) || '';
+        }
+        return q.explanation || '';
+    }
+
+    function lockAnswersForExam() {
+        if (!state.questions || state.isSubmitted) return;
+        state.questions.forEach(q => {
+            if (!q) return;
+            if (Array.isArray(q.answers) && q.answers.length > 0) {
+                if (!_answerVault.has(q)) {
+                    _answerVault.set(q, [...q.answers]);
+                }
+            }
+            if (q.explanation && !_explanationVault.has(q)) {
+                _explanationVault.set(q, q.explanation);
+            }
+            // Strip raw answers from public inspection in state
+            q.answers = [];
+        });
+    }
+
+    function unlockAnswersForReview() {
+        if (!state.questions) return;
+        state.questions.forEach(q => {
+            if (!q) return;
+            if (_answerVault.has(q)) {
+                q.answers = [..._answerVault.get(q)];
+            }
+            if (_explanationVault.has(q)) {
+                q.explanation = _explanationVault.get(q);
+            }
+        });
+    }
+
+    function setMode(mode) {
+        state.currentMode = mode;
+        if (mode === 'exam' && !state.isSubmitted) {
+            lockAnswersForExam();
+        } else if (mode === 'practice' || state.isSubmitted) {
+            unlockAnswersForReview();
+        }
+    }
+
+    function recordQuestionTime(qIndex, seconds = 1) {
+        if (state.isSubmitted || !state.questions || !state.questions[qIndex]) return;
+        if (!state.questionTimeSpent) state.questionTimeSpent = {};
+        state.questionTimeSpent[qIndex] = (state.questionTimeSpent[qIndex] || 0) + seconds;
+    }
+
+    function getQuestionTime(qIndex) {
+        if (!state.questionTimeSpent) return 0;
+        return state.questionTimeSpent[qIndex] || 0;
+    }
+
     function setQuestions(newQuestions) {
-        state.questions = newQuestions;
+        state.questions = newQuestions || [];
         state.userAnswers = {};
         state.evaluatedQuestions = new Set();
         state.flaggedQuestions.clear();
@@ -31,8 +102,27 @@ const QuizEngine = (() => {
         state.incorrectQData = [];
         state.violationCount = 0;
         state.violationLogs = [];
+        state.questionTimeSpent = {};
         state.timeLeft = state.durationMinutes > 0 ? state.durationMinutes * 60 : -1;
         state.targetEndTime = state.timeLeft > 0 ? (Date.now() + state.timeLeft * 1000) : null;
+
+        // Vault all answer keys and explanations securely
+        if (Array.isArray(state.questions)) {
+            state.questions.forEach(q => {
+                if (q) {
+                    if (Array.isArray(q.answers) && q.answers.length > 0) {
+                        _answerVault.set(q, [...q.answers]);
+                    }
+                    if (typeof q.explanation === 'string') {
+                        _explanationVault.set(q, q.explanation);
+                    }
+                }
+            });
+            // If in active exam mode, immediately sequester answers from public state
+            if (state.currentMode === 'exam') {
+                lockAnswersForExam();
+            }
+        }
     }
 
     function setExamDuration(minutes) {
@@ -167,14 +257,16 @@ const QuizEngine = (() => {
     }
 
     function isAnswerCorrect(q, selectedIndices) {
-        if (!q || !Array.isArray(q.answers) || q.answers.length === 0) {
+        if (!q) return false;
+        const answers = getCorrectAnswers(q);
+        if (!Array.isArray(answers) || answers.length === 0) {
             return false;
         }
         if (!Array.isArray(selectedIndices) || selectedIndices.length === 0) {
             return false;
         }
         const cleanSelected = selectedIndices.map(Number).filter(n => !isNaN(n));
-        const cleanAnswers = q.answers.map(Number).filter(n => !isNaN(n));
+        const cleanAnswers = answers.map(Number).filter(n => !isNaN(n));
 
         const selSet = new Set(cleanSelected);
         const ansSet = new Set(cleanAnswers);
@@ -214,10 +306,12 @@ const QuizEngine = (() => {
         });
         if (hasRelativeOption) return;
 
+        const currentAnswers = getCorrectAnswers(q);
+
         // Pair option text with correctness
         const indexedOpts = q.options.map((text, idx) => ({
             text,
-            isCorrect: q.answers.includes(idx)
+            isCorrect: currentAnswers.includes(idx)
         }));
 
         // Fisher-Yates shuffle on options
@@ -227,14 +321,24 @@ const QuizEngine = (() => {
         }
 
         q.options = indexedOpts.map(o => o.text);
-        q.answers = [];
+        const newAnswers = [];
         indexedOpts.forEach((o, idx) => {
-            if (o.isCorrect) q.answers.push(idx);
+            if (o.isCorrect) newAnswers.push(idx);
         });
+
+        _answerVault.set(q, newAnswers);
+        if (state.currentMode === 'exam' && !state.isSubmitted) {
+            q.answers = [];
+        } else {
+            q.answers = [...newAnswers];
+        }
     }
 
     function shuffle() {
         if (state.isSubmitted) return;
+
+        // Unlock real answers to preserve correctness during shuffle
+        unlockAnswersForReview();
 
         // 1. Shuffle question order and maintain strict question-image pairing
         const paired = state.questions.map((q, idx) => ({
@@ -260,14 +364,23 @@ const QuizEngine = (() => {
             shuffleQuestionOptions(p.question);
         });
 
+        // Re-lock if in exam mode
+        if (state.currentMode === 'exam') {
+            lockAnswersForExam();
+        }
+
         // Reset answers and flags for a fresh randomized test
         state.userAnswers = {};
         state.evaluatedQuestions.clear();
         state.flaggedQuestions.clear();
         state.incorrectQData = [];
+        state.questionTimeSpent = {};
     }
 
     function calculateResults() {
+        // SEC-03: Unlock real answers for evaluation and post-exam review
+        unlockAnswersForReview();
+
         let correct = 0;
         let incorrectAttempted = 0;
         let unattempted = 0;
@@ -423,6 +536,18 @@ const QuizEngine = (() => {
         setExamDuration,
         syncTimeLeft,
         recordViolation,
-        createRetakeMistakesExam
+        createRetakeMistakesExam,
+        getCorrectAnswers,
+        getExplanation,
+        lockAnswersForExam,
+        unlockAnswersForReview,
+        setMode,
+        recordQuestionTime,
+        getQuestionTime
     };
 })();
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = QuizEngine;
+}
+

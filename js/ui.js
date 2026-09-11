@@ -169,18 +169,23 @@ const UIManager = (() => {
                 block.appendChild(checkBtn);
             }
 
-            // Explanation box
+            // SEC-01: Explanation box (Strictly avoid DOM leaking when unsubmitted)
             const expDiv = document.createElement('div');
             expDiv.className = 'explanation';
             expDiv.id = 'exp-' + qIndex;
-            const safeExpText = (typeof QuestionParser !== 'undefined' && QuestionParser.formatMathText) 
-                ? QuestionParser.formatMathText(q.explanation) 
+            const explanationText = (typeof QuizEngine !== 'undefined' && QuizEngine.getExplanation)
+                ? QuizEngine.getExplanation(q)
                 : q.explanation;
-            const hasExpText = q.explanation && q.explanation.trim().length > 0;
-            expDiv.innerHTML = `<strong>${t('explanation')}</strong> ${safeExpText}`;
+            const hasExpText = explanationText && explanationText.trim().length > 0;
+
             if (isEvaluated && hasExpText) {
+                const safeExpText = (typeof QuestionParser !== 'undefined' && QuestionParser.formatMathText) 
+                    ? QuestionParser.formatMathText(explanationText) 
+                    : explanationText;
+                expDiv.innerHTML = `<strong>${t('explanation')}</strong> ${safeExpText}`;
                 expDiv.style.display = 'block';
             } else {
+                expDiv.innerHTML = '';
                 expDiv.style.display = 'none';
             }
             block.appendChild(expDiv);
@@ -198,7 +203,17 @@ const UIManager = (() => {
 
             const counterPill = document.createElement('div');
             counterPill.className = 'q-indicator-pill';
-            counterPill.innerText = `${t('questionLabel') || 'Câu'} ${qIndex + 1} / ${questions.length}`;
+            let pacingTag = '';
+            if (isSubmitted && typeof QuizEngine !== 'undefined' && typeof QuizEngine.getQuestionTime === 'function') {
+                const secs = QuizEngine.getQuestionTime(qIndex);
+                if (secs > 0) {
+                    const m = Math.floor(secs / 60);
+                    const s = secs % 60;
+                    const timeStr = m > 0 ? `${m}m ${s}s` : `${s}s`;
+                    pacingTag = ` <span class="q-pacing-badge" title="Thời gian làm câu này">⏱️ ${timeStr}</span>`;
+                }
+            }
+            counterPill.innerHTML = `${t('questionLabel') || 'Câu'} ${qIndex + 1} / ${questions.length}${pacingTag}`;
             navFooter.appendChild(counterPill);
 
             const nextBtn = document.createElement('button');
@@ -372,11 +387,26 @@ const UIManager = (() => {
             checkBtn.style.display = (q.type === 'multiple' && mode === 'practice' && !isEvaluated) ? 'inline-flex' : 'none';
         }
 
-        // Update explanation
+        // SEC-01: Update explanation (Strictly avoid DOM leaking when unsubmitted)
         const expDiv = document.getElementById('exp-' + qIndex);
         if (expDiv) {
-            const hasExpText = q.explanation && q.explanation.trim().length > 0;
-            expDiv.style.display = (isEvaluated && hasExpText) ? 'block' : 'none';
+            const explanationText = (typeof QuizEngine !== 'undefined' && QuizEngine.getExplanation)
+                ? QuizEngine.getExplanation(q)
+                : q.explanation;
+            const hasExpText = explanationText && explanationText.trim().length > 0;
+            if (isEvaluated && hasExpText) {
+                if (!expDiv.innerHTML) {
+                    const safeExpText = (typeof QuestionParser !== 'undefined' && QuestionParser.formatMathText) 
+                        ? QuestionParser.formatMathText(explanationText) 
+                        : explanationText;
+                    expDiv.innerHTML = `<strong>${t('explanation')}</strong> ${safeExpText}`;
+                    typesetMath(expDiv);
+                }
+                expDiv.style.display = 'block';
+            } else {
+                expDiv.innerHTML = '';
+                expDiv.style.display = 'none';
+            }
         }
     }
 
@@ -405,6 +435,7 @@ const UIManager = (() => {
         }
 
         let countAnswered = 0;
+        let countIncorrect = 0;
         const countFlagged = flaggedQuestions.size;
 
         questions.forEach((q, qIndex) => {
@@ -417,6 +448,9 @@ const UIManager = (() => {
             const isEvaluated = isSubmitted || (mode === 'practice' && evaluatedQuestions && evaluatedQuestions.has(qIndex));
 
             if (hasAnswered) countAnswered++;
+            if (isEvaluated && hasAnswered && !QuizEngine.isAnswerCorrect(q, answers)) {
+                countIncorrect++;
+            }
 
             // Preserve current-viewing state
             const isCurrentViewing = qIndex === activeViewingQuestionIndex;
@@ -445,6 +479,10 @@ const UIManager = (() => {
             if (currentPaletteFilter === 'answered' && !hasAnswered) visible = false;
             if (currentPaletteFilter === 'unanswered' && hasAnswered) visible = false;
             if (currentPaletteFilter === 'flagged' && !isFlagged) visible = false;
+            if (currentPaletteFilter === 'incorrect') {
+                const isIncorrect = isEvaluated && hasAnswered && !QuizEngine.isAnswerCorrect(q, answers);
+                if (!isIncorrect) visible = false;
+            }
 
             btn.style.display = visible ? 'flex' : 'none';
         });
@@ -454,11 +492,25 @@ const UIManager = (() => {
         const fltAns = document.getElementById('flt-answered');
         const fltFlg = document.getElementById('flt-flagged');
         const fltUna = document.getElementById('flt-unanswered');
+        const fltInc = document.getElementById('flt-incorrect');
 
         if (fltAll) fltAll.innerText = `${t('fltAll')} (${questions.length})`;
         if (fltAns) fltAns.innerText = `${t('fltAnswered')} (${countAnswered})`;
         if (fltFlg) fltFlg.innerText = `${t('fltFlagged')} (${countFlagged})`;
         if (fltUna) fltUna.innerText = `${t('fltUnanswered')} (${questions.length - countAnswered})`;
+        if (fltInc) {
+            if (isSubmitted || mode === 'practice') {
+                fltInc.style.display = 'inline-flex';
+                fltInc.innerText = `${t('fltIncorrect') || '❌ Câu sai'} (${countIncorrect})`;
+            } else {
+                fltInc.style.display = 'none';
+                if (currentPaletteFilter === 'incorrect') {
+                    currentPaletteFilter = 'all';
+                    document.querySelectorAll('.filter-chip').forEach(el => el.classList.remove('active'));
+                    document.getElementById('flt-all')?.classList.add('active');
+                }
+            }
+        }
 
         // Azota Circular Progress Gauge (circumference for r=13 is ~81.68)
         const pctVal = questions.length > 0 ? (countAnswered / questions.length) : 0;

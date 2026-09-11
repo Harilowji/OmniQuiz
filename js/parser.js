@@ -68,6 +68,97 @@ const QuestionParser = (() => {
      * render code snippets and diagrams, and protect math expressions from browser DOM tag swallowing.
      */
     /**
+     * PRS-01: Normalize invisible, non-breaking, or non-standard Unicode whitespaces
+     * and linebreaks commonly found in PDF/Word extractions into standard space (\u0020).
+     */
+    function normalizeUnicodeWhitespace(text) {
+        if (!text || typeof text !== 'string') return '';
+        return text
+            // Unicode whitespace variants, zero-width spaces, BOM
+            .replace(/[\u00A0\u1680\u180E\u2000-\u200A\u200B\u200C\u200D\u2028\u2029\u202F\u205F\u3000\uFEFF]/g, ' ')
+            // Normalize CRLF to LF
+            .replace(/\r\n/g, '\n')
+            .replace(/\r/g, '\n');
+    }
+
+    /**
+     * SEC-02: Robust HTML Sanitizer with safe tag whitelist, attribute verification,
+     * inline event handler stripping, and URI scheme blocking.
+     */
+    function sanitizeHtml(html) {
+        if (!html || typeof html !== 'string') return '';
+
+        // 1. Completely remove dangerous executable tags and headers
+        let clean = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+        clean = clean.replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '');
+        clean = clean.replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '');
+        clean = clean.replace(/<embed\b[^>]*\/?>/gi, '');
+        clean = clean.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
+        clean = clean.replace(/<form\b[^<]*(?:(?!<\/form>)<[^<]*)*<\/form>/gi, '');
+        clean = clean.replace(/<meta\b[^>]*\/?>/gi, '');
+        clean = clean.replace(/<link\b[^>]*\/?>/gi, '');
+
+        // 2. Strip all inline on* event handlers (e.g. onerror, onclick, onload, etc.)
+        clean = clean.replace(/\son[a-zA-Z]+\s*=\s*(?:'[^']*'|"[^"]*"|[^\s>]+)/gi, '');
+
+        // 3. Block malicious schemes in src and href (javascript:, vbscript:, unsafe data:)
+        clean = clean.replace(/\b(href|src)\s*=\s*(['"])\s*(?:javascript:|vbscript:|data:(?!image\/))\S*\2/gi, '$1=""');
+        clean = clean.replace(/\b(href|src)\s*=\s*(?:javascript:|vbscript:|data:(?!image\/))\S+/gi, '$1=""');
+
+        // 4. In browser environments, enforce strict DOMParser whitelist validation
+        if (typeof window !== 'undefined' && window.DOMParser) {
+            try {
+                const doc = new DOMParser().parseFromString(clean, 'text/html');
+                const allowedTags = new Set([
+                    'DIV', 'SPAN', 'B', 'STRONG', 'EM', 'I', 'U', 'P', 'BR',
+                    'TABLE', 'TR', 'TD', 'TH', 'THEAD', 'TBODY', 'CODE', 'PRE',
+                    'IMG', 'SVG', 'PATH', 'SUP', 'SUB', 'BUTTON'
+                ]);
+
+                const allowedAttrs = new Set([
+                    'class', 'id', 'src', 'alt', 'title', 'width', 'height',
+                    'style', 'data-code', 'viewbox', 'd', 'fill', 'stroke',
+                    'stroke-width', 'stroke-linecap', 'cx', 'cy', 'r'
+                ]);
+
+                const allElements = doc.body.querySelectorAll('*');
+                allElements.forEach(el => {
+                    const tag = el.tagName.toUpperCase();
+                    if (!allowedTags.has(tag)) {
+                        const textNode = doc.createTextNode(el.textContent || '');
+                        el.parentNode ? el.parentNode.replaceChild(textNode, el) : el.remove();
+                        return;
+                    }
+
+                    const attrs = Array.from(el.attributes);
+                    for (const attr of attrs) {
+                        const attrName = attr.name.toLowerCase();
+                        if (attrName.startsWith('on') || !allowedAttrs.has(attrName)) {
+                            el.removeAttribute(attr.name);
+                            continue;
+                        }
+
+                        if (attrName === 'src' || attrName === 'href') {
+                            const val = attr.value.trim().toLowerCase();
+                            if (val.startsWith('javascript:') || val.startsWith('vbscript:')) {
+                                el.removeAttribute(attr.name);
+                            } else if (val.startsWith('data:') && !val.startsWith('data:image/')) {
+                                el.removeAttribute(attr.name);
+                            }
+                        }
+                    }
+                });
+
+                return doc.body.innerHTML;
+            } catch (e) {
+                return clean;
+            }
+        }
+
+        return clean;
+    }
+
+    /**
      * Helper to safely escape HTML special characters inside code blocks and text.
      */
     function escapeHtml(str) {
@@ -168,7 +259,7 @@ const QuestionParser = (() => {
             return `<div class="quiz-code-block-wrap"><div class="quiz-code-header">${langLabel}<button type="button" class="btn-copy-code" data-code="${encodedCode}">📋 Chép mã</button></div><pre class="quiz-code-block"><code>${escapedCode}</code></pre></div>`;
         });
 
-        return processed;
+        return sanitizeHtml(processed);
     }
 
     /**
@@ -216,7 +307,8 @@ const QuestionParser = (() => {
      */
     function cleanPdfNoise(text) {
         if (!text || typeof text !== 'string') return '';
-        return text
+        let cleaned = normalizeUnicodeWhitespace(text);
+        return cleaned
             // Studocu and standard document headers/footers
             .replace(/--\s*\d+\s+of\s+\d+\s*--/gi, '')
             .replace(/lOMoARcPSD\|\d+/gi, '')
@@ -329,8 +421,8 @@ const QuestionParser = (() => {
         const questions = [];
         const { cleanText, keyMap } = extractTrailingAnswerTable(cleaned);
 
-        // Match start of question headers: Câu 1, Bài 1, Question 1, Q1, or 1.
-        const qHeaderRegex = /(?:^|\n+)\s*(?:(?:Câu|Question|Bài|Q)\s*(\d+)[\s:.]+|(\d+)[\s.:]\s+(?=[A-ZÀ-Ỹ\$\\\*]))/gi;
+        // Match start of question headers: Câu 1, Bài 1, Question 1, Q1, 1/, 1-, 1>, 1:, 1., Câu 1 (2.0 điểm):, etc.
+        const qHeaderRegex = /(?:^|\n+)\s*(?:(?:Câu\s*hỏi|Câu|Question|Bài|Q)\s*(\d+)(?:\s*\([^\)]*\))?[\s:.\-\—\–\)\/]+|(\d+)(?:\s*\([^\)]*\))?[\s.:\)\/\-\>]\s+(?=[A-ZÀ-Ỹ\$\\\*0-9\(]))/gi;
 
         const matches = [];
         let match;
@@ -368,14 +460,14 @@ const QuestionParser = (() => {
         let explanation = '';
         let readingState = 'q'; // 'q', 'exp'
 
-        const optRegex = /^(?:[\*\-\s]*[\(\[]?([A-E])[\)\]\.\:\*]+\s*)(.+)$/i;
+        const optRegex = /^(?:[\*\-\s]*[\(\[]?([A-E])[\)\]\.\:\*\-\/]+\s*)(.+)$/i;
         const ansRegex = /^\s*(?:=>|->|⇒|→|[\*\-\>\•])?\s*\[?\s*(?:(?:Đáp\s*án(?:\s*đúng)?(?:\s*là)?|Đ\/?A|Chọn(?:\s*đáp\s*án)?|Answer|Key|Ans)[\s\:\=\]\.]*)\s*([A-E](?:\s*,\s*[A-E])*)/i;
         const arrowOrBracketAnsRegex = /^\s*(?:=>|->|⇒|→)?\s*[\(\[]?\s*([A-E])\s*[\)\]\.]?\s*$/i;
         const expRegex = /^\s*[\*\-\>\•]?\s*\[?\s*(?:Lời\s*giải(?:\s*chi\s*tiết)?|Hướng\s*dẫn(?:\s*giải)?|Giải(?:\s*chi\s*tiết)?|Explanation|Solution)[\]\s\:\.]*(.*)$/i;
         const expInlineAnsRegex = /(?:chọn(?:\s*đáp\s*án)?|đáp\s*án(?:\s*(?:đúng|là))?|key|answer)[\s\:\=]*([A-E])\b/i;
 
-        // Remove initial header like "Câu 1:" from first line
-        let firstLine = lines[0].replace(/^(?:(?:Câu|Question|Bài|Q)\s*\d+[\s:.]*|\d+[\s:.]*)/i, '').trim();
+        // Remove initial header like "Câu 1:" or "1/" or "Câu 1 (2.0 điểm):" from first line
+        let firstLine = lines[0].replace(/^(?:(?:Câu\s*hỏi|Câu|Question|Bài|Q)\s*\d+(?:\s*\([^\)]*\))?[\s:.\-\—\–\)\/]*|\d+(?:\s*\([^\)]*\))?[\s.:\)\/\-\>]\s*)/i, '').trim();
 
         // Check if inline answer exists in header e.g. "Câu 1: (Đáp án A) Cho hàm số..."
         const headerAnsMatch = firstLine.match(/[\(\[]\s*(?:Đáp\s*án(?:\s*đúng)?|Chọn|Answer|Key)[\s\:\=]*([A-E])\s*[\)\]]/i);
@@ -530,6 +622,7 @@ const QuestionParser = (() => {
 
     function parse(rawText) {
         if (!rawText || typeof rawText !== 'string') return [];
+        rawText = normalizeUnicodeWhitespace(rawText);
         let questions = [];
 
         // Standard CBT format
@@ -560,7 +653,9 @@ const QuestionParser = (() => {
         parse,
         isValidQuestion,
         autoWrapMath,
-        formatMathText
+        formatMathText,
+        sanitizeHtml,
+        normalizeUnicodeWhitespace
     };
 })();
 
