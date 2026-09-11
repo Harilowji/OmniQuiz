@@ -1759,3 +1759,87 @@ body.theme-emerald .quiz-inline-code {
     font-size: 0.9em;
 }
 
+/* ================= STATUS MATRIX SUBMIT CONFIRM MODAL ================= */
+.submit-confirm-card {
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+}
+.matrix-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.matrix-box {
+    padding: 14px 10px;
+    border-radius: 14px;
+    border: 1.5px solid var(--option-border);
+    background: var(--option-bg);
+    transition: transform 0.2s ease;
+}
+.matrix-box:hover {
+    transform: translateY(-2px);
+}
+.matrix-box.answered {
+    border-color: #22c55e;
+    background: rgba(34, 197, 94, 0.08);
+}
+.matrix-box.answered .matrix-num {
+    color: #16a34a;
+}
+.matrix-box.unattempted {
+    border-color: #94a3b8;
+    background: var(--option-bg);
+}
+.matrix-box.unattempted.has-warning {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.08);
+}
+.matrix-box.unattempted.has-warning .matrix-num {
+    color: #ef4444;
+}
+.matrix-box.flagged {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.08);
+}
+.matrix-box.flagged .matrix-num {
+    color: #d97706;
+}
+.matrix-num {
+    font-size: 1.8em;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 4px;
+}
+.matrix-lbl {
+    font-size: 0.85em;
+    font-weight: 700;
+    opacity: 0.9;
+    color: var(--text-color);
+    margin-bottom: 2px;
+}
+.matrix-sub {
+    font-size: 0.75em;
+    opacity: 0.7;
+    font-weight: 600;
+}
+.confirm-warning-banner {
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid #ef4444;
+    color: #f87171;
+    font-size: 0.88em;
+    line-height: 1.5;
+    text-align: left;
+    margin-bottom: 12px;
+}
+
+/* ================= FOCUS MODE (EXAM INTEGRITY & CPU SAVING) ================= */
+body.focus-mode #confetti-canvas {
+    display: none !important;
+}
+body.focus-mode {
+    animation: none !important;
+}
+

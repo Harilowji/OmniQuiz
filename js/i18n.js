@@ -108,7 +108,15 @@ const I18N = {
         badgeCorrect: "Đúng",
         badgeIncorrect: "Sai",
         badgeUnattempted: "Chưa làm",
-        toastSelectFirst: "Vui lòng chọn ít nhất một đáp án trước khi kiểm tra!"
+        toastSelectFirst: "Vui lòng chọn ít nhất một đáp án trước khi kiểm tra!",
+        confirmTitle: "Xác Nhận Nộp Bài Thi",
+        confirmSubtitle: "Vui lòng kiểm tra kỹ ma trận trạng thái bài làm trước khi nộp điểm chính thức",
+        matrixAnswered: "Đã làm",
+        matrixUnanswered: "Chưa làm",
+        matrixFlagged: "Đang cắm cờ",
+        btnCancelSubmit: "↩️ Quay lại làm bài",
+        btnProceedSubmit: "✓ Xác nhận nộp bài",
+        lblPacing: "Tốc độ tb/câu"
     },
     en: {
         appTitle: "Universal Multi-Subject CBT Platform",
@@ -216,7 +224,15 @@ const I18N = {
         optDurationUnlimited: "No limit",
         optDurationMins: "{0} mins",
         lblViolations: "Screen switches:",
-        cleanViolations: "0 times (Valid)"
+        cleanViolations: "0 times (Valid)",
+        confirmTitle: "Confirm Exam Submission",
+        confirmSubtitle: "Please review your question completion matrix before final grading",
+        matrixAnswered: "Answered",
+        matrixUnanswered: "Unattempted",
+        matrixFlagged: "Flagged",
+        btnCancelSubmit: "↩️ Return to Exam",
+        btnProceedSubmit: "✓ Submit & Grade",
+        lblPacing: "Avg Pacing"
     }
 };
 
@@ -260,7 +276,15 @@ function updateUILanguage(lang) {
         'txt-modal-review': trans.modalReview,
         'txt-modal-export': trans.modalExport,
         'txt-modal-new-quiz': trans.modalNewQuiz,
-        'lbl-duration-picker': trans.lblExamDuration
+        'lbl-duration-picker': trans.lblExamDuration,
+        'txt-confirm-title': trans.confirmTitle,
+        'txt-confirm-subtitle': trans.confirmSubtitle,
+        'txt-matrix-answered': trans.matrixAnswered,
+        'txt-matrix-unanswered': trans.matrixUnanswered,
+        'txt-matrix-flagged': trans.matrixFlagged,
+        'btn-cancel-submit': trans.btnCancelSubmit,
+        'btn-proceed-submit': trans.btnProceedSubmit,
+        'txt-modal-pacing': trans.lblPacing
     };
 
     for (const [id, text] of Object.entries(elementMap)) {

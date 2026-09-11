@@ -14,6 +14,7 @@ const QuizEngine = (() => {
         isSubmitted: false,
         durationMinutes: 60,
         timeLeft: 3600,
+        targetEndTime: null,
         violationCount: 0,
         maxViolations: 3,
         violationLogs: [],
@@ -31,12 +32,21 @@ const QuizEngine = (() => {
         state.violationCount = 0;
         state.violationLogs = [];
         state.timeLeft = state.durationMinutes > 0 ? state.durationMinutes * 60 : -1;
+        state.targetEndTime = state.timeLeft > 0 ? (Date.now() + state.timeLeft * 1000) : null;
     }
 
     function setExamDuration(minutes) {
         const mins = parseInt(minutes, 10);
         state.durationMinutes = isNaN(mins) ? 60 : mins;
         state.timeLeft = state.durationMinutes > 0 ? state.durationMinutes * 60 : -1;
+        state.targetEndTime = state.timeLeft > 0 ? (Date.now() + state.timeLeft * 1000) : null;
+    }
+
+    function syncTimeLeft() {
+        if (state.timeLeft === -1 || !state.targetEndTime) return state.timeLeft;
+        const remaining = Math.max(0, Math.round((state.targetEndTime - Date.now()) / 1000));
+        state.timeLeft = remaining;
+        return state.timeLeft;
     }
 
     function recordViolation(reason) {
@@ -283,6 +293,20 @@ const QuizEngine = (() => {
         const score100 = total > 0 ? Math.round((correct / total) * 100) : 0;
         const score10 = total > 0 ? ((correct / total) * 10).toFixed(2) : '0.00';
 
+        const durationSpent = (state.durationMinutes > 0 && state.timeLeft >= 0)
+            ? Math.max(0, (state.durationMinutes * 60) - state.timeLeft)
+            : 0;
+        const pacingSeconds = (answered > 0 && durationSpent > 0)
+            ? Math.round(durationSpent / answered)
+            : (total > 0 && durationSpent > 0 ? Math.round(durationSpent / total) : 0);
+
+        let pacingDisplay = '--';
+        if (pacingSeconds > 0) {
+            const pm = Math.floor(pacingSeconds / 60);
+            const ps = pacingSeconds % 60;
+            pacingDisplay = pm > 0 ? `${pm}m ${ps}s` : `${ps}s`;
+        }
+
         return {
             total,
             answered,
@@ -292,6 +316,9 @@ const QuizEngine = (() => {
             totalIncorrect,
             score100,
             score10,
+            durationSpent,
+            pacingSeconds,
+            pacingDisplay,
             violations: state.violationCount,
             violationLogs: state.violationLogs
         };
@@ -393,6 +420,7 @@ const QuizEngine = (() => {
         calculateResults,
         exportPDFReport,
         setExamDuration,
+        syncTimeLeft,
         recordViolation,
         createRetakeMistakesExam
     };

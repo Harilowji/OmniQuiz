@@ -307,6 +307,10 @@
                     <div class="num" id="modal-violations" style="color: #10b981;">0</div>
                     <div class="lbl" id="txt-modal-violations">Rời màn hình</div>
                 </div>
+                <div class="modal-box" id="modal-box-pacing">
+                    <div class="num" id="modal-pacing" style="color: #0284c7;">--</div>
+                    <div class="lbl" id="txt-modal-pacing">Tốc độ tb/câu</div>
+                </div>
             </div>
 
             <div class="modal-actions">
@@ -453,6 +457,46 @@
             <div style="margin-top: 14px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--card-border); padding-top: 12px;">
                 <button class="btn-action btn-history-action btn-del" id="btn-clear-all-history">🗑️ Xóa toàn bộ lịch sử</button>
                 <button class="btn-action btn-primary" id="btn-history-modal-close" style="padding: 8px 18px;">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUBMIT CONFIRMATION & STATUS MATRIX MODAL -->
+    <div class="modal-overlay" id="submit-confirm-modal" style="display: none; z-index: 99997;">
+        <div class="modal-content submit-confirm-card" style="max-width: 520px; text-align: center;">
+            <div style="font-size: 2.8em; margin-bottom: 6px;">📋</div>
+            <h2 id="txt-confirm-title" style="color: var(--heading-color); margin-bottom: 6px; font-size: 1.4em;">Xác Nhận Nộp Bài Thi</h2>
+            <p id="txt-confirm-subtitle" style="font-size: 0.9em; opacity: 0.8; margin-bottom: 16px;">Vui lòng kiểm tra kỹ ma trận trạng thái bài làm trước khi nộp điểm chính thức</p>
+
+            <div class="matrix-stats-grid">
+                <div class="matrix-box answered">
+                    <div class="matrix-num" id="matrix-count-answered">0</div>
+                    <div class="matrix-lbl" id="txt-matrix-answered">Đã làm</div>
+                    <div class="matrix-sub" id="matrix-percent-answered">0%</div>
+                </div>
+                <div class="matrix-box unattempted" id="matrix-box-unanswered">
+                    <div class="matrix-num" id="matrix-count-unanswered">0</div>
+                    <div class="matrix-lbl" id="txt-matrix-unanswered">Chưa làm</div>
+                    <div class="matrix-sub" id="matrix-alert-unanswered">Chưa tick</div>
+                </div>
+                <div class="matrix-box flagged">
+                    <div class="matrix-num" id="matrix-count-flagged">0</div>
+                    <div class="matrix-lbl" id="txt-matrix-flagged">Đang cắm cờ</div>
+                    <div class="matrix-sub">Cần xem 🚩</div>
+                </div>
+            </div>
+
+            <div id="confirm-unanswered-warning" class="confirm-warning-banner" style="display: none;">
+                ⚠️ <strong>Cảnh báo:</strong> Bạn vẫn còn <span id="confirm-unanswered-highlight">0</span> câu chưa làm. Các câu này sẽ bị tính 0 điểm nếu nộp bài ngay bây giờ!
+            </div>
+
+            <div style="display: flex; gap: 10px; width: 100%; margin-top: 18px;">
+                <button class="btn-action" id="btn-cancel-submit" style="flex: 1; padding: 12px; justify-content: center; font-weight: 600;">
+                    ↩️ Quay lại làm bài
+                </button>
+                <button class="btn-action btn-danger" id="btn-proceed-submit" style="flex: 1.2; padding: 12px; justify-content: center; font-weight: 700;">
+                    ✓ Xác nhận nộp bài
+                </button>
             </div>
         </div>
     </div>

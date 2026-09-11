@@ -673,6 +673,14 @@ const UIManager = (() => {
             }
         }
 
+        // Pacing analysis box
+        const pacingBox = document.getElementById('modal-box-pacing');
+        const pacingNum = document.getElementById('modal-pacing');
+        if (pacingBox && pacingNum) {
+            pacingBox.style.display = 'block';
+            pacingNum.innerText = results.pacingDisplay || '--';
+        }
+
         modal.style.display = 'flex';
     }
 
@@ -955,6 +963,7 @@ const UIManager = (() => {
                                 <span>📅 ${item.dateFormatted || new Date(item.timestamp).toLocaleDateString()}</span>
                                 <span>⏱️ ${item.durationSpent ? Math.round(item.durationSpent / 60) + ' phút' : 'Tự do'}</span>
                                 <span>✓ ${item.correctCount}/${item.totalQuestions} đúng</span>
+                                ${item.pacingDisplay && item.pacingDisplay !== '--' ? `<span>⚡ ${item.pacingDisplay}/câu</span>` : ''}
                                 ${item.syncedToCloud ? '<span style="color: #38bdf8; font-weight: 700;">☁️ Supabase</span>' : ''}
                             </div>
                         </div>
@@ -1076,6 +1085,65 @@ const UIManager = (() => {
         if (modal) modal.style.display = 'none';
     }
 
+    function showSubmitConfirmModal(stats, onConfirm, onCancel) {
+        const modal = document.getElementById('submit-confirm-modal');
+        if (!modal) return;
+
+        const total = stats.total || 0;
+        const answered = stats.answered || 0;
+        const unanswered = stats.unanswered || 0;
+        const flagged = stats.flagged || 0;
+        const percent = total > 0 ? Math.round((answered / total) * 100) : 0;
+
+        const ansEl = document.getElementById('matrix-count-answered');
+        const pctEl = document.getElementById('matrix-percent-answered');
+        const unEl = document.getElementById('matrix-count-unanswered');
+        const flgEl = document.getElementById('matrix-count-flagged');
+
+        if (ansEl) ansEl.innerText = answered;
+        if (pctEl) pctEl.innerText = percent + '%';
+        if (unEl) unEl.innerText = unanswered;
+        if (flgEl) flgEl.innerText = flagged;
+
+        const unBox = document.getElementById('matrix-box-unanswered');
+        const warnBanner = document.getElementById('confirm-unanswered-warning');
+        const unHighlight = document.getElementById('confirm-unanswered-highlight');
+
+        if (unanswered > 0) {
+            if (unBox) unBox.classList.add('has-warning');
+            if (warnBanner) {
+                warnBanner.style.display = 'block';
+                if (unHighlight) unHighlight.innerText = unanswered;
+            }
+        } else {
+            if (unBox) unBox.classList.remove('has-warning');
+            if (warnBanner) warnBanner.style.display = 'none';
+        }
+
+        const btnCancel = document.getElementById('btn-cancel-submit');
+        const btnProceed = document.getElementById('btn-proceed-submit');
+
+        if (btnCancel) {
+            btnCancel.onclick = () => {
+                hideSubmitConfirmModal();
+                if (typeof onCancel === 'function') onCancel();
+            };
+        }
+        if (btnProceed) {
+            btnProceed.onclick = () => {
+                hideSubmitConfirmModal();
+                if (typeof onConfirm === 'function') onConfirm();
+            };
+        }
+
+        modal.style.display = 'flex';
+    }
+
+    function hideSubmitConfirmModal() {
+        const modal = document.getElementById('submit-confirm-modal');
+        if (modal) modal.style.display = 'none';
+    }
+
     function getActiveQuestionIndex() {
         return activeViewingQuestionIndex;
     }
@@ -1111,6 +1179,8 @@ const UIManager = (() => {
         showFullscreenLockout,
         hideFullscreenLockout,
         showFullscreenExamPrompt,
-        hideFullscreenExamPrompt
+        hideFullscreenExamPrompt,
+        showSubmitConfirmModal,
+        hideSubmitConfirmModal
     };
 })();

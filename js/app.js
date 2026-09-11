@@ -94,7 +94,9 @@
         QuizEngine.state.customImages = {};
         QuizEngine.state.isSubmitted = false;
         QuizEngine.state.timeLeft = 3600;
+        QuizEngine.state.targetEndTime = null;
         QuizEngine.state.incorrectQData = [];
+        document.body.classList.remove('focus-mode');
 
         // Reset file input
         const fileInput = document.getElementById('file-input');
@@ -376,6 +378,20 @@
                 handleAntiCheatViolation(QuizEngine.state.currentLang === 'vi' 
                     ? 'Chuyển tab / Ẩn màn hình thi' 
                     : 'Tab switch / Hidden exam window');
+            } else {
+                // Tab became visible again: immediately sync timer from TargetEndTime to eliminate CPU throttling lag
+                if (!QuizEngine.state.isSubmitted && QuizEngine.state.timeLeft > 0) {
+                    QuizEngine.syncTimeLeft();
+                    const timerEl = document.getElementById('time-remaining');
+                    if (timerEl && QuizEngine.state.timeLeft !== -1) {
+                        let m = Math.floor(QuizEngine.state.timeLeft / 60);
+                        let s = QuizEngine.state.timeLeft % 60;
+                        timerEl.innerText = (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+                    }
+                    if (QuizEngine.state.timeLeft <= 0) {
+                        finishQuiz(true);
+                    }
+                }
             }
         });
 
@@ -448,9 +464,13 @@
 
             const currentPos = visibleButtons.findIndex(btn => btn.id === 'pbtn-' + currentIdx);
 
-            // DevTools and Cheat Key Suppression in Exam Mode
+            // DevTools and Cheat Key Suppression in Exam Mode (F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+P, F5, Ctrl+R)
             if (QuizEngine.state.currentMode === 'exam' && isExamActiveUnsubmitted()) {
-                if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && (e.key === 'u' || e.key === 'U'))) {
+                const isPrint = e.ctrlKey && (e.key === 'p' || e.key === 'P');
+                const isRefresh = e.key === 'F5' || (e.ctrlKey && (e.key === 'r' || e.key === 'R'));
+                const isDevTools = e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && (e.key === 'u' || e.key === 'U'));
+
+                if (isDevTools || isPrint || isRefresh) {
                     e.preventDefault();
                     UIManager.showToast('⚠️ Phím tắt bị vô hiệu hóa trong phòng thi!');
                     return;
@@ -963,6 +983,7 @@
                 QuizEngine.state.customImages = saved.customImages || {};
                 QuizEngine.state.isSubmitted = false;
                 QuizEngine.state.timeLeft = saved.timeLeft !== undefined ? saved.timeLeft : (QuizEngine.state.durationMinutes > 0 ? QuizEngine.state.durationMinutes * 60 : -1);
+                QuizEngine.state.targetEndTime = saved.targetEndTime || (QuizEngine.state.timeLeft > 0 ? (Date.now() + QuizEngine.state.timeLeft * 1000) : null);
             } else {
                 StorageManager.clearState();
                 QuizEngine.state.userAnswers = {};
@@ -973,6 +994,7 @@
                     : {};
                 QuizEngine.state.isSubmitted = false;
                 QuizEngine.state.timeLeft = QuizEngine.state.durationMinutes > 0 ? QuizEngine.state.durationMinutes * 60 : -1;
+                QuizEngine.state.targetEndTime = QuizEngine.state.timeLeft > 0 ? (Date.now() + QuizEngine.state.timeLeft * 1000) : null;
                 QuizEngine.state.violationCount = 0;
                 QuizEngine.state.violationLogs = [];
                 QuizEngine.state.incorrectQData = [];
@@ -986,6 +1008,12 @@
         document.getElementById('palette-section').style.display = 'block';
         const fab = document.getElementById('btn-mobile-palette-toggle');
         if (fab) fab.style.display = 'inline-flex';
+
+        if (QuizEngine.state.currentMode === 'exam' && !QuizEngine.state.isSubmitted) {
+            document.body.classList.add('focus-mode');
+        } else {
+            document.body.classList.remove('focus-mode');
+        }
 
         refreshUI();
         startTimer();
@@ -1151,6 +1179,13 @@
             timerEl.innerText = display;
         };
 
+        if (QuizEngine.state.durationMinutes > 0 && QuizEngine.state.timeLeft > 0) {
+            if (!QuizEngine.state.targetEndTime) {
+                QuizEngine.state.targetEndTime = Date.now() + (QuizEngine.state.timeLeft * 1000);
+            }
+        }
+
+        QuizEngine.syncTimeLeft();
         updateTimerDisplay();
         if (QuizEngine.state.timeLeft === -1) return;
 
@@ -1160,7 +1195,8 @@
                 return;
             }
 
-            QuizEngine.state.timeLeft--;
+            // Sync from TargetEndTime to prevent browser background tab CPU throttling skew
+            QuizEngine.syncTimeLeft();
             updateTimerDisplay();
 
             // Periodic auto-save every 3 seconds to IndexedDB & localStorage
@@ -1184,21 +1220,21 @@
                 answeredCount++;
             }
         });
-        const unattempted = QuizEngine.state.questions.length - answeredCount;
+        const total = QuizEngine.state.questions.length;
+        const unattempted = total - answeredCount;
+        const flagged = QuizEngine.state.flaggedQuestions ? QuizEngine.state.flaggedQuestions.size : 0;
 
-        let msg = t('confirmFinish');
-        if (unattempted > 0) {
-            msg += '\n' + t('unansweredWarning', unattempted);
-        }
-
-        if (confirm(msg)) {
-            finishQuiz(false);
-        }
+        UIManager.showSubmitConfirmModal(
+            { total, answered: answeredCount, unanswered: unattempted, flagged },
+            () => finishQuiz(false),
+            null
+        );
     }
 
     async function finishQuiz(isTimeout) {
         if (timerInterval) clearInterval(timerInterval);
         QuizEngine.state.isSubmitted = true;
+        document.body.classList.remove('focus-mode');
         StorageManager.saveState(QuizEngine.state);
 
         const results = QuizEngine.calculateResults();
@@ -1218,14 +1254,14 @@
                 ? (firstQuestionText.replace(/<[^>]+>/g, '').trim().substring(0, 50) + '...')
                 : 'Bài thi trắc nghiệm';
 
-            const durationSpent = (QuizEngine.state.durationMinutes > 0 && QuizEngine.state.timeLeft >= 0)
-                ? (QuizEngine.state.durationMinutes * 60 - QuizEngine.state.timeLeft)
-                : 0;
+            const durationSpent = results.durationSpent !== undefined ? results.durationSpent : 0;
 
             const record = {
                 title: cleanTitle,
                 timestamp: Date.now(),
                 durationSpent: durationSpent,
+                pacingSeconds: results.pacingSeconds || 0,
+                pacingDisplay: results.pacingDisplay || '--',
                 score10: parseFloat(results.score10) || 0,
                 score100: results.score100 || 0,
                 correctCount: results.correct || 0,
