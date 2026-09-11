@@ -3,12 +3,14 @@
  * Implements high-resilience Offline Caching & Stale-While-Revalidate strategy
  */
 
-const CACHE_NAME = 'omniquiz-pro-v3';
+const CACHE_NAME = 'omniquiz-pro-v4';
 
 const PRECACHE_ASSETS = [
     './',
     './index.html',
     './manifest.json',
+    './assets/logo.svg',
+    './assets/favicon.svg',
     './assets/logo.png',
     './buzz.wav',
     './ding.wav',
