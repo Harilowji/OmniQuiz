@@ -10,11 +10,12 @@
   **Hệ thống thi trắc nghiệm máy tính (CBT) không máy chủ, bảo mật tối đa và chuẩn hóa quốc tế.**
   *Universal Computer-Based Testing & Exam Preparation Platform — 100% Client-Side, Zero-Backend & PWA Offline.*
 
-  [![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-22c55e?style=for-the-badge&logo=github&logoColor=white&labelColor=0d1527&color=22c55e)](https://harilowji.github.io/OmniQuiz/)
+  [![Vercel App](https://img.shields.io/badge/Vercel-Live%20App-000000?style=for-the-badge&logo=vercel&logoColor=white&labelColor=0d1527&color=000000)](https://omni-quiz-harilowji.vercel.app/)
+  [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Demo-22c55e?style=for-the-badge&logo=github&logoColor=white&labelColor=0d1527&color=22c55e)](https://harilowji.github.io/OmniQuiz/)
   [![Version](https://img.shields.io/badge/Version-3.0%20Pro-818cf8?style=for-the-badge&logo=speedtest&logoColor=white&labelColor=0d1527&color=818cf8)](https://github.com/Harilowji/OmniQuiz)
-  [![PWA Offline](https://img.shields.io/badge/PWA-100%25%20Offline-38bdf8?style=for-the-badge&logo=pwa&logoColor=white&labelColor=0d1527&color=38bdf8)](https://github.com/Harilowji/OmniQuiz)
-  [![WCAG](https://img.shields.io/badge/WCAG-2.1%20AA-10b981?style=for-the-badge&logo=w3c&logoColor=white&labelColor=0d1527&color=10b981)](https://github.com/Harilowji/OmniQuiz)
-  [![Anti-Cheat](https://img.shields.io/badge/Anti--Cheat-Protected-f43f5e?style=for-the-badge&logo=security&logoColor=white&labelColor=0d1527&color=f43f5e)](https://github.com/Harilowji/OmniQuiz)
+  [![PWA Offline](https://img.shields.io/badge/PWA-100%25%20Offline-38bdf8?style=for-the-badge&logo=pwa&logoColor=white&labelColor=0d1527&color=38bdf8)](https://omni-quiz-harilowji.vercel.app/)
+  [![WCAG](https://img.shields.io/badge/WCAG-2.1%20AA-10b981?style=for-the-badge&logo=w3c&logoColor=white&labelColor=0d1527&color=10b981)](https://omni-quiz-harilowji.vercel.app/)
+  [![Anti-Cheat](https://img.shields.io/badge/Anti--Cheat-Protected-f43f5e?style=for-the-badge&logo=security&logoColor=white&labelColor=0d1527&color=f43f5e)](https://omni-quiz-harilowji.vercel.app/)
   [![License](https://img.shields.io/badge/License-MIT-c084fc?style=for-the-badge&logo=opensourceinitiative&logoColor=white&labelColor=0d1527&color=c084fc)](LICENSE)
 
   <br />
@@ -132,9 +133,10 @@ Bạn có thể trải nghiệm OmniQuiz Pro theo phương thức phù hợp nh�
 
 | Phương thức | Tệp / Địa chỉ | Phù hợp với | Mô tả |
 | :--- | :--- | :--- | :--- |
-| **Trực Tiếp** *(Khuyên dùng)* | [`index.html`](index.html) | Luyện thi tức thì | Mở trực tiếp trên mọi trình duyệt web hiện đại (Chrome, Edge, Safari, Firefox). Kéo thả file đề thi vào là bắt đầu làm bài! |
-| **Cài Đặt PWA** | [Trang chủ OmniQuiz](https://harilowji.github.io/OmniQuiz/) | Offline / Máy tính bảng | Nhấp nút **Install** trên thanh địa chỉ trình duyệt để cài đặt thành ứng dụng độc lập, thi ngoại tuyến 100% khi mất mạng. |
-| **Docker Container** | [`docker-compose.yml`](docker-compose.yml) | Phòng máy trường học / Lab | Đóng gói Nginx Alpine siêu nhẹ (< 25MB RAM). Khởi chạy máy chủ cục bộ tốc độ cao cho hàng trăm học sinh cùng lúc. |
+| **Vercel Cloud** *(Khuyên dùng)* | [omni-quiz-harilowji.vercel.app](https://omni-quiz-harilowji.vercel.app/) | Mọi thiết bị / CDN Siêu tốc | Tải trang siêu tốc tức thì, tự động cập nhật phiên bản mới nhất từ nhánh `main`. |
+| **GitHub Pages** | [harilowji.github.io/OmniQuiz](https://harilowji.github.io/OmniQuiz/) | Dự phòng / Trực tiếp | Triển khai tự động song song qua GitHub Actions CI/CD. |
+| **Cài Đặt PWA** | [Trang chủ OmniQuiz](https://omni-quiz-harilowji.vercel.app/) | Offline / Di động | Nhấp nút **Install** trên thanh địa chỉ trình duyệt để cài đặt thành app máy tính/điện thoại, thi offline 100%. |
+| **Docker Container** | [`docker-compose.yml`](docker-compose.yml) | Phòng máy trường học / Lab | Đóng gói Nginx Alpine siêu nhẹ (< 25MB RAM). Khởi chạy máy chủ nội bộ không cần mạng Internet ngoài. |
 
 > [!TIP]
 > **Yêu cầu hệ thống**: Mọi thiết bị có trình duyệt web hỗ trợ ES6 (Windows, macOS, Linux, iPadOS, Android). Không yêu cầu NodeJS, Python hay cơ sở dữ liệu để vận hành.
