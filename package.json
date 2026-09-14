@@ -1,0 +1,31 @@
+{
+  "name": "omniquiz-pro",
+  "version": "2.5.0",
+  "description": "OmniQuiz PRO - Full-Stack Computer-Based Testing (CBT) Platform with Node.js Backend API, Database, Auth & PWA",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node tests/api.test.js"
+  },
+  "keywords": [
+    "cbt",
+    "quiz",
+    "exam",
+    "education",
+    "fullstack",
+    "nodejs",
+    "database",
+    "api",
+    "pwa"
+  ],
+  "author": "Harilowji",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

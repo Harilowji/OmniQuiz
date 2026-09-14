@@ -180,8 +180,27 @@
                                 <span>🔑</span> <span>Cài đặt Gemini API Key</span>
                             </button>
                         </div>
+
+                        <!-- Group 5: Full-Stack System -->
+                        <div class="tools-menu-group">
+                            <div class="tools-group-label">Hạ tầng & Hệ thống</div>
+                            <button type="button" class="tools-menu-btn" id="btn-view-architecture">
+                                <span>🏛️</span> <span>Sơ đồ Web 9 Lớp & 12 Bước</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Server Status Indicator Badge (Full-Stack Architecture) -->
+                <button type="button" class="server-status-pill" id="server-status-badge" title="Bấm để xem Báo cáo Kiến trúc Full-Stack & Trạng thái API Máy chủ">
+                    <span class="status-dot"></span>
+                    <span class="status-label" id="server-status-text">Đang kết nối...</span>
+                </button>
+
+                <!-- User Authentication & Profile Button -->
+                <button type="button" class="btn-action btn-auth" id="btn-auth-toggle" title="Đăng nhập / Quản lý tài khoản">
+                    <span>👤</span> <span id="auth-btn-label">Tài khoản</span>
+                </button>
 
                 <!-- 5. Fullscreen Toggle -->
                 <button class="btn-action" id="btn-fullscreen-toggle" title="Toàn màn hình">⛶</button>
@@ -805,11 +824,273 @@
         </div>
     </div>
 
+    <!-- FULL-STACK AUTHENTICATION MODAL -->
+    <div class="modal-overlay" id="auth-modal" style="display: none; z-index: 99999;">
+        <div class="modal-content auth-modal-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.4em;">🛡️</span>
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.2em; color: var(--heading-color);">Tài khoản OmniQuiz PRO</h3>
+                        <p style="margin: 0; font-size: 0.8em; opacity: 0.75;">Xác thực máy chủ bảo mật JWT & RBAC</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-action btn-history-action btn-del" id="btn-close-auth-modal" style="padding: 4px 10px;">✕</button>
+            </div>
+
+            <!-- Tab Switcher -->
+            <div class="auth-tabs-nav" id="auth-tabs-nav">
+                <button type="button" class="auth-tab-btn active" id="tab-btn-login">Đăng nhập</button>
+                <button type="button" class="auth-tab-btn" id="tab-btn-register">Đăng ký mới</button>
+            </div>
+
+            <!-- Alert Notification -->
+            <div id="auth-alert-box" style="display: none; padding: 10px 14px; border-radius: 8px; font-size: 0.85em; font-weight: 600; margin-bottom: 14px;"></div>
+
+            <!-- View 1: Login Form -->
+            <form id="auth-login-form">
+                <div class="auth-form-group">
+                    <label class="auth-form-label" for="login-email">Email đăng nhập</label>
+                    <input type="email" id="login-email" class="auth-form-input" placeholder="name@example.com" required autocomplete="email">
+                </div>
+                <div class="auth-form-group">
+                    <label class="auth-form-label" for="login-password">Mật khẩu</label>
+                    <input type="password" id="login-password" class="auth-form-input" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-action btn-primary" style="width: 100%; justify-content: center; padding: 10px; font-size: 1em;">
+                    🚀 Đăng nhập hệ thống
+                </button>
+
+                <!-- Demo Quick Login Buttons -->
+                <div class="auth-demo-box">
+                    <div class="auth-demo-title">⚡ Đăng nhập nhanh tài khoản mẫu:</div>
+                    <div class="auth-demo-btns">
+                        <button type="button" class="btn-auth-demo" id="btn-demo-teacher">
+                            👨‍🏫 Giáo viên (Admin)
+                        </button>
+                        <button type="button" class="btn-auth-demo" id="btn-demo-student">
+                            🎓 Học sinh
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- View 2: Register Form -->
+            <form id="auth-register-form" style="display: none;">
+                <div class="auth-form-group">
+                    <label class="auth-form-label" for="register-name">Họ và tên</label>
+                    <input type="text" id="register-name" class="auth-form-input" placeholder="Nguyễn Văn A" required>
+                </div>
+                <div class="auth-form-group">
+                    <label class="auth-form-label" for="register-email">Email</label>
+                    <input type="email" id="register-email" class="auth-form-input" placeholder="name@example.com" required>
+                </div>
+                <div class="auth-form-group">
+                    <label class="auth-form-label" for="register-password">Mật khẩu (Tối thiểu 6 ký tự)</label>
+                    <input type="password" id="register-password" class="auth-form-input" placeholder="••••••••" minlength="6" required>
+                </div>
+                <div class="auth-form-group">
+                    <label class="auth-form-label" for="register-role">Vai trò</label>
+                    <select id="register-role" class="auth-form-input">
+                        <option value="student">🎓 Thí sinh / Học sinh</option>
+                        <option value="teacher">👨‍🏫 Giáo viên / Giảng viên</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-action btn-primary" style="width: 100%; justify-content: center; padding: 10px; font-size: 1em;">
+                    ✨ Tạo tài khoản ngay
+                </button>
+            </form>
+
+            <!-- View 3: Profile Logged In -->
+            <div id="auth-profile-view" style="display: none;">
+                <div style="text-align: center; padding: 16px 0;">
+                    <div style="font-size: 3em; margin-bottom: 8px;">👤</div>
+                    <h3 id="profile-user-name" style="margin: 0; color: var(--heading-color);">Người dùng</h3>
+                    <div id="profile-user-email" style="font-size: 0.88em; opacity: 0.8; margin-top: 2px;">email@domain.com</div>
+                    <div id="profile-user-badge" style="display: inline-block; margin-top: 8px; padding: 3px 12px; border-radius: 99px; background: rgba(79, 70, 229, 0.15); color: var(--primary-color); font-weight: 700; font-size: 0.8em;">
+                        ROLE: STUDENT
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 16px;">
+                    <button type="button" class="btn-action btn-danger" id="btn-auth-logout" style="width: 100%; justify-content: center;">
+                        🚪 Đăng xuất khỏi hệ thống
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FULL-STACK ARCHITECTURE & 12-STEP LIFECYCLE MODAL -->
+    <div class="modal-overlay" id="fullstack-arch-modal" style="display: none; z-index: 99999;">
+        <div class="modal-content arch-modal-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.8em;">🏛️</span>
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.25em; color: var(--heading-color);">Kiến Trúc Toàn Diện Hệ Thống (Full-Stack Architecture)</h3>
+                        <p style="margin: 0; font-size: 0.82em; opacity: 0.8;">Mô hình 9 Thành Phần Cốt Lõi & Luồng Vận Hành 12 Bước Khép Kín</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-action btn-history-action btn-del" id="btn-close-arch-modal" style="padding: 4px 10px;">✕</button>
+            </div>
+
+            <!-- SECTION 1: 9 COMPONENTS OF WEB -->
+            <div style="margin-bottom: 20px;">
+                <h4 style="margin: 0 0 8px 0; color: var(--primary-color); display: flex; align-items: center; gap: 6px;">
+                    <span>📐</span> Cấu Trúc Hoàn Chỉnh Của Website (9 Thành Phần)
+                </h4>
+                <div class="arch-grid-9">
+                    <div class="arch-item">
+                        <div class="arch-icon">🌐</div>
+                        <div>
+                            <div class="arch-title">1. Domain (Tên miền)</div>
+                            <div class="arch-desc">Định danh như omniquiz.edu.vn hoặc localhost</div>
+                            <span class="arch-tag">Active</span>
+                        </div>
+                    </div>
+                    <div class="arch-item">
+                        <div class="arch-icon">🧭</div>
+                        <div>
+                            <div class="arch-title">2. DNS Resolution</div>
+                            <div class="arch-desc">Hệ thống phân giải tên miền sang IP Web Server</div>
+                            <span class="arch-tag">DNS Ready</span>
+                        </div>
+                    </div>
+                    <div class="arch-item">
+                        <div class="arch-icon">🖥️</div>
+                        <div>
+                            <div class="arch-title">3. Hosting / Server</div>
+                            <div class="arch-desc">Node.js Express Server, Docker & Vercel Serverless</div>
+                            <span class="arch-tag" id="arch-server-tag">Port 3000 / Alpine</span>
+                        </div>
+                    </div>
+                    <div class="arch-item">
+                        <div class="arch-icon">🎨</div>
+                        <div>
+                            <div class="arch-title">4. Frontend SPA</div>
+                            <div class="arch-desc">HTML5, Modular JS, CSS3, KaTeX Math & PWA</div>
+                            <span class="arch-tag">Client Layer</span>
+                        </div>
+                    </div>
+                    <div class="arch-item">
+                        <div class="arch-icon">⚙️</div>
+                        <div>
+                            <div class="arch-title">5. Backend Core</div>
+                            <div class="arch-desc">Xử lý logic, JWT Auth, RBAC, Server-Side Grading</div>
+                            <span class="arch-tag">Node.js Controller</span>
+                        </div>
+                    </div>
+                    <div class="arch-item">
+                        <div class="arch-icon">💾</div>
+                        <div>
+                            <div class="arch-title">6. Database CSDL</div>
+                            <div class="arch-desc">ACID File-Backed JSON DAL / Cloud PostgreSQL</div>
+                            <span class="arch-tag" id="arch-db-tag">data/db.json</span>
+                        </div>
+                    </div>
+                    <div class="arch-item">
+                        <div class="arch-icon">🔌</div>
+                        <div>
+                            <div class="arch-title">7. RESTful API</div>
+                            <div class="arch-desc">Cầu nối JSON 6 cụm endpoints (/api/auth, /api/exams...)</div>
+                            <span class="arch-tag">HTTP / JSON</span>
+                        </div>
+                    </div>
+                    <div class="arch-item">
+                        <div class="arch-icon">🔒</div>
+                        <div>
+                            <div class="arch-title">8. SSL / HTTPS</div>
+                            <div class="arch-desc">Mã hóa TLS, PBKDF2 Password Salt, WeakMap Vault</div>
+                            <span class="arch-tag">Grade A Security</span>
+                        </div>
+                    </div>
+                    <div class="arch-item">
+                        <div class="arch-icon">⚡</div>
+                        <div>
+                            <div class="arch-title">9. CDN, Cache & Storage</div>
+                            <div class="arch-desc">Gzip Nginx, Browser Cache, IndexedDB & Service Worker</div>
+                            <span class="arch-tag">Ultra Fast</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: 12-STEP OPERATIONAL LIFECYCLE -->
+            <div>
+                <h4 style="margin: 0 0 10px 0; color: var(--primary-color); display: flex; align-items: center; gap: 6px;">
+                    <span>🔄</span> Luồng Vận Hành 12 Bước Của Hệ Thống (Request-Response Lifecycle)
+                </h4>
+                <div class="arch-steps-container">
+                    <div class="arch-steps-list">
+                        <div class="arch-step-row">
+                            <span class="arch-step-num">1</span>
+                            <div class="arch-step-detail"><span class="arch-step-actor">User:</span> Nhập tên miền (omniquiz.edu.vn / localhost:3000) vào trình duyệt</div>
+                        </div>
+                        <div class="arch-step-row">
+                            <span class="arch-step-num">2</span>
+                            <div class="arch-step-detail"><span class="arch-step-actor">Browser:</span> Gửi truy vấn DNS hỏi IP máy chủ hosting</div>
+                        </div>
+                        <div class="arch-step-row">
+                            <span class="arch-step-num">3</span>
+                            <div class="arch-step-detail"><span class="arch-step-actor">DNS:</span> Phân giải và trả về địa chỉ IP của Server</div>
+                        </div>
+                        <div class="arch-step-row">
+                            <span class="arch-step-num">4</span>
+                            <div class="arch-step-detail"><span class="arch-step-actor">Browser:</span> Gửi HTTP/HTTPS Request đến Web Server</div>
+                        </div>
+                        <div class="arch-step-row">
+                            <span class="arch-step-num">5</span>
+                            <div class="arch-step-detail"><span class="arch-step-actor">Server:</span> Trả về gói tài nguyên Frontend (HTML, CSS, JS, Fonts, Assets)</div>
+                        </div>
+                        <div class="arch-step-row">
+                            <span class="arch-step-num">6</span>
+                            <div class="arch-step-detail"><span class="arch-step-actor">Browser & User:</span> Trình duyệt render UI; Thí sinh thực hiện thao tác (Đăng nhập, Chọn đề, Nộp bài)</div>
+                        </div>
+                        <div class="arch-step-row">
+                            <span class="arch-step-num">7</span>
+                            <div class="arch-step-detail"><span class="arch-step-actor">Frontend:</span> Gửi API Request (JSON payload kèm Authorization Bearer JWT Token)</div>
+                        </div>
+                        <div class="arch-step-row">
+                            <span class="arch-step-num">8</span>
+                            <div class="arch-step-detail"><span class="arch-step-actor">Backend (Node.js):</span> Tiếp nhận, kiểm tra JWT, xác thực bảo mật & thực thi nghiệp vụ chấm điểm</div>
+                        </div>
+                        <div class="arch-step-row">
+                            <span class="arch-step-num">9</span>
+                            <div class="arch-step-detail"><span class="arch-step-actor">Backend:</span> Gửi truy vấn ACID đến Database DAL để lưu bài thi và bảng xếp hạng</div>
+                        </div>
+                        <div class="arch-step-row">
+                            <span class="arch-step-num">10</span>
+                            <div class="arch-step-detail"><span class="arch-step-actor">Database:</span> Thực thi truy vấn ghi dữ liệu an toàn và trả kết quả về Backend</div>
+                        </div>
+                        <div class="arch-step-row">
+                            <span class="arch-step-num">11</span>
+                            <div class="arch-step-detail"><span class="arch-step-actor">Backend:</span> Xử lý dữ liệu trả về và phản hồi HTTP 200/201 OK kèm JSON Data về Frontend</div>
+                        </div>
+                        <div class="arch-step-row">
+                            <span class="arch-step-num">12</span>
+                            <div class="arch-step-detail"><span class="arch-step-actor">Frontend:</span> Render kết quả điểm số, xếp hạng thời gian thực và cập nhật UI lập tức</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LIVE SYSTEM HEALTH METRICS -->
+            <div style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; margin-top: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <div style="font-size: 0.85em; font-weight: 700; color: var(--heading-color);">📊 Trạng thái Máy chủ & CSDL Thời Gian Thực:</div>
+                    <div id="arch-live-stats" style="font-size: 0.82em; opacity: 0.85; margin-top: 4px;">Đang tải thông số máy chủ...</div>
+                </div>
+                <button type="button" class="btn-action" id="btn-refresh-health" style="padding: 6px 12px;">🔄 Kiểm tra lại</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modular JavaScript Files -->
     <script src="js/i18n.js"></script>
     <script src="js/audio.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/supabase-client.js"></script>
+    <script src="js/api-client.js"></script>
     <script src="js/room-manager.js"></script>
     <script src="js/editor.js"></script>
     <script src="js/confetti.js"></script>

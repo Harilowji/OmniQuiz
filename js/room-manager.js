@@ -79,9 +79,27 @@ const RoomManager = (() => {
             console.warn('[RoomManager] Failed to cache room locally:', e);
         }
 
-        // 2. Sync to Supabase cloud table "exam_rooms" if configured
+        // 2. Sync to Node.js Backend Server API & Database if online
         let cloudSynced = false;
-        if (window.SupabaseClient && SupabaseClient.isConfigured()) {
+        if (window.ApiClient && ApiClient.isOnline()) {
+            try {
+                await ApiClient.createRoom({
+                    pin: roomPin,
+                    title: title,
+                    durationMinutes: durationMinutes,
+                    anticheatEnabled: isAnticheat,
+                    hostName: hostName,
+                    questions: questions
+                });
+                cloudSynced = true;
+                console.log('[RoomManager] Room published to Node.js Backend Server:', roomPin);
+            } catch (err) {
+                console.warn('[RoomManager] Backend API room publish warning:', err.message);
+            }
+        }
+
+        // 3. Fallback: Sync to Supabase cloud table "exam_rooms" if configured
+        if (!cloudSynced && window.SupabaseClient && SupabaseClient.isConfigured()) {
             try {
                 const client = window.supabase ? window.supabase.createClient(
                     SupabaseClient.getStoredConfig().url,
@@ -130,7 +148,27 @@ const RoomManager = (() => {
         const cleanPin = String(pin).trim();
         if (!cleanPin) return null;
 
-        // 1. Try Supabase cloud first
+        // 1. Try Node.js Backend Server API first
+        if (window.ApiClient && ApiClient.isOnline()) {
+            try {
+                const serverRoom = await ApiClient.getRoom(cleanPin);
+                if (serverRoom) {
+                    return {
+                        id: serverRoom.pin,
+                        title: serverRoom.title,
+                        durationMinutes: serverRoom.durationMinutes || 60,
+                        anticheatEnabled: Boolean(serverRoom.anticheatEnabled),
+                        questions: serverRoom.questions || [],
+                        cloudSource: true,
+                        serverVerified: true
+                    };
+                }
+            } catch (e) {
+                console.warn('[RoomManager] Backend API fetch error:', e);
+            }
+        }
+
+        // 2. Try Supabase cloud
         if (window.SupabaseClient && SupabaseClient.isConfigured()) {
             try {
                 const client = window.supabase ? window.supabase.createClient(
@@ -209,6 +247,26 @@ const RoomManager = (() => {
             localStorage.setItem(subKey, JSON.stringify(existing));
         } catch (e) {}
 
+        // Node.js Backend Server sync if online
+        if (window.ApiClient && ApiClient.isOnline()) {
+            try {
+                await ApiClient.submitRoomExam(session.roomPin, {
+                    studentName: session.studentName || 'Thí sinh ẩn danh',
+                    studentSbd: session.studentId || 'N/A',
+                    score10: record.score10,
+                    score100: record.score100,
+                    correctCount: record.correctCount,
+                    wrongCount: record.wrongCount,
+                    totalQuestions: record.totalQuestions,
+                    durationSpent: record.durationSpent,
+                    violationCount: record.violationCount || 0
+                });
+                console.log('[RoomManager] Student score submitted to Backend API Room:', session.roomPin);
+            } catch (err) {
+                console.warn('[RoomManager] Failed to submit to Backend API Room:', err);
+            }
+        }
+
         // Cloud sync to Supabase table "room_submissions"
         if (window.SupabaseClient && SupabaseClient.isConfigured()) {
             try {
@@ -236,7 +294,29 @@ const RoomManager = (() => {
         const cleanPin = String(roomPin).trim();
         if (!cleanPin) return [];
 
-        // 1. Try fetching from Supabase
+        // 1. Try fetching from Node.js Backend Server API
+        if (window.ApiClient && ApiClient.isOnline()) {
+            try {
+                const serverBoard = await ApiClient.getRoomLeaderboard(cleanPin);
+                if (serverBoard && Array.isArray(serverBoard.leaderboard) && serverBoard.leaderboard.length > 0) {
+                    return serverBoard.leaderboard.map((row, idx) => ({
+                        rank: row.rank || (idx + 1),
+                        studentName: row.studentName,
+                        studentId: row.studentSbd || row.studentId || 'N/A',
+                        score10: row.score10,
+                        correctCount: row.correctCount,
+                        totalQuestions: row.totalQuestions,
+                        durationSpent: row.durationSpent,
+                        violationCount: row.violationCount || 0,
+                        submittedAt: row.submittedAt
+                    }));
+                }
+            } catch (e) {
+                console.warn('[RoomManager] Backend API leaderboard fetch error:', e);
+            }
+        }
+
+        // 2. Try fetching from Supabase
         if (window.SupabaseClient && SupabaseClient.isConfigured()) {
             try {
                 const client = window.supabase ? window.supabase.createClient(

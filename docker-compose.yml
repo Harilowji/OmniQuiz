@@ -1,7 +1,12 @@
 services:
   omniquiz:
     build: .
-    container_name: omniquiz_web
+    container_name: omniquiz_fullstack
     ports:
-      - "8080:80"
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+    volumes:
+      - ./data:/app/data
     restart: unless-stopped

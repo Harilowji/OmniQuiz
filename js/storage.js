@@ -381,7 +381,21 @@ const StorageManager = (() => {
             }
         }
 
-        // 3. Trigger cloud sync if Supabase is connected
+        // 3. Trigger Full-Stack Backend Database Sync if server is online
+        if (typeof ApiClient !== 'undefined' && ApiClient.isOnline()) {
+            ApiClient.submitExam({
+                examId: record.examId || 'exam_default_math',
+                studentName: record.studentName || (ApiClient.getCurrentUser() ? ApiClient.getCurrentUser().username : 'Thí sinh tự do'),
+                answers: record.userAnswers || {},
+                timeSpentSeconds: record.durationSpent || 0,
+                violations: record.violationCount || 0
+            }).then(() => {
+                historyItem.syncedToCloud = true;
+                updateHistoryItemSyncStatus(historyItem.id, true);
+            }).catch(() => {});
+        }
+
+        // 4. Trigger cloud sync if Supabase BaaS is connected
         if (typeof SupabaseClient !== 'undefined' && SupabaseClient.isConfigured()) {
             SupabaseClient.syncExamResult(historyItem).then(synced => {
                 if (synced) {

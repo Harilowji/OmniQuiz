@@ -1,0 +1,629 @@
+{
+  "users": [
+    {
+      "id": "usr_teacher_default",
+      "email": "teacher@omniquiz.edu.vn",
+      "username": "Thầy Giáo Viên (Demo)",
+      "role": "teacher",
+      "salt": "7a8f9e1d2c3b4a5f",
+      "passwordHash": "3b34bf96918752dc31beeab030775da5b22555749ab82be606c8f1607fcdca5014ddc97f75bcfe032f664467ae8da0cca9283fbfc047bc94654fa31d7db3c1c2",
+      "createdAt": "2026-09-01T00:00:00.000Z"
+    },
+    {
+      "id": "usr_student_default",
+      "email": "student@omniquiz.edu.vn",
+      "username": "Nguyễn Văn Học Sinh (Demo)",
+      "role": "student",
+      "salt": "1b2c3d4e5f6a7b8c",
+      "passwordHash": "d89ed208a523fb5812ffed9f4f21df980bb2010bdf00d18585b52ee45959e1253229ef58527741bebe5b33576c1216c0943cdac8b7c24837638bbfc63bb80dc3",
+      "createdAt": "2026-09-01T00:00:00.000Z"
+    },
+    {
+      "id": "usr_1789387049899_bf0vx",
+      "email": "student_1789387049898@example.com",
+      "username": "Nguyễn Kiểm Thử",
+      "role": "student",
+      "salt": "34ca67e95eb5cf8a6d47951b8e299f96",
+      "passwordHash": "1bfa752f66f5641f075a6653e283995263700ed59e2940e0a017aca29b58372ac7e16c3aaad9e44bca644e99b13094fba8b8d844dcd18327a2b7dab14264485f",
+      "createdAt": "2026-09-14T11:57:29.904Z"
+    },
+    {
+      "id": "usr_1789387278699_rkesz",
+      "email": "student_1789387278698@example.com",
+      "username": "Nguyễn Kiểm Thử",
+      "role": "student",
+      "salt": "2648a8d6a4c6f7cbfed64847de9ffca5",
+      "passwordHash": "02563ae9b6f49b2c9076f2038be4d627558ec8b12e5056cb3c93f67b85b4d7ca6bd11ea35f661a43f632bc82163e3f6ceffbad94eec10e653a1bf5aa2638f77e",
+      "createdAt": "2026-09-14T12:01:18.704Z"
+    },
+    {
+      "id": "usr_1789387308256_dm3o3",
+      "email": "student_1789387308255@example.com",
+      "username": "Nguyễn Kiểm Thử",
+      "role": "student",
+      "salt": "3ef08faa0468b314c7471810f765ff1e",
+      "passwordHash": "d39d5d700b31bd728cf5e06dcc004e15ad1484ce9a2a319b1ea295df91168030b59807110f1909350930bc31aaf3f3145b41d516c1c63db5a88ca2329eed508e",
+      "createdAt": "2026-09-14T12:01:48.261Z"
+    }
+  ],
+  "exams": [
+    {
+      "id": "exam_cs_10",
+      "title": "Tin học & CNTT - Đề thi chuẩn kiến thức",
+      "subject": "informatics",
+      "description": "Bộ 10 câu hỏi trắc nghiệm Tin học lập trình cơ bản và kiến trúc máy tính",
+      "durationMinutes": 15,
+      "isPublic": true,
+      "createdBy": "usr_teacher_default",
+      "createdAt": "2026-09-01T00:00:00.000Z",
+      "questions": [
+        {
+          "q": "Ngôn ngữ lập trình nào sau đây được thực thi trực tiếp trên hầu hết các trình duyệt web hiện đại mà không cần plugin?",
+          "options": [
+            "Python",
+            "JavaScript",
+            "C++",
+            "Java"
+          ],
+          "answers": [
+            1
+          ],
+          "explanation": "JavaScript là ngôn ngữ tiêu chuẩn của Web được tích hợp sẵn trong mọi engine trình duyệt hiện đại (V8, SpiderMonkey, JavaScriptCore)."
+        },
+        {
+          "q": "Giao thức nào cung cấp kết nối mạng an toàn được mã hóa bằng TLS/SSL giữa trình duyệt và máy chủ?",
+          "options": [
+            "HTTP",
+            "FTP",
+            "HTTPS",
+            "SMTP"
+          ],
+          "answers": [
+            2
+          ],
+          "explanation": "HTTPS (Hypertext Transfer Protocol Secure) sử dụng chứng chỉ SSL/TLS để mã hóa toàn bộ dữ liệu trao đổi giữa Client và Server."
+        },
+        {
+          "q": "Cấu trúc dữ liệu nào hoạt động theo nguyên tắc LIFO (Last In First Out - Vào sau ra trước)?",
+          "options": [
+            "Queue (Hàng đợi)",
+            "Stack (Ngăn xếp)",
+            "Array (Mảng)",
+            "Linked List (Danh sách liên kết)"
+          ],
+          "answers": [
+            1
+          ],
+          "explanation": "Stack hoạt động theo cơ chế LIFO, phần tử đưa vào sau cùng sẽ được lấy ra đầu tiên (ví dụ: thao tác Undo/Redo)."
+        },
+        {
+          "q": "Độ phức tạp thời gian trung bình của thuật toán Tìm kiếm nhị phân (Binary Search) trên mảng đã sắp xếp là gì?",
+          "options": [
+            "O(1)",
+            "O(n)",
+            "O(log n)",
+            "O(n^2)"
+          ],
+          "answers": [
+            2
+          ],
+          "explanation": "Tìm kiếm nhị phân chia đôi không gian tìm kiếm sau mỗi bước, do đó độ phức tạp thời gian là O(log n)."
+        },
+        {
+          "q": "Trong kiến trúc phần mềm RESTful API, phương thức HTTP nào thường được sử dụng để tạo mới một tài nguyên?",
+          "options": [
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE"
+          ],
+          "answers": [
+            1
+          ],
+          "explanation": "POST được dùng để gửi dữ liệu lên server nhằm tạo mới một tài nguyên trong chuẩn REST."
+        }
+      ]
+    },
+    {
+      "id": "exam_math_thpt",
+      "title": "Toán học THPT - Khảo sát hàm số & Tích phân",
+      "subject": "math",
+      "description": "Đề thi trắc nghiệm Toán học giải tích THPT Quốc gia có hỗ trợ công thức KaTeX",
+      "durationMinutes": 45,
+      "isPublic": true,
+      "createdBy": "usr_teacher_default",
+      "createdAt": "2026-09-02T00:00:00.000Z",
+      "questions": [
+        {
+          "q": "Đồ thị hàm số $y = \\frac{2x - 1}{x + 1}$ có đường tiệm cận ngang là đường thẳng nào?",
+          "options": [
+            "$y = 2$",
+            "$y = -1$",
+            "$x = 2$",
+            "$x = -1$"
+          ],
+          "answers": [
+            0
+          ],
+          "explanation": "Ta có $\\lim_{x \\to \\pm\\infty} \\frac{2x-1}{x+1} = 2$, suy ra tiệm cận ngang là $y = 2$."
+        },
+        {
+          "q": "Tập xác định của hàm số $y = \\log_2 (3x - 6)$ là:",
+          "options": [
+            "$(2; +\\infty)$",
+            "$[2; +\\infty)$",
+            "$(-\\infty; 2)$",
+            "$\\mathbb{R} \\setminus \\{2\\}$"
+          ],
+          "answers": [
+            0
+          ],
+          "explanation": "Điều kiện xác định: $3x - 6 > 0 \\iff x > 2$. Vậy tập xác định là $(2; +\\infty)$."
+        },
+        {
+          "q": "Tính tích phân $I = \\int_0^1 e^x dx$:",
+          "options": [
+            "$e - 1$",
+            "$e$",
+            "$e + 1$",
+            "$1$"
+          ],
+          "answers": [
+            0
+          ],
+          "explanation": "Ta có $\\int_0^1 e^x dx = \\left. e^x \\right|_0^1 = e^1 - e^0 = e - 1$."
+        }
+      ]
+    }
+  ],
+  "submissions": [
+    {
+      "id": "sub_1789387308264_qpx23",
+      "examId": "exam_cs_10",
+      "examTitle": "Tin học & CNTT - Đề thi chuẩn kiến thức",
+      "userId": null,
+      "studentName": "Nguyễn Kiểm Thử",
+      "studentSbd": "TEST-001",
+      "score": 80,
+      "totalQuestions": 5,
+      "correctCount": 4,
+      "incorrectCount": 1,
+      "unattemptedCount": 0,
+      "timeSpentSeconds": 180,
+      "violations": 0,
+      "detailedReview": [
+        {
+          "questionIndex": 0,
+          "questionText": "Ngôn ngữ lập trình nào sau đây được thực thi trực tiếp trên hầu hết các trình duyệt web hiện đại mà không cần plugin?",
+          "options": [
+            "Python",
+            "JavaScript",
+            "C++",
+            "Java"
+          ],
+          "userAnswers": [
+            1
+          ],
+          "correctAnswers": [
+            1
+          ],
+          "isCorrect": true,
+          "isAttempted": true,
+          "explanation": "JavaScript là ngôn ngữ tiêu chuẩn của Web được tích hợp sẵn trong mọi engine trình duyệt hiện đại (V8, SpiderMonkey, JavaScriptCore)."
+        },
+        {
+          "questionIndex": 1,
+          "questionText": "Giao thức nào cung cấp kết nối mạng an toàn được mã hóa bằng TLS/SSL giữa trình duyệt và máy chủ?",
+          "options": [
+            "HTTP",
+            "FTP",
+            "HTTPS",
+            "SMTP"
+          ],
+          "userAnswers": [
+            2
+          ],
+          "correctAnswers": [
+            2
+          ],
+          "isCorrect": true,
+          "isAttempted": true,
+          "explanation": "HTTPS (Hypertext Transfer Protocol Secure) sử dụng chứng chỉ SSL/TLS để mã hóa toàn bộ dữ liệu trao đổi giữa Client và Server."
+        },
+        {
+          "questionIndex": 2,
+          "questionText": "Cấu trúc dữ liệu nào hoạt động theo nguyên tắc LIFO (Last In First Out - Vào sau ra trước)?",
+          "options": [
+            "Queue (Hàng đợi)",
+            "Stack (Ngăn xếp)",
+            "Array (Mảng)",
+            "Linked List (Danh sách liên kết)"
+          ],
+          "userAnswers": [
+            0
+          ],
+          "correctAnswers": [
+            1
+          ],
+          "isCorrect": false,
+          "isAttempted": true,
+          "explanation": "Stack hoạt động theo cơ chế LIFO, phần tử đưa vào sau cùng sẽ được lấy ra đầu tiên (ví dụ: thao tác Undo/Redo)."
+        },
+        {
+          "questionIndex": 3,
+          "questionText": "Độ phức tạp thời gian trung bình của thuật toán Tìm kiếm nhị phân (Binary Search) trên mảng đã sắp xếp là gì?",
+          "options": [
+            "O(1)",
+            "O(n)",
+            "O(log n)",
+            "O(n^2)"
+          ],
+          "userAnswers": [
+            2
+          ],
+          "correctAnswers": [
+            2
+          ],
+          "isCorrect": true,
+          "isAttempted": true,
+          "explanation": "Tìm kiếm nhị phân chia đôi không gian tìm kiếm sau mỗi bước, do đó độ phức tạp thời gian là O(log n)."
+        },
+        {
+          "questionIndex": 4,
+          "questionText": "Trong kiến trúc phần mềm RESTful API, phương thức HTTP nào thường được sử dụng để tạo mới một tài nguyên?",
+          "options": [
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE"
+          ],
+          "userAnswers": [
+            1
+          ],
+          "correctAnswers": [
+            1
+          ],
+          "isCorrect": true,
+          "isAttempted": true,
+          "explanation": "POST được dùng để gửi dữ liệu lên server nhằm tạo mới một tài nguyên trong chuẩn REST."
+        }
+      ],
+      "submittedAt": "2026-09-14T12:01:48.264Z"
+    },
+    {
+      "id": "sub_1789387278709_ig8sb",
+      "examId": "exam_cs_10",
+      "examTitle": "Tin học & CNTT - Đề thi chuẩn kiến thức",
+      "userId": null,
+      "studentName": "Nguyễn Kiểm Thử",
+      "studentSbd": "TEST-001",
+      "score": 80,
+      "totalQuestions": 5,
+      "correctCount": 4,
+      "incorrectCount": 1,
+      "unattemptedCount": 0,
+      "timeSpentSeconds": 180,
+      "violations": 0,
+      "detailedReview": [
+        {
+          "questionIndex": 0,
+          "questionText": "Ngôn ngữ lập trình nào sau đây được thực thi trực tiếp trên hầu hết các trình duyệt web hiện đại mà không cần plugin?",
+          "options": [
+            "Python",
+            "JavaScript",
+            "C++",
+            "Java"
+          ],
+          "userAnswers": [
+            1
+          ],
+          "correctAnswers": [
+            1
+          ],
+          "isCorrect": true,
+          "isAttempted": true,
+          "explanation": "JavaScript là ngôn ngữ tiêu chuẩn của Web được tích hợp sẵn trong mọi engine trình duyệt hiện đại (V8, SpiderMonkey, JavaScriptCore)."
+        },
+        {
+          "questionIndex": 1,
+          "questionText": "Giao thức nào cung cấp kết nối mạng an toàn được mã hóa bằng TLS/SSL giữa trình duyệt và máy chủ?",
+          "options": [
+            "HTTP",
+            "FTP",
+            "HTTPS",
+            "SMTP"
+          ],
+          "userAnswers": [
+            2
+          ],
+          "correctAnswers": [
+            2
+          ],
+          "isCorrect": true,
+          "isAttempted": true,
+          "explanation": "HTTPS (Hypertext Transfer Protocol Secure) sử dụng chứng chỉ SSL/TLS để mã hóa toàn bộ dữ liệu trao đổi giữa Client và Server."
+        },
+        {
+          "questionIndex": 2,
+          "questionText": "Cấu trúc dữ liệu nào hoạt động theo nguyên tắc LIFO (Last In First Out - Vào sau ra trước)?",
+          "options": [
+            "Queue (Hàng đợi)",
+            "Stack (Ngăn xếp)",
+            "Array (Mảng)",
+            "Linked List (Danh sách liên kết)"
+          ],
+          "userAnswers": [
+            0
+          ],
+          "correctAnswers": [
+            1
+          ],
+          "isCorrect": false,
+          "isAttempted": true,
+          "explanation": "Stack hoạt động theo cơ chế LIFO, phần tử đưa vào sau cùng sẽ được lấy ra đầu tiên (ví dụ: thao tác Undo/Redo)."
+        },
+        {
+          "questionIndex": 3,
+          "questionText": "Độ phức tạp thời gian trung bình của thuật toán Tìm kiếm nhị phân (Binary Search) trên mảng đã sắp xếp là gì?",
+          "options": [
+            "O(1)",
+            "O(n)",
+            "O(log n)",
+            "O(n^2)"
+          ],
+          "userAnswers": [
+            2
+          ],
+          "correctAnswers": [
+            2
+          ],
+          "isCorrect": true,
+          "isAttempted": true,
+          "explanation": "Tìm kiếm nhị phân chia đôi không gian tìm kiếm sau mỗi bước, do đó độ phức tạp thời gian là O(log n)."
+        },
+        {
+          "questionIndex": 4,
+          "questionText": "Trong kiến trúc phần mềm RESTful API, phương thức HTTP nào thường được sử dụng để tạo mới một tài nguyên?",
+          "options": [
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE"
+          ],
+          "userAnswers": [
+            1
+          ],
+          "correctAnswers": [
+            1
+          ],
+          "isCorrect": true,
+          "isAttempted": true,
+          "explanation": "POST được dùng để gửi dữ liệu lên server nhằm tạo mới một tài nguyên trong chuẩn REST."
+        }
+      ],
+      "submittedAt": "2026-09-14T12:01:18.709Z"
+    },
+    {
+      "id": "sub_1789387049908_ygipb",
+      "examId": "exam_cs_10",
+      "examTitle": "Tin học & CNTT - Đề thi chuẩn kiến thức",
+      "userId": null,
+      "studentName": "Nguyễn Kiểm Thử",
+      "studentSbd": "TEST-001",
+      "score": 80,
+      "totalQuestions": 5,
+      "correctCount": 4,
+      "incorrectCount": 1,
+      "unattemptedCount": 0,
+      "timeSpentSeconds": 180,
+      "violations": 0,
+      "detailedReview": [
+        {
+          "questionIndex": 0,
+          "questionText": "Ngôn ngữ lập trình nào sau đây được thực thi trực tiếp trên hầu hết các trình duyệt web hiện đại mà không cần plugin?",
+          "options": [
+            "Python",
+            "JavaScript",
+            "C++",
+            "Java"
+          ],
+          "userAnswers": [
+            1
+          ],
+          "correctAnswers": [
+            1
+          ],
+          "isCorrect": true,
+          "isAttempted": true,
+          "explanation": "JavaScript là ngôn ngữ tiêu chuẩn của Web được tích hợp sẵn trong mọi engine trình duyệt hiện đại (V8, SpiderMonkey, JavaScriptCore)."
+        },
+        {
+          "questionIndex": 1,
+          "questionText": "Giao thức nào cung cấp kết nối mạng an toàn được mã hóa bằng TLS/SSL giữa trình duyệt và máy chủ?",
+          "options": [
+            "HTTP",
+            "FTP",
+            "HTTPS",
+            "SMTP"
+          ],
+          "userAnswers": [
+            2
+          ],
+          "correctAnswers": [
+            2
+          ],
+          "isCorrect": true,
+          "isAttempted": true,
+          "explanation": "HTTPS (Hypertext Transfer Protocol Secure) sử dụng chứng chỉ SSL/TLS để mã hóa toàn bộ dữ liệu trao đổi giữa Client và Server."
+        },
+        {
+          "questionIndex": 2,
+          "questionText": "Cấu trúc dữ liệu nào hoạt động theo nguyên tắc LIFO (Last In First Out - Vào sau ra trước)?",
+          "options": [
+            "Queue (Hàng đợi)",
+            "Stack (Ngăn xếp)",
+            "Array (Mảng)",
+            "Linked List (Danh sách liên kết)"
+          ],
+          "userAnswers": [
+            0
+          ],
+          "correctAnswers": [
+            1
+          ],
+          "isCorrect": false,
+          "isAttempted": true,
+          "explanation": "Stack hoạt động theo cơ chế LIFO, phần tử đưa vào sau cùng sẽ được lấy ra đầu tiên (ví dụ: thao tác Undo/Redo)."
+        },
+        {
+          "questionIndex": 3,
+          "questionText": "Độ phức tạp thời gian trung bình của thuật toán Tìm kiếm nhị phân (Binary Search) trên mảng đã sắp xếp là gì?",
+          "options": [
+            "O(1)",
+            "O(n)",
+            "O(log n)",
+            "O(n^2)"
+          ],
+          "userAnswers": [
+            2
+          ],
+          "correctAnswers": [
+            2
+          ],
+          "isCorrect": true,
+          "isAttempted": true,
+          "explanation": "Tìm kiếm nhị phân chia đôi không gian tìm kiếm sau mỗi bước, do đó độ phức tạp thời gian là O(log n)."
+        },
+        {
+          "questionIndex": 4,
+          "questionText": "Trong kiến trúc phần mềm RESTful API, phương thức HTTP nào thường được sử dụng để tạo mới một tài nguyên?",
+          "options": [
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE"
+          ],
+          "userAnswers": [
+            1
+          ],
+          "correctAnswers": [
+            1
+          ],
+          "isCorrect": true,
+          "isAttempted": true,
+          "explanation": "POST được dùng để gửi dữ liệu lên server nhằm tạo mới một tài nguyên trong chuẩn REST."
+        }
+      ],
+      "submittedAt": "2026-09-14T11:57:29.908Z"
+    }
+  ],
+  "rooms": [
+    {
+      "pin": "194412",
+      "title": "Phòng thi thử tự động",
+      "examId": "exam_cs_10",
+      "hostUserId": "anonymous",
+      "durationMinutes": 30,
+      "isAnticheat": true,
+      "status": "active",
+      "createdAt": "2026-09-14T12:01:48.266Z"
+    },
+    {
+      "pin": "174725",
+      "title": "Phòng thi thử tự động",
+      "examId": "exam_cs_10",
+      "hostUserId": "anonymous",
+      "durationMinutes": 30,
+      "isAnticheat": true,
+      "status": "active",
+      "createdAt": "2026-09-14T12:01:18.710Z"
+    },
+    {
+      "pin": "448670",
+      "title": "Phòng thi thử tự động",
+      "examId": "exam_cs_10",
+      "hostUserId": "anonymous",
+      "durationMinutes": 30,
+      "isAnticheat": true,
+      "status": "active",
+      "createdAt": "2026-09-14T11:57:29.909Z"
+    },
+    {
+      "pin": "888999",
+      "title": "Phòng thi mẫu kiểm tra 15 phút - Tin học 10",
+      "examId": "exam_cs_10",
+      "hostUserId": "usr_teacher_default",
+      "durationMinutes": 15,
+      "isAnticheat": true,
+      "status": "active",
+      "createdAt": "2026-09-14T11:57:29.716Z"
+    }
+  ],
+  "room_results": [
+    {
+      "id": "rres_1789387308267_dyegx",
+      "roomPin": "194412",
+      "studentName": "Vũ Thí Sinh",
+      "studentSbd": "12A-99",
+      "score": 95,
+      "totalQuestions": 5,
+      "correctCount": 5,
+      "incorrectCount": 0,
+      "timeSpentSeconds": 300,
+      "violations": 0,
+      "submittedAt": "2026-09-14T12:01:48.267Z"
+    },
+    {
+      "id": "rres_1789387278712_om3t3",
+      "roomPin": "174725",
+      "studentName": "Vũ Thí Sinh",
+      "studentSbd": "12A-99",
+      "score": 95,
+      "totalQuestions": 5,
+      "correctCount": 5,
+      "incorrectCount": 0,
+      "timeSpentSeconds": 300,
+      "violations": 0,
+      "submittedAt": "2026-09-14T12:01:18.712Z"
+    },
+    {
+      "id": "rres_1789387049911_it90y",
+      "roomPin": "448670",
+      "studentName": "Vũ Thí Sinh",
+      "studentSbd": "12A-99",
+      "score": 95,
+      "totalQuestions": 5,
+      "correctCount": 5,
+      "incorrectCount": 0,
+      "timeSpentSeconds": 300,
+      "violations": 0,
+      "submittedAt": "2026-09-14T11:57:29.911Z"
+    },
+    {
+      "id": "res_demo_1",
+      "roomPin": "888999",
+      "studentName": "Trần Thị Thu Thảo",
+      "studentSbd": "10A1-02",
+      "score": 100,
+      "totalQuestions": 5,
+      "correctCount": 5,
+      "incorrectCount": 0,
+      "timeSpentSeconds": 420,
+      "violations": 0,
+      "submittedAt": "2026-09-14T10:57:29.716Z"
+    },
+    {
+      "id": "res_demo_2",
+      "roomPin": "888999",
+      "studentName": "Lê Hoàng Nam",
+      "studentSbd": "10A1-15",
+      "score": 80,
+      "totalQuestions": 5,
+      "correctCount": 4,
+      "incorrectCount": 1,
+      "timeSpentSeconds": 510,
+      "violations": 1,
+      "submittedAt": "2026-09-14T11:27:29.716Z"
+    }
+  ]
+}

@@ -1,15 +1,21 @@
-# OmniQuiz - Multi-Subject CBT Platform
-# Production-ready, ultra-lightweight web server container
-FROM nginx:alpine
+# OmniQuiz PRO - Full-Stack CBT Platform
+# Production-ready Node.js container with static asset serving & RESTful API
+FROM node:20-alpine
 
-# Copy custom Nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+WORKDIR /app
 
-# Copy all web application assets to Nginx html directory
-COPY . /usr/share/nginx/html/
+# Install dependencies with caching
+COPY package*.json ./
+RUN npm ci --only=production
 
-# Expose standard HTTP port
-EXPOSE 80
+# Copy application source code
+COPY . .
 
-# Run Nginx in foreground
-CMD ["nginx", "-g", "daemon off;"]
+# Expose application port
+EXPOSE 3000
+
+ENV NODE_ENV=production
+ENV PORT=3000
+
+# Start Full-Stack Server
+CMD ["node", "server.js"]

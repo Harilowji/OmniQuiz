@@ -755,6 +755,245 @@
                 StorageManager.saveState(QuizEngine.state);
             }
         });
+
+        // Initialize Full-Stack REST API & Authentication UI
+        bindFullStackEvents();
+    }
+
+    function bindFullStackEvents() {
+        const badge = document.getElementById('server-status-badge');
+        const badgeText = document.getElementById('server-status-text');
+        const btnAuth = document.getElementById('btn-auth-toggle');
+        const authBtnLabel = document.getElementById('auth-btn-label');
+
+        const authModal = document.getElementById('auth-modal');
+        const btnCloseAuth = document.getElementById('btn-close-auth-modal');
+        const tabBtnLogin = document.getElementById('tab-btn-login');
+        const tabBtnRegister = document.getElementById('tab-btn-register');
+        const loginForm = document.getElementById('auth-login-form');
+        const registerForm = document.getElementById('auth-register-form');
+        const profileView = document.getElementById('auth-profile-view');
+        const authAlertBox = document.getElementById('auth-alert-box');
+
+        const archModal = document.getElementById('fullstack-arch-modal');
+        const btnCloseArch = document.getElementById('btn-close-arch-modal');
+        const btnViewArch = document.getElementById('btn-view-architecture');
+        const btnRefreshHealth = document.getElementById('btn-refresh-health');
+        const archLiveStats = document.getElementById('arch-live-stats');
+        const archServerTag = document.getElementById('arch-server-tag');
+
+        function showAuthAlert(msg, isError = true) {
+            if (!authAlertBox) return;
+            authAlertBox.style.display = 'block';
+            authAlertBox.style.background = isError ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)';
+            authAlertBox.style.color = isError ? '#dc2626' : '#059669';
+            authAlertBox.style.border = `1px solid ${isError ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`;
+            authAlertBox.textContent = msg;
+        }
+
+        function updateAuthUI() {
+            if (!window.ApiClient) return;
+            const user = ApiClient.getCurrentUser();
+            if (user) {
+                if (btnAuth) btnAuth.classList.add('is-logged-in');
+                if (authBtnLabel) authBtnLabel.textContent = user.username ? (user.username.split(' ')[0] || user.username) : 'Tài khoản';
+                if (profileView) profileView.style.display = 'block';
+                if (loginForm) loginForm.style.display = 'none';
+                if (registerForm) registerForm.style.display = 'none';
+                const tabsNav = document.getElementById('auth-tabs-nav');
+                if (tabsNav) tabsNav.style.display = 'none';
+
+                const nameEl = document.getElementById('profile-user-name');
+                const emailEl = document.getElementById('profile-user-email');
+                const badgeEl = document.getElementById('profile-user-badge');
+                if (nameEl) nameEl.textContent = user.username || 'Thí sinh';
+                if (emailEl) emailEl.textContent = user.email || '';
+                if (badgeEl) badgeEl.textContent = `VAI TRÒ: ${(user.role || 'student').toUpperCase()}`;
+            } else {
+                if (btnAuth) btnAuth.classList.remove('is-logged-in');
+                if (authBtnLabel) authBtnLabel.textContent = 'Tài khoản';
+                if (profileView) profileView.style.display = 'none';
+                const tabsNav = document.getElementById('auth-tabs-nav');
+                if (tabsNav) tabsNav.style.display = 'flex';
+                if (loginForm) loginForm.style.display = 'block';
+                if (registerForm) registerForm.style.display = 'none';
+                tabBtnLogin?.classList.add('active');
+                tabBtnRegister?.classList.remove('active');
+            }
+        }
+
+        function updateServerStatusUI(isOnline, healthData) {
+            if (!badge) return;
+            if (isOnline) {
+                badge.classList.remove('offline', 'error');
+                if (badgeText) badgeText.textContent = '🟢 Server Online';
+                badge.title = 'Máy chủ Node.js REST API & CSDL đang kết nối hoàn hảo!';
+                if (archServerTag) archServerTag.textContent = `Node.js ${healthData?.stats?.nodeVersion || 'Online'}`;
+                if (archLiveStats && healthData && healthData.stats) {
+                    archLiveStats.innerHTML = `
+                        <strong>Trạng thái:</strong> ${healthData.status.toUpperCase()} | 
+                        <strong>Uptime:</strong> ${Math.round(healthData.stats.uptime)}s | 
+                        <strong>Tài khoản:</strong> ${healthData.stats.totalUsers} | 
+                        <strong>Đề thi CSDL:</strong> ${healthData.stats.totalExams} | 
+                        <strong>Bài đã nộp:</strong> ${healthData.stats.totalSubmissions}
+                    `;
+                }
+            } else {
+                badge.classList.add('offline');
+                badge.classList.remove('error');
+                if (badgeText) badgeText.textContent = '⚪ Chế độ Offline';
+                badge.title = 'Máy chủ chưa kết nối - Ứng dụng tự động chạy Offline PWA!';
+                if (archLiveStats) {
+                    archLiveStats.innerHTML = `<em>Máy chủ API chưa kết nối. Toàn bộ tính năng đang hoạt động an toàn ở chế độ Offline Client-Side (PWA & LocalStorage).</em>`;
+                }
+            }
+        }
+
+        if (window.ApiClient) {
+            ApiClient.onStatusChange((isOnline, healthData) => {
+                updateServerStatusUI(isOnline, healthData);
+            });
+            ApiClient.onAuthChange(() => {
+                updateAuthUI();
+            });
+
+            // Initial check
+            updateServerStatusUI(ApiClient.isOnline(), ApiClient.getHealthData());
+            updateAuthUI();
+        }
+
+        // Open/Close Auth Modal
+        btnAuth?.addEventListener('click', () => {
+            if (authModal) {
+                if (authAlertBox) authAlertBox.style.display = 'none';
+                updateAuthUI();
+                authModal.style.display = 'flex';
+            }
+        });
+        btnCloseAuth?.addEventListener('click', () => {
+            if (authModal) authModal.style.display = 'none';
+        });
+
+        // Tabs switcher
+        tabBtnLogin?.addEventListener('click', () => {
+            tabBtnLogin.classList.add('active');
+            tabBtnRegister?.classList.remove('active');
+            if (loginForm) loginForm.style.display = 'block';
+            if (registerForm) registerForm.style.display = 'none';
+            if (authAlertBox) authAlertBox.style.display = 'none';
+        });
+        tabBtnRegister?.addEventListener('click', () => {
+            tabBtnRegister?.classList.add('active');
+            tabBtnLogin?.classList.remove('active');
+            if (loginForm) loginForm.style.display = 'none';
+            if (registerForm) registerForm.style.display = 'block';
+            if (authAlertBox) authAlertBox.style.display = 'none';
+        });
+
+        // Demo Quick Logins
+        document.getElementById('btn-demo-teacher')?.addEventListener('click', async () => {
+            const emailInp = document.getElementById('login-email');
+            const passInp = document.getElementById('login-password');
+            if (emailInp) emailInp.value = 'teacher@omniquiz.edu.vn';
+            if (passInp) passInp.value = 'admin123';
+            try {
+                showAuthAlert('Đang đăng nhập tài khoản Giáo viên mẫu...', false);
+                await ApiClient.login('teacher@omniquiz.edu.vn', 'admin123');
+                showAuthAlert('✓ Đăng nhập Giáo viên thành công!', false);
+                setTimeout(() => {
+                    if (authModal) authModal.style.display = 'none';
+                    UIManager.showToast('👨‍🏫 Xin chào Thầy/Cô (Giáo viên)!');
+                }, 700);
+            } catch (err) {
+                showAuthAlert(err.message, true);
+            }
+        });
+
+        document.getElementById('btn-demo-student')?.addEventListener('click', async () => {
+            const emailInp = document.getElementById('login-email');
+            const passInp = document.getElementById('login-password');
+            if (emailInp) emailInp.value = 'student@omniquiz.edu.vn';
+            if (passInp) passInp.value = 'student123';
+            try {
+                showAuthAlert('Đang đăng nhập tài khoản Học sinh mẫu...', false);
+                await ApiClient.login('student@omniquiz.edu.vn', 'student123');
+                showAuthAlert('✓ Đăng nhập Học sinh thành công!', false);
+                setTimeout(() => {
+                    if (authModal) authModal.style.display = 'none';
+                    UIManager.showToast('🎓 Xin chào Học sinh!');
+                }, 700);
+            } catch (err) {
+                showAuthAlert(err.message, true);
+            }
+        });
+
+        // Submit Login Form
+        loginForm?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email')?.value.trim();
+            const password = document.getElementById('login-password')?.value;
+            try {
+                showAuthAlert('Đang xác thực thông tin tài khoản...', false);
+                await ApiClient.login(email, password);
+                showAuthAlert('✓ Đăng nhập thành công!', false);
+                setTimeout(() => {
+                    if (authModal) authModal.style.display = 'none';
+                    UIManager.showToast('✓ Đăng nhập thành công!');
+                }, 600);
+            } catch (err) {
+                showAuthAlert(err.message, true);
+            }
+        });
+
+        // Submit Register Form
+        registerForm?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('register-name')?.value.trim();
+            const email = document.getElementById('register-email')?.value.trim();
+            const password = document.getElementById('register-password')?.value;
+            const role = document.getElementById('register-role')?.value || 'student';
+            try {
+                showAuthAlert('Đang đăng ký tài khoản...', false);
+                await ApiClient.register({ username, email, password, role });
+                showAuthAlert('✓ Đăng ký tài khoản thành công!', false);
+                setTimeout(() => {
+                    if (authModal) authModal.style.display = 'none';
+                    UIManager.showToast('🎉 Đăng ký thành công!');
+                }, 700);
+            } catch (err) {
+                showAuthAlert(err.message, true);
+            }
+        });
+
+        // Logout
+        document.getElementById('btn-auth-logout')?.addEventListener('click', () => {
+            ApiClient.logout();
+            UIManager.showToast('Đã đăng xuất tài khoản!');
+            if (authModal) authModal.style.display = 'none';
+        });
+
+        // Open/Close Architecture Modal
+        const openArchModal = async () => {
+            if (archModal) {
+                archModal.style.display = 'flex';
+                if (window.ApiClient) {
+                    const health = await ApiClient.checkHealth();
+                    updateServerStatusUI(ApiClient.isOnline(), health);
+                }
+            }
+        };
+        badge?.addEventListener('click', openArchModal);
+        btnViewArch?.addEventListener('click', openArchModal);
+        btnCloseArch?.addEventListener('click', () => {
+            if (archModal) archModal.style.display = 'none';
+        });
+        btnRefreshHealth?.addEventListener('click', async () => {
+            if (window.ApiClient) {
+                const health = await ApiClient.checkHealth();
+                updateServerStatusUI(ApiClient.isOnline(), health);
+                UIManager.showToast('Đã cập nhật trạng thái máy chủ!');
+            }
+        });
     }
 
     async function loadQuestions() {

@@ -21,3 +21,11 @@ __pycache__/
 
 # Raw screenshots folder
 quiz_app_img/
+
+# Node dependencies & logs
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+

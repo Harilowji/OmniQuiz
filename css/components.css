@@ -3008,4 +3008,300 @@ body.focus-mode {
     }
 }
 
+/* ==========================================================================
+   FULL-STACK ARCHITECTURE & AUTHENTICATION STYLES (9 Layers & 12-Step Lifecycle)
+   ========================================================================== */
+
+.server-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 0.82em;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1.5px solid rgba(16, 185, 129, 0.35);
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.server-status-pill:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+.server-status-pill.offline {
+    border-color: rgba(148, 163, 184, 0.4);
+    background: rgba(148, 163, 184, 0.12);
+    color: #64748b;
+}
+.server-status-pill.error {
+    border-color: rgba(239, 68, 68, 0.35);
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #10b981;
+    position: relative;
+    display: inline-block;
+}
+.server-status-pill:not(.offline) .status-dot::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 50%;
+    background-color: #10b981;
+    opacity: 0.75;
+    animation: statusPulse 1.8s infinite;
+}
+.server-status-pill.offline .status-dot {
+    background-color: #94a3b8;
+}
+.server-status-pill.error .status-dot {
+    background-color: #ef4444;
+}
+
+@keyframes statusPulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(2.2); opacity: 0; }
+    100% { transform: scale(1); opacity: 0; }
+}
+
+/* User Auth Button */
+.btn-auth {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(6, 182, 212, 0.08));
+    border: 1.5px solid rgba(79, 70, 229, 0.3);
+    color: var(--primary-color);
+    font-weight: 700;
+}
+.btn-auth:hover {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(6, 182, 212, 0.15));
+    border-color: var(--primary-color);
+}
+.btn-auth.is-logged-in {
+    background: linear-gradient(135deg, #4f46e5, #06b6d4);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+}
+
+/* Auth Modal Specifics */
+.auth-modal-card {
+    max-width: 480px;
+    width: 92%;
+    border-radius: 20px;
+    background: var(--card-bg);
+    border: 1.5px solid var(--card-border);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    padding: 24px;
+}
+.auth-tabs-nav {
+    display: flex;
+    gap: 8px;
+    background: var(--option-bg);
+    padding: 4px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border: 1px solid var(--card-border);
+}
+.auth-tab-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-color);
+    font-weight: 700;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.auth-tab-btn.active {
+    background: var(--primary-color);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+}
+.auth-form-group {
+    margin-bottom: 16px;
+}
+.auth-form-label {
+    display: block;
+    font-size: 0.85em;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--heading-color);
+}
+.auth-form-input {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--card-border);
+    background: var(--option-bg);
+    color: var(--text-color);
+    font-size: 0.95em;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+.auth-form-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+.auth-demo-box {
+    margin-top: 18px;
+    padding: 14px;
+    border-radius: 12px;
+    background: rgba(79, 70, 229, 0.05);
+    border: 1px dashed rgba(79, 70, 229, 0.3);
+}
+.auth-demo-title {
+    font-size: 0.82em;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.auth-demo-btns {
+    display: flex;
+    gap: 8px;
+}
+.btn-auth-demo {
+    flex: 1;
+    padding: 6px 10px;
+    font-size: 0.82em;
+    font-weight: 600;
+    border-radius: 8px;
+    border: 1px solid rgba(79, 70, 229, 0.25);
+    background: var(--card-bg);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-auth-demo:hover {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+
+/* Full-Stack System Architecture Modal */
+.arch-modal-card {
+    max-width: 840px;
+    width: 95%;
+    max-height: 88vh;
+    overflow-y: auto;
+    border-radius: 20px;
+    background: var(--card-bg);
+    border: 1.5px solid var(--card-border);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    padding: 24px;
+}
+.arch-grid-9 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 16px 0;
+}
+.arch-item {
+    background: var(--option-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.arch-item:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary-color);
+}
+.arch-icon {
+    font-size: 1.6em;
+    line-height: 1;
+}
+.arch-title {
+    font-size: 0.9em;
+    font-weight: 700;
+    color: var(--heading-color);
+    margin-bottom: 2px;
+}
+.arch-desc {
+    font-size: 0.78em;
+    opacity: 0.8;
+    line-height: 1.35;
+}
+.arch-tag {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 2px 6px;
+    font-size: 0.7em;
+    font-weight: 700;
+    border-radius: 4px;
+    background: rgba(16, 185, 129, 0.15);
+    color: #059669;
+}
+
+/* 12-Step Lifecycle Flowchart */
+.arch-steps-container {
+    background: var(--option-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 16px;
+    margin: 16px 0;
+}
+.arch-steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.arch-step-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    font-size: 0.85em;
+    font-weight: 500;
+}
+.arch-step-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4f46e5, #06b6d4);
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 0.8em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.arch-step-detail {
+    flex: 1;
+}
+.arch-step-actor {
+    font-weight: 700;
+    color: var(--primary-color);
+}
+@media (max-width: 768px) {
+    .arch-grid-9 {
+        grid-template-columns: 1fr;
+    }
+}
+
+
 
