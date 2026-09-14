@@ -1845,11 +1845,13 @@
         );
     }
 
-    // Reactive MathJax hook when MathJax finishes loading asynchronously
+    // Reactive MathJax hook: Only activates as fallback when KaTeX is unavailable
     window.onMathJaxReady = () => {
-        const container = document.getElementById('quiz-container');
-        if (container && typeof UIManager !== 'undefined' && UIManager.typesetMathJaxProgressively) {
-            UIManager.typesetMathJaxProgressively(container);
+        if (typeof renderMathInElement !== 'function') {
+            const container = document.getElementById('quiz-container');
+            if (container && typeof UIManager !== 'undefined' && UIManager.typesetMathJaxProgressively) {
+                UIManager.typesetMathJaxProgressively(container);
+            }
         }
     };
 

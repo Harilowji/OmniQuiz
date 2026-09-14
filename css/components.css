@@ -220,6 +220,7 @@
     padding: 28px 32px;
     margin-bottom: 24px;
     scroll-margin-top: 125px;
+    contain: content;
     transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.3s ease;
 }
 .question-block:hover {

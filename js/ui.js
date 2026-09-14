@@ -1285,7 +1285,7 @@ const UIManager = (() => {
             if (unBox) unBox.classList.add('has-warning');
             if (warnBanner) {
                 warnBanner.style.display = 'block';
-                if (unHighlight) unHighlight.innerText = unanswered;
+                warnBanner.innerHTML = `⚠️ <strong>${t('confirmWarningTitle')}</strong> ${t('confirmWarningText', `<span id="confirm-unanswered-highlight">${unanswered}</span>`)}`;
             }
         } else {
             if (unBox) unBox.classList.remove('has-warning');

@@ -109,12 +109,12 @@
 
                 <!-- 3. Smart AI Tutor CTA Button -->
                 <button class="btn-action btn-ai-glow" id="btn-open-ai-tutor" title="Trợ lý Gia sư AI & Trích xuất đề thi từ ảnh (Gemini OCR)">
-                    🤖 <span class="btn-ai-text">Gia sư AI</span>
+                    🤖 <span class="btn-ai-text" id="txt-btn-ai-tutor">Gia sư AI</span>
                 </button>
 
                 <!-- 4. Tools & Settings Center Button -->
                 <button type="button" class="btn-action btn-tools-trigger" id="btn-tools-toggle" title="Tiện ích & Cài đặt hệ thống">
-                    ⚙️ <span class="btn-tools-text">Tiện ích</span>
+                    ⚙️ <span class="btn-tools-text" id="txt-btn-tools">Tiện ích</span>
                 </button>
 
                 <!-- Server Connection Status Badge -->
@@ -175,16 +175,16 @@
                                 <label class="btn-action btn-primary btn-upload-cta">
                                     📁 <span id="txt-btn-browse">Chọn file từ thiết bị</span>
                                     <input type="file" id="file-input" accept=".txt,.docx,.doc,.pdf" style="display: none;">
-                                </label>
+                                 </label>
                                 <button type="button" class="btn-action btn-ai-ocr-trigger" id="btn-hero-ocr" style="font-weight: 600;">
-                                    📸 Quét ảnh đề (OCR AI)
+                                    <span id="txt-btn-hero-ocr">📸 Quét ảnh đề (OCR AI)</span>
                                 </button>
                                 <button type="button" class="btn-action" id="btn-open-studio-hero" style="font-weight: 600;">
-                                    ✏️ Tự soạn đề thi
+                                    <span id="txt-btn-studio-hero">✏️ Tự soạn đề thi</span>
                                 </button>
                             </div>
                             
-                            <div class="dropzone-note">
+                            <div class="dropzone-note" id="txt-dropzone-note">
                                 * File .doc cũ: Vui lòng lưu thành .docx để đọc tốt nhất
                             </div>
                         </div>
@@ -204,7 +204,7 @@
                                     <optgroup label="🌐 Đề thi Máy chủ (Cloud Database)" id="optgroup-cloud-exams">
                                         <!-- Dynamically populated from /api/exams -->
                                     </optgroup>
-                                    <optgroup label="📚 Đề thi mẫu Offline">
+                                    <optgroup label="📚 Đề thi mẫu Offline" id="optgroup-offline-exams">
                                         <option value="informatics_10">💻 Tin học - Lập trình & CNTT (10 câu)</option>
                                         <option value="chem_40_pdf">🧪 Hóa học - 40 câu trắc nghiệm (Trích xuất từ file PDF)</option>
                                         <option value="math_50">📐 Toán học - Đề thi thử THPT (50 câu)</option>
@@ -237,8 +237,8 @@
                             <div class="join-pin-header">
                                 <span class="join-pin-icon">🔑</span>
                                 <div>
-                                    <h3 class="join-pin-title">Phòng thi trực tuyến</h3>
-                                    <p class="join-pin-subtitle">Nhập mã PIN 6 số để vào thi ngay</p>
+                                    <h3 class="join-pin-title" id="txt-join-pin-title">Phòng thi trực tuyến</h3>
+                                    <p class="join-pin-subtitle" id="txt-join-pin-subtitle">Nhập mã PIN 6 số để vào thi ngay</p>
                                 </div>
                             </div>
                             <div class="join-pin-form">
@@ -246,7 +246,7 @@
                                 <input type="text" class="custom-select" id="input-join-name" placeholder="Họ và tên thí sinh..." maxlength="50">
                                 <input type="text" class="custom-select" id="input-join-sbd" placeholder="Số báo danh / Lớp (tùy chọn)..." maxlength="30">
                                 <button type="button" class="btn-action btn-primary" id="btn-join-room" style="justify-content: center; padding: 10px; font-weight: 700; margin-top: 4px;">
-                                    🎯 Vào phòng thi
+                                    <span id="txt-btn-join-room">🎯 Vào phòng thi</span>
                                 </button>
                             </div>
                         </div>
@@ -462,8 +462,8 @@
         <div class="modal-content history-modal-card">
             <div class="history-modal-header">
                 <div>
-                    <h2 style="margin: 0; color: var(--heading-color); font-size: 1.3em;">📜 Lịch Sử Bài Thi & Thống Kê</h2>
-                    <p style="margin: 4px 0 0; font-size: 0.85em; opacity: 0.75;">Lưu trữ bài thi cục bộ (IndexedDB) & Tự động đồng bộ Supabase Cloud</p>
+                    <h2 id="txt-hist-title" style="margin: 0; color: var(--heading-color); font-size: 1.3em;">📜 Lịch Sử Bài Thi & Thống Kê</h2>
+                    <p id="txt-hist-subtitle" style="margin: 4px 0 0; font-size: 0.85em; opacity: 0.75;">Lưu trữ bài thi cục bộ (IndexedDB) & Tự động đồng bộ Supabase Cloud</p>
                 </div>
                 <button class="btn-action btn-history-action btn-del" id="btn-close-history" style="border-radius: 50%; width: 34px; height: 34px; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 1.1em;">✕</button>
             </div>
@@ -471,20 +471,20 @@
             <div class="history-stats-bar">
                 <div class="history-stat-box">
                     <div class="history-stat-num" id="hist-stat-total">0</div>
-                    <div class="history-stat-lbl">Bài thi đã làm</div>
+                    <div class="history-stat-lbl" id="txt-hist-stat-total">Bài thi đã làm</div>
                 </div>
                 <div class="history-stat-box">
                     <div class="history-stat-num" id="hist-stat-avg">0.0</div>
-                    <div class="history-stat-lbl">Điểm trung bình (/10)</div>
+                    <div class="history-stat-lbl" id="txt-hist-stat-avg">Điểm trung bình (/10)</div>
                 </div>
                 <div class="history-stat-box">
                     <div class="history-stat-num" id="hist-stat-best">0</div>
-                    <div class="history-stat-lbl">Điểm cao nhất (/100)</div>
+                    <div class="history-stat-lbl" id="txt-hist-stat-best">Điểm cao nhất (/100)</div>
                 </div>
             </div>
 
             <div class="history-tabs-nav">
-                <button class="history-tab-btn active" id="tab-btn-hist-list">📋 Danh sách bài thi (<span id="hist-count-pill">0</span>)</button>
+                <button class="history-tab-btn active" id="tab-btn-hist-list">📋 <span id="txt-tab-hist-list">Danh sách bài thi</span> (<span id="hist-count-pill">0</span>)</button>
                 <button class="history-tab-btn" id="tab-btn-hist-cloud">☁️ Supabase Cloud Sync (BaaS)</button>
             </div>
 
@@ -514,8 +514,8 @@
             </div>
 
             <div style="margin-top: 14px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--card-border); padding-top: 12px;">
-                <button class="btn-action btn-history-action btn-del" id="btn-clear-all-history">🗑️ Xóa toàn bộ lịch sử</button>
-                <button class="btn-action btn-primary" id="btn-history-modal-close" style="padding: 8px 18px;">Đóng</button>
+                <button class="btn-action btn-history-action btn-del" id="btn-clear-all-history">🗑️ <span id="txt-btn-clear-history">Xóa toàn bộ lịch sử</span></button>
+                <button class="btn-action btn-primary" id="btn-history-modal-close" style="padding: 8px 18px;"><span id="txt-btn-close-history">Đóng</span></button>
             </div>
         </div>
     </div>
@@ -568,16 +568,16 @@
                 <div class="studio-header-left">
                     <span style="font-size: 1.6em;">✨</span>
                     <div>
-                        <div class="studio-header-title">Question Studio - Biên Tập & Soạn Thảo Đề Thi</div>
+                        <div class="studio-header-title" id="txt-studio-header-title">Question Studio - Biên Tập & Soạn Thảo Đề Thi</div>
                         <div style="font-size: 0.82em; opacity: 0.75;" id="studio-total-count">0 câu hỏi</div>
                     </div>
                 </div>
                 <div class="studio-header-actions">
-                    <button type="button" class="btn-action" id="btn-studio-quick-paste" title="Dán nhanh câu hỏi dạng văn bản hoặc OCR">📸 Dán nhanh / OCR</button>
-                    <button type="button" class="btn-action" id="btn-studio-export-json" title="Tải về file JSON">📥 Xuất JSON</button>
-                    <button type="button" class="btn-action" id="btn-studio-export-txt" title="Tải về file TXT">📄 Xuất TXT</button>
-                    <button type="button" class="btn-action btn-ai-glow" id="btn-studio-save-cloud" title="Lưu đề thi này vào Thư viện Máy chủ (CSDL Cloud)">☁️ Lưu lên Máy chủ</button>
-                    <button type="button" class="btn-action btn-primary" id="btn-studio-apply" style="font-weight: 700;">💾 Áp dụng & Bắt đầu thi</button>
+                    <button type="button" class="btn-action" id="btn-studio-quick-paste" title="Dán nhanh câu hỏi dạng văn bản hoặc OCR"><span id="txt-btn-studio-paste">📸 Dán nhanh / OCR</span></button>
+                    <button type="button" class="btn-action" id="btn-studio-export-json" title="Tải về file JSON"><span id="txt-btn-studio-export-json">📥 Xuất JSON</span></button>
+                    <button type="button" class="btn-action" id="btn-studio-export-txt" title="Tải về file TXT"><span id="txt-btn-studio-export-txt">📄 Xuất TXT</span></button>
+                    <button type="button" class="btn-action btn-ai-glow" id="btn-studio-save-cloud" title="Lưu đề thi này vào Thư viện Máy chủ (CSDL Cloud)"><span id="txt-btn-studio-cloud">☁️ Lưu lên Máy chủ</span></button>
+                    <button type="button" class="btn-action btn-primary" id="btn-studio-apply" style="font-weight: 700;"><span id="txt-btn-studio-apply">💾 Áp dụng & Bắt đầu thi</span></button>
                     <button type="button" class="btn-action btn-history-action btn-del" id="btn-close-studio" style="padding: 6px 12px;">✕</button>
                 </div>
             </div>
@@ -589,7 +589,7 @@
                     <div class="studio-qlist-tools">
                         <input type="text" class="custom-select" id="studio-search-q" placeholder="🔍 Tìm câu hỏi...">
                         <div style="display: flex; gap: 6px;">
-                            <button type="button" class="btn-action btn-primary" id="btn-studio-add-q" style="flex: 1; justify-content: center; font-size: 0.85em;">➕ Thêm câu mới</button>
+                            <button type="button" class="btn-action btn-primary" id="btn-studio-add-q" style="flex: 1; justify-content: center; font-size: 0.85em;"><span id="txt-btn-studio-add-q">➕ Thêm câu mới</span></button>
                         </div>
                     </div>
                     <div class="studio-qlist-items" id="studio-qlist">
@@ -668,26 +668,26 @@
     <div class="modal-overlay" id="host-room-modal" style="display: none; z-index: 99998;">
         <div class="modal-content host-room-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-                <h3 style="color: var(--heading-color); font-size: 1.3em;">🌐 Mở Phòng Thi Trực Tuyến</h3>
+                <h3 id="txt-host-title" style="color: var(--heading-color); font-size: 1.3em;">🌐 Mở Phòng Thi Trực Tuyến</h3>
                 <button type="button" class="btn-action btn-history-action btn-del" id="btn-close-host-modal" style="padding: 4px 10px;">✕</button>
             </div>
 
             <div id="host-room-setup-box">
-                <p style="font-size: 0.9em; opacity: 0.8; margin-bottom: 14px;">
+                <p id="txt-host-desc" style="font-size: 0.9em; opacity: 0.8; margin-bottom: 14px;">
                     Khởi tạo phòng thi với mã PIN để thí sinh truy cập đồng thời từ bất kỳ thiết bị nào.
                 </p>
                 <div style="display: flex; flex-direction: column; gap: 12px;">
                     <div>
-                        <label style="font-size: 0.85em; font-weight: 700;">Tên đề / Tiêu đề phòng thi:</label>
+                        <label id="txt-host-lbl-title" style="font-size: 0.85em; font-weight: 700;">Tên đề / Tiêu đề phòng thi:</label>
                         <input type="text" class="custom-select" id="host-input-title" style="width: 100%; margin-top: 4px;" placeholder="VD: Kiểm tra 15 phút - Tin học 10">
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <div>
-                            <label style="font-size: 0.85em; font-weight: 700;">Số câu hỏi:</label>
+                            <label id="txt-host-lbl-qcount" style="font-size: 0.85em; font-weight: 700;">Số câu hỏi:</label>
                             <div class="custom-select" id="host-q-count" style="width: 100%; margin-top: 4px; background: var(--option-bg);">0 câu</div>
                         </div>
                         <div>
-                            <label style="font-size: 0.85em; font-weight: 700;">Thời gian làm bài:</label>
+                            <label id="txt-host-lbl-duration" style="font-size: 0.85em; font-weight: 700;">Thời gian làm bài:</label>
                             <select class="custom-select" id="host-select-duration" style="width: 100%; margin-top: 4px;">
                                 <option value="15">⏱️ 15 phút</option>
                                 <option value="30">⏱️ 30 phút</option>
@@ -701,27 +701,27 @@
                     <div>
                         <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9em; cursor: pointer; margin-top: 6px;">
                             <input type="checkbox" id="host-check-anticheat" checked style="width: 18px; height: 18px; accent-color: var(--primary-color);">
-                            <span>Bật chế độ Giám sát phòng thi (Bắt buộc Toàn màn hình & khóa khi vi phạm)</span>
+                            <span id="txt-host-lbl-anticheat">Bật chế độ Giám sát phòng thi (Bắt buộc Toàn màn hình & khóa khi vi phạm)</span>
                         </label>
                     </div>
                     <button type="button" class="btn-action btn-primary" id="btn-confirm-host" style="width: 100%; justify-content: center; padding: 12px; font-weight: 700; margin-top: 10px;">
-                        🚀 Kích hoạt & Nhận mã PIN
+                        <span id="txt-btn-confirm-host">🚀 Kích hoạt & Nhận mã PIN</span>
                     </button>
                 </div>
             </div>
 
             <div id="host-room-created-box" style="display: none;">
                 <div class="host-pin-display-box">
-                    <div style="font-size: 0.9em; opacity: 0.8;">MÃ PIN PHÒNG THI</div>
+                    <div id="txt-host-pin-lbl" style="font-size: 0.9em; opacity: 0.8;">MÃ PIN PHÒNG THI</div>
                     <div class="host-display-pin" id="host-display-pin">------</div>
-                    <p style="font-size: 0.85em; opacity: 0.8;">Cung cấp mã PIN này cho thí sinh để vào làm bài thi</p>
+                    <p id="txt-host-pin-desc" style="font-size: 0.85em; opacity: 0.8;">Cung cấp mã PIN này cho thí sinh để vào làm bài thi</p>
                 </div>
                 <div style="display: flex; gap: 10px; margin-top: 12px;">
                     <button type="button" class="btn-action btn-primary" id="btn-copy-room-pin" style="flex: 1; justify-content: center;">
-                        📋 Sao chép mã PIN
+                        <span id="txt-btn-copy-pin">📋 Sao chép mã PIN</span>
                     </button>
                     <button type="button" class="btn-action" id="btn-view-hosted-leaderboard" style="flex: 1; justify-content: center;">
-                        🏆 Bảng xếp hạng
+                        <span id="txt-btn-view-lb">🏆 Bảng xếp hạng</span>
                     </button>
                 </div>
             </div>
@@ -733,11 +733,11 @@
         <div class="modal-content leaderboard-modal-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                 <div>
-                    <h3 style="color: var(--heading-color); font-size: 1.25em;">🏆 Bảng Xếp Hạng Phòng Thi</h3>
-                    <div style="font-size: 0.85em; opacity: 0.8;">Mã PIN: <strong id="leaderboard-room-pin" style="color: var(--primary-color);">------</strong></div>
+                    <h3 id="txt-lb-title" style="color: var(--heading-color); font-size: 1.25em;">🏆 Bảng Xếp Hạng Phòng Thi</h3>
+                    <div style="font-size: 0.85em; opacity: 0.8;"><span id="txt-lb-pin-label">Mã PIN</span>: <strong id="leaderboard-room-pin" style="color: var(--primary-color);">------</strong></div>
                 </div>
                 <div style="display: flex; gap: 8px;">
-                    <button type="button" class="btn-action" id="btn-refresh-leaderboard" title="Làm mới kết quả">🔄 Làm mới</button>
+                    <button type="button" class="btn-action" id="btn-refresh-leaderboard" title="Làm mới kết quả"><span id="txt-btn-refresh-lb">🔄 Làm mới</span></button>
                     <button type="button" class="btn-action btn-history-action btn-del" id="btn-close-leaderboard-modal" style="padding: 4px 10px;">✕</button>
                 </div>
             </div>
@@ -746,12 +746,12 @@
                 <table class="leaderboard-table">
                     <thead>
                         <tr>
-                            <th style="text-align: center; width: 60px;">Hạng</th>
-                            <th>Thí sinh</th>
-                            <th>SBD / Lớp</th>
-                            <th>Điểm</th>
-                            <th>Thời gian</th>
-                            <th style="text-align: center;">Vi phạm</th>
+                            <th id="th-lb-rank" style="text-align: center; width: 60px;">Hạng</th>
+                            <th id="th-lb-name">Thí sinh</th>
+                            <th id="th-lb-sbd">SBD / Lớp</th>
+                            <th id="th-lb-score">Điểm</th>
+                            <th id="th-lb-time">Thời gian</th>
+                            <th id="th-lb-violations" style="text-align: center;">Vi phạm</th>
                         </tr>
                     </thead>
                     <tbody id="leaderboard-tbody">
@@ -778,8 +778,8 @@
 
             <!-- Tab Switcher -->
             <div class="auth-tabs-nav" id="auth-tabs-nav">
-                <button type="button" class="auth-tab-btn active" id="tab-btn-login">Đăng nhập</button>
-                <button type="button" class="auth-tab-btn" id="tab-btn-register">Đăng ký mới</button>
+                <button type="button" class="auth-tab-btn active" id="tab-btn-login"><span id="txt-tab-login">Đăng nhập</span></button>
+                <button type="button" class="auth-tab-btn" id="tab-btn-register"><span id="txt-tab-register">Đăng ký mới</span></button>
             </div>
 
             <!-- Alert Notification -->
@@ -788,26 +788,26 @@
             <!-- View 1: Login Form -->
             <form id="auth-login-form">
                 <div class="auth-form-group">
-                    <label class="auth-form-label" for="login-email">Email đăng nhập</label>
+                    <label class="auth-form-label" for="login-email" id="txt-lbl-login-email">Email đăng nhập</label>
                     <input type="email" id="login-email" class="auth-form-input" placeholder="name@example.com" required autocomplete="email">
                 </div>
                 <div class="auth-form-group">
-                    <label class="auth-form-label" for="login-password">Mật khẩu</label>
+                    <label class="auth-form-label" for="login-password" id="txt-lbl-login-password">Mật khẩu</label>
                     <input type="password" id="login-password" class="auth-form-input" placeholder="••••••••" required autocomplete="current-password">
                 </div>
                 <button type="submit" class="btn-action btn-primary" style="width: 100%; justify-content: center; padding: 10px; font-size: 1em;">
-                    🚀 Đăng nhập hệ thống
+                    <span id="txt-btn-login-submit">🚀 Đăng nhập hệ thống</span>
                 </button>
 
                 <!-- Demo Quick Login Buttons -->
                 <div class="auth-demo-box">
-                    <div class="auth-demo-title">⚡ Đăng nhập nhanh tài khoản mẫu:</div>
+                    <div class="auth-demo-title" id="txt-auth-demo-title">⚡ Đăng nhập nhanh tài khoản mẫu:</div>
                     <div class="auth-demo-btns">
                         <button type="button" class="btn-auth-demo" id="btn-demo-teacher">
-                            👨‍🏫 Giáo viên (Admin)
+                            <span id="txt-btn-demo-teacher">👨‍🏫 Giáo viên (Admin)</span>
                         </button>
                         <button type="button" class="btn-auth-demo" id="btn-demo-student">
-                            🎓 Học sinh
+                            <span id="txt-btn-demo-student">🎓 Học sinh</span>
                         </button>
                     </div>
                 </div>
@@ -816,26 +816,26 @@
             <!-- View 2: Register Form -->
             <form id="auth-register-form" style="display: none;">
                 <div class="auth-form-group">
-                    <label class="auth-form-label" for="register-name">Họ và tên</label>
+                    <label class="auth-form-label" for="register-name" id="txt-lbl-reg-name">Họ và tên</label>
                     <input type="text" id="register-name" class="auth-form-input" placeholder="Nguyễn Văn A" required>
                 </div>
                 <div class="auth-form-group">
-                    <label class="auth-form-label" for="register-email">Email</label>
+                    <label class="auth-form-label" for="register-email" id="txt-lbl-reg-email">Email</label>
                     <input type="email" id="register-email" class="auth-form-input" placeholder="name@example.com" required>
                 </div>
                 <div class="auth-form-group">
-                    <label class="auth-form-label" for="register-password">Mật khẩu (Tối thiểu 6 ký tự)</label>
+                    <label class="auth-form-label" for="register-password" id="txt-lbl-reg-password">Mật khẩu (Tối thiểu 6 ký tự)</label>
                     <input type="password" id="register-password" class="auth-form-input" placeholder="••••••••" minlength="6" required>
                 </div>
                 <div class="auth-form-group">
-                    <label class="auth-form-label" for="register-role">Vai trò</label>
+                    <label class="auth-form-label" for="register-role" id="txt-lbl-reg-role">Vai trò</label>
                     <select id="register-role" class="auth-form-input">
-                        <option value="student">🎓 Thí sinh / Học sinh</option>
-                        <option value="teacher">👨‍🏫 Giáo viên / Giảng viên</option>
+                        <option value="student" id="opt-role-student">🎓 Thí sinh / Học sinh</option>
+                        <option value="teacher" id="opt-role-teacher">👨‍🏫 Giáo viên / Giảng viên</option>
                     </select>
                 </div>
                 <button type="submit" class="btn-action btn-primary" style="width: 100%; justify-content: center; padding: 10px; font-size: 1em;">
-                    ✨ Tạo tài khoản ngay
+                    <span id="txt-btn-reg-submit">✨ Tạo tài khoản ngay</span>
                 </button>
             </form>
 
@@ -885,8 +885,8 @@
                 <div class="tools-modal-title-group">
                     <div class="tools-modal-icon-ring">⚙️</div>
                     <div>
-                        <h2 class="tools-modal-title">Trung Tâm Tiện Ích & Cài Đặt</h2>
-                        <p class="tools-modal-subtitle">Tùy chỉnh giao diện, công cụ đề thi, phòng thi trực tuyến và trợ lý AI</p>
+                        <h2 class="tools-modal-title" id="txt-tools-modal-title">Trung Tâm Tiện Ích & Cài Đặt</h2>
+                        <p class="tools-modal-subtitle" id="txt-tools-modal-subtitle">Tùy chỉnh giao diện, công cụ đề thi, phòng thi trực tuyến và trợ lý AI</p>
                     </div>
                 </div>
                 <button type="button" class="btn-action btn-history-action btn-del" id="btn-close-tools-modal" title="Đóng tiện ích" style="padding: 6px 14px; font-size: 1.1em;">✕</button>
@@ -899,8 +899,8 @@
                     <div class="tools-card-header">
                         <span class="tools-card-icon">🎨</span>
                         <div>
-                            <h3 class="tools-card-title">Giao diện & Chế độ màu</h3>
-                            <span class="tools-card-desc">Tối ưu độ tương phản và êm mắt khi làm bài thi</span>
+                            <h3 class="tools-card-title" id="txt-tools-card1-title">Giao diện & Chế độ màu</h3>
+                            <span class="tools-card-desc" id="txt-tools-card1-desc">Tối ưu độ tương phản và êm mắt khi làm bài thi</span>
                         </div>
                     </div>
                     
@@ -908,32 +908,32 @@
                         <button type="button" class="theme-choice-btn active" data-theme="academic">
                             <span class="theme-dot" style="background: #2563eb;"></span>
                             <span class="theme-name">Slate Focus</span>
-                            <span class="theme-badge">Mặc định</span>
+                            <span class="theme-badge" id="badge-theme-academic">Mặc định</span>
                         </button>
                         <button type="button" class="theme-choice-btn" data-theme="sepia">
                             <span class="theme-dot" style="background: #b45309;"></span>
                             <span class="theme-name">Warm Sepia</span>
-                            <span class="theme-badge">Giấy êm mắt</span>
+                            <span class="theme-badge" id="badge-theme-sepia">Giấy êm mắt</span>
                         </button>
                         <button type="button" class="theme-choice-btn" data-theme="emerald">
                             <span class="theme-dot" style="background: #059669;"></span>
                             <span class="theme-name">Sage Calm</span>
-                            <span class="theme-badge">Thảo mộc dịu</span>
+                            <span class="theme-badge" id="badge-theme-emerald">Thảo mộc dịu</span>
                         </button>
                         <button type="button" class="theme-choice-btn" data-theme="cyberpunk">
                             <span class="theme-dot" style="background: #38bdf8;"></span>
                             <span class="theme-name">Nordic Dark</span>
-                            <span class="theme-badge">Đêm dịu mắt</span>
+                            <span class="theme-badge" id="badge-theme-cyberpunk">Đêm dịu mắt</span>
                         </button>
                         <button type="button" class="theme-choice-btn" data-theme="minimalist">
                             <span class="theme-dot" style="background: #18181b;"></span>
                             <span class="theme-name">Minimalist</span>
-                            <span class="theme-badge">Tối giản</span>
+                            <span class="theme-badge" id="badge-theme-minimalist">Tối giản</span>
                         </button>
                         <button type="button" class="theme-choice-btn" data-theme="playful">
                             <span class="theme-dot" style="background: #ea580c;"></span>
                             <span class="theme-name">Soft Peach</span>
-                            <span class="theme-badge">Gam ấm</span>
+                            <span class="theme-badge" id="badge-theme-playful">Gam ấm</span>
                         </button>
                     </div>
 
@@ -948,7 +948,7 @@
                     </select>
 
                     <div class="tools-lang-row">
-                        <span style="font-weight: 600; font-size: 0.9em; display: flex; align-items: center; gap: 6px;">
+                        <span id="txt-tools-lang-label" style="font-weight: 600; font-size: 0.9em; display: flex; align-items: center; gap: 6px;">
                             🌐 Ngôn ngữ:
                         </span>
                         <div class="tools-lang-toggle">
@@ -967,8 +967,8 @@
                     <div class="tools-card-header">
                         <span class="tools-card-icon">✏️</span>
                         <div>
-                            <h3 class="tools-card-title">Công cụ soạn thảo & Đề thi</h3>
-                            <span class="tools-card-desc">Biên tập câu hỏi, xáo trộn và xem lịch sử</span>
+                            <h3 class="tools-card-title" id="txt-tools-card2-title">Công cụ soạn thảo & Đề thi</h3>
+                            <span class="tools-card-desc" id="txt-tools-card2-desc">Biên tập câu hỏi, xáo trộn và xem lịch sử</span>
                         </div>
                     </div>
 
@@ -976,8 +976,8 @@
                         <button type="button" class="tools-feature-btn" id="btn-tools-open-studio">
                             <div class="tools-feature-icon">✏️</div>
                             <div class="tools-feature-text">
-                                <div class="tools-feature-name">Question Studio</div>
-                                <div class="tools-feature-desc">Soạn thảo, thêm bớt câu hỏi, chỉnh sửa LaTeX/KaTeX</div>
+                                <div class="tools-feature-name" id="txt-tools-f-studio-name">Question Studio</div>
+                                <div class="tools-feature-desc" id="txt-tools-f-studio-desc">Soạn thảo, thêm bớt câu hỏi, chỉnh sửa LaTeX/KaTeX</div>
                             </div>
                             <span class="tools-feature-arrow">→</span>
                         </button>
@@ -985,8 +985,8 @@
                         <button type="button" class="tools-feature-btn" id="btn-tools-shuffle">
                             <div class="tools-feature-icon">🔀</div>
                             <div class="tools-feature-text">
-                                <div class="tools-feature-name">Xáo trộn đề & Đáp án</div>
-                                <div class="tools-feature-desc">Đảo ngẫu nhiên vị trí câu hỏi và phương án A, B, C, D</div>
+                                <div class="tools-feature-name" id="txt-tools-f-shuffle-name">Xáo trộn đề & Đáp án</div>
+                                <div class="tools-feature-desc" id="txt-tools-f-shuffle-desc">Đảo ngẫu nhiên vị trí câu hỏi và phương án A, B, C, D</div>
                             </div>
                             <span class="tools-feature-arrow">→</span>
                         </button>
@@ -994,8 +994,8 @@
                         <button type="button" class="tools-feature-btn" id="btn-tools-history">
                             <div class="tools-feature-icon">📜</div>
                             <div class="tools-feature-text">
-                                <div class="tools-feature-name">Lịch sử thi & Bảng điểm</div>
-                                <div class="tools-feature-desc">Xem lại điểm số, câu đúng/sai và đồng bộ đám mây</div>
+                                <div class="tools-feature-name" id="txt-tools-f-history-name">Lịch sử thi & Bảng điểm</div>
+                                <div class="tools-feature-desc" id="txt-tools-f-history-desc">Xem lại điểm số, câu đúng/sai và đồng bộ đám mây</div>
                             </div>
                             <span class="tools-feature-arrow">→</span>
                         </button>
@@ -1007,8 +1007,8 @@
                     <div class="tools-card-header">
                         <span class="tools-card-icon">🌐</span>
                         <div>
-                            <h3 class="tools-card-title">Phòng thi trực tuyến (CBT Online)</h3>
-                            <span class="tools-card-desc">Tổ chức thi đồng bộ và theo dõi xếp hạng thời gian thực</span>
+                            <h3 class="tools-card-title" id="txt-tools-card3-title">Phòng thi trực tuyến (CBT Online)</h3>
+                            <span class="tools-card-desc" id="txt-tools-card3-desc">Tổ chức thi đồng bộ và theo dõi xếp hạng thời gian thực</span>
                         </div>
                     </div>
 
@@ -1016,8 +1016,8 @@
                         <button type="button" class="tools-feature-btn" id="btn-tools-host-room">
                             <div class="tools-feature-icon">🌐</div>
                             <div class="tools-feature-text">
-                                <div class="tools-feature-name">Khởi tạo phòng thi (Mã PIN)</div>
-                                <div class="tools-feature-desc">Tạo mã PIN 6 số để học sinh vào thi cùng lúc trên các thiết bị</div>
+                                <div class="tools-feature-name" id="txt-tools-f-host-name">Khởi tạo phòng thi (Mã PIN)</div>
+                                <div class="tools-feature-desc" id="txt-tools-f-host-desc">Tạo mã PIN 6 số để học sinh vào thi cùng lúc trên các thiết bị</div>
                             </div>
                             <span class="tools-feature-arrow">→</span>
                         </button>
@@ -1025,8 +1025,8 @@
                         <button type="button" class="tools-feature-btn" id="btn-tools-leaderboard">
                             <div class="tools-feature-icon">🏆</div>
                             <div class="tools-feature-text">
-                                <div class="tools-feature-name">Bảng xếp hạng trực tiếp</div>
-                                <div class="tools-feature-desc">Xem điểm số, thời gian làm bài và thứ hạng thời gian thực</div>
+                                <div class="tools-feature-name" id="txt-tools-f-lb-name">Bảng xếp hạng trực tiếp</div>
+                                <div class="tools-feature-desc" id="txt-tools-f-lb-desc">Xem điểm số, thời gian làm bài và thứ hạng thời gian thực</div>
                             </div>
                             <span class="tools-feature-arrow">→</span>
                         </button>
@@ -1038,8 +1038,8 @@
                     <div class="tools-card-header">
                         <span class="tools-card-icon">🤖</span>
                         <div>
-                            <h3 class="tools-card-title">Trí tuệ nhân tạo (AI Assistant)</h3>
-                            <span class="tools-card-desc">Quét ảnh đề OCR và phân tích bẫy câu hỏi</span>
+                            <h3 class="tools-card-title" id="txt-tools-card4-title">Trí tuệ nhân tạo (AI Assistant)</h3>
+                            <span class="tools-card-desc" id="txt-tools-card4-desc">Quét ảnh đề OCR và phân tích bẫy câu hỏi</span>
                         </div>
                     </div>
 
@@ -1047,8 +1047,8 @@
                         <button type="button" class="tools-feature-btn" id="btn-tools-ocr">
                             <div class="tools-feature-icon">📸</div>
                             <div class="tools-feature-text">
-                                <div class="tools-feature-name">Quét ảnh đề thi (AI OCR Vision)</div>
-                                <div class="tools-feature-desc">Chụp hoặc tải ảnh đề giấy để Gemini tự động trích xuất đề</div>
+                                <div class="tools-feature-name" id="txt-tools-f-ocr-name">Quét ảnh đề thi (AI OCR Vision)</div>
+                                <div class="tools-feature-desc" id="txt-tools-f-ocr-desc">Chụp hoặc tải ảnh đề giấy để Gemini tự động trích xuất đề</div>
                             </div>
                             <span class="tools-feature-arrow">→</span>
                         </button>
@@ -1056,8 +1056,8 @@
                         <button type="button" class="tools-feature-btn" id="btn-tools-ai-key">
                             <div class="tools-feature-icon">🔑</div>
                             <div class="tools-feature-text">
-                                <div class="tools-feature-name">Cài đặt Gemini API Key</div>
-                                <div class="tools-feature-desc">Quản lý khóa API cá nhân để dùng AI miễn phí không giới hạn</div>
+                                <div class="tools-feature-name" id="txt-tools-f-aikey-name">Cài đặt Gemini API Key</div>
+                                <div class="tools-feature-desc" id="txt-tools-f-aikey-desc">Quản lý khóa API cá nhân để dùng AI miễn phí không giới hạn</div>
                             </div>
                             <span class="tools-feature-arrow">→</span>
                         </button>
@@ -1068,7 +1068,7 @@
             <!-- Footer -->
             <div class="tools-modal-footer">
                 <div class="tools-modal-footer-tag">🛡️ OmniQuiz PRO • CBT Platform</div>
-                <button type="button" class="btn-action btn-primary" id="btn-done-tools" style="padding: 8px 24px;">✓ Hoàn tất</button>
+                <button type="button" class="btn-action btn-primary" id="btn-done-tools" style="padding: 8px 24px;"><span id="txt-btn-done-tools">✓ Hoàn tất</span></button>
             </div>
         </div>
     </div>
