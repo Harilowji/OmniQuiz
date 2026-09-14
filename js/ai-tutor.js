@@ -348,6 +348,11 @@ CHÚ Ý:
 
         document.body.appendChild(modalDiv);
 
+        // Dismiss on clicking overlay backdrop
+        modalDiv.addEventListener('click', (e) => {
+            if (e.target === modalDiv) closeApiKeySettingsModal();
+        });
+
         // Bind events
         document.getElementById('btn-close-ai-key-modal')?.addEventListener('click', closeApiKeySettingsModal);
         
@@ -483,6 +488,11 @@ CHÚ Ý:
         `;
 
         document.body.appendChild(modalDiv);
+
+        // Dismiss on clicking overlay backdrop
+        modalDiv.addEventListener('click', (e) => {
+            if (e.target === modalDiv) closeImageOcrModal();
+        });
 
         let selectedBase64 = null;
         let selectedMime = 'image/jpeg';

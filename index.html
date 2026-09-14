@@ -112,76 +112,10 @@
                     🤖 <span class="btn-ai-text">Gia sư AI</span>
                 </button>
 
-                <!-- 4. Tools & Settings Menu (Progressive Disclosure Dropdown) -->
-                <div class="tools-dropdown-wrapper" id="tools-dropdown-wrap">
-                    <button class="btn-action btn-tools-trigger" id="btn-tools-toggle" title="Tiện ích & Cài đặt hệ thống" aria-haspopup="true" aria-expanded="false">
-                        ⚙️ <span class="btn-tools-text">Tiện ích</span> <span class="tools-chevron">▾</span>
-                    </button>
-
-                    <div class="tools-dropdown-menu" id="tools-dropdown-menu" role="menu">
-                        <!-- Group 1: Appearance & Locale -->
-                        <div class="tools-menu-group">
-                            <div class="tools-group-label">Giao diện & Ngôn ngữ</div>
-                            <div class="tools-menu-item">
-                                <span class="tools-item-icon">🎨</span>
-                                <div style="flex: 1;">
-                                    <label for="theme-selector" class="tools-item-title">Giao diện màu</label>
-                                    <select class="custom-select tools-subselect" id="theme-selector" aria-label="Chọn giao diện">
-                                        <option value="academic" selected>🎯 Slate Focus (Tập trung)</option>
-                                        <option value="sepia">📖 Warm Sepia (Giấy êm mắt)</option>
-                                        <option value="emerald">🌿 Sage Calm (Thảo mộc dịu)</option>
-                                        <option value="cyberpunk">🌌 Nordic Dark (Đêm dịu mắt)</option>
-                                        <option value="minimalist">⚪ Clean Minimalist (Tối giản)</option>
-                                        <option value="playful">🍑 Soft Peach (Gam ấm nhẹ)</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="tools-menu-item">
-                                <span class="tools-item-icon">🌐</span>
-                                <div style="flex: 1;">
-                                    <label for="lang-selector" class="tools-item-title">Ngôn ngữ hiển thị</label>
-                                    <select class="custom-select tools-subselect" id="lang-selector" aria-label="Chọn ngôn ngữ">
-                                        <option value="vi">🇻🇳 Tiếng Việt</option>
-                                        <option value="en">🇬🇧 English</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Group 2: Exam & Question Tools -->
-                        <div class="tools-menu-group">
-                            <div class="tools-group-label">Công cụ & Soạn thảo</div>
-                            <button type="button" class="tools-menu-btn" id="btn-open-studio">
-                                <span>✏️</span> <span>Soạn & Sửa đề thi (Studio)</span>
-                            </button>
-                            <button type="button" class="tools-menu-btn" id="btn-shuffle">
-                                <span>🔀</span> <span>Đảo ngẫu nhiên đề & đáp án</span>
-                            </button>
-                            <button type="button" class="tools-menu-btn" id="btn-history-toggle">
-                                <span>📜</span> <span>Lịch sử bài thi & Đồng bộ Cloud</span>
-                            </button>
-                        </div>
-
-                        <!-- Group 3: Online Room -->
-                        <div class="tools-menu-group">
-                            <div class="tools-group-label">Phòng thi trực tuyến</div>
-                            <button type="button" class="tools-menu-btn" id="btn-host-room">
-                                <span>🌐</span> <span>Khởi tạo phòng thi (Mã PIN)</span>
-                            </button>
-                            <button type="button" class="tools-menu-btn" id="btn-room-leaderboard">
-                                <span>🏆</span> <span>Bảng xếp hạng phòng thi</span>
-                            </button>
-                        </div>
-
-                        <!-- Group 4: AI Settings -->
-                        <div class="tools-menu-group">
-                            <div class="tools-group-label">Trí tuệ nhân tạo (AI)</div>
-                            <button type="button" class="tools-menu-btn" id="btn-config-ai-key">
-                                <span>🔑</span> <span>Cài đặt Gemini API Key</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <!-- 4. Tools & Settings Center Button -->
+                <button type="button" class="btn-action btn-tools-trigger" id="btn-tools-toggle" title="Tiện ích & Cài đặt hệ thống">
+                    ⚙️ <span class="btn-tools-text">Tiện ích</span>
+                </button>
 
                 <!-- Server Connection Status Badge -->
                 <button type="button" class="server-status-pill" id="server-status-badge" title="Trạng thái kết nối máy chủ OmniQuiz Cloud">
@@ -402,6 +336,7 @@
     <button id="btn-mobile-palette-toggle" class="floating-palette-fab" style="display: none;" title="Mở bản đồ câu hỏi">
         📋 <span id="txt-mobile-fab-lbl">Bản đồ</span> (<span id="fab-answered-count">0</span>/<span id="fab-total-count">0</span>)
     </button>
+    <div class="drawer-backdrop" id="palette-drawer-backdrop" style="display: none;"></div>
 
     <!-- SUMMARY SCORE MODAL -->
     <div class="modal-overlay" id="summary-modal">
@@ -938,6 +873,202 @@
                         🚪 Đăng xuất tài khoản
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOOLS & SETTINGS CENTER MODAL -->
+    <div class="modal-overlay" id="tools-modal" style="display: none; z-index: 95000;">
+        <div class="modal-content tools-modal-card">
+            <!-- Header -->
+            <div class="tools-modal-header">
+                <div class="tools-modal-title-group">
+                    <div class="tools-modal-icon-ring">⚙️</div>
+                    <div>
+                        <h2 class="tools-modal-title">Trung Tâm Tiện Ích & Cài Đặt</h2>
+                        <p class="tools-modal-subtitle">Tùy chỉnh giao diện, công cụ đề thi, phòng thi trực tuyến và trợ lý AI</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-action btn-history-action btn-del" id="btn-close-tools-modal" title="Đóng tiện ích" style="padding: 6px 14px; font-size: 1.1em;">✕</button>
+            </div>
+
+            <!-- Body Grid (2x2 Cards) -->
+            <div class="tools-modal-grid">
+                <!-- Card 1: Giao diện & Độ tập trung -->
+                <div class="tools-card-section">
+                    <div class="tools-card-header">
+                        <span class="tools-card-icon">🎨</span>
+                        <div>
+                            <h3 class="tools-card-title">Giao diện & Chế độ màu</h3>
+                            <span class="tools-card-desc">Tối ưu độ tương phản và êm mắt khi làm bài thi</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tools-theme-grid">
+                        <button type="button" class="theme-choice-btn active" data-theme="academic">
+                            <span class="theme-dot" style="background: #2563eb;"></span>
+                            <span class="theme-name">Slate Focus</span>
+                            <span class="theme-badge">Mặc định</span>
+                        </button>
+                        <button type="button" class="theme-choice-btn" data-theme="sepia">
+                            <span class="theme-dot" style="background: #b45309;"></span>
+                            <span class="theme-name">Warm Sepia</span>
+                            <span class="theme-badge">Giấy êm mắt</span>
+                        </button>
+                        <button type="button" class="theme-choice-btn" data-theme="emerald">
+                            <span class="theme-dot" style="background: #059669;"></span>
+                            <span class="theme-name">Sage Calm</span>
+                            <span class="theme-badge">Thảo mộc dịu</span>
+                        </button>
+                        <button type="button" class="theme-choice-btn" data-theme="cyberpunk">
+                            <span class="theme-dot" style="background: #38bdf8;"></span>
+                            <span class="theme-name">Nordic Dark</span>
+                            <span class="theme-badge">Đêm dịu mắt</span>
+                        </button>
+                        <button type="button" class="theme-choice-btn" data-theme="minimalist">
+                            <span class="theme-dot" style="background: #18181b;"></span>
+                            <span class="theme-name">Minimalist</span>
+                            <span class="theme-badge">Tối giản</span>
+                        </button>
+                        <button type="button" class="theme-choice-btn" data-theme="playful">
+                            <span class="theme-dot" style="background: #ea580c;"></span>
+                            <span class="theme-name">Soft Peach</span>
+                            <span class="theme-badge">Gam ấm</span>
+                        </button>
+                    </div>
+
+                    <!-- Hidden select kept for 100% backward compatibility with scripts -->
+                    <select id="theme-selector" style="display: none;" aria-label="Theme selector">
+                        <option value="academic">Slate Focus</option>
+                        <option value="sepia">Warm Sepia</option>
+                        <option value="emerald">Sage Calm</option>
+                        <option value="cyberpunk">Nordic Dark</option>
+                        <option value="minimalist">Minimalist</option>
+                        <option value="playful">Soft Peach</option>
+                    </select>
+
+                    <div class="tools-lang-row">
+                        <span style="font-weight: 600; font-size: 0.9em; display: flex; align-items: center; gap: 6px;">
+                            🌐 Ngôn ngữ:
+                        </span>
+                        <div class="tools-lang-toggle">
+                            <button type="button" class="btn-lang-choice active" data-lang="vi">🇻🇳 Tiếng Việt</button>
+                            <button type="button" class="btn-lang-choice" data-lang="en">🇬🇧 English</button>
+                        </div>
+                        <select id="lang-selector" style="display: none;" aria-label="Language selector">
+                            <option value="vi">Tiếng Việt</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Card 2: Công cụ soạn thảo & Đề thi -->
+                <div class="tools-card-section">
+                    <div class="tools-card-header">
+                        <span class="tools-card-icon">✏️</span>
+                        <div>
+                            <h3 class="tools-card-title">Công cụ soạn thảo & Đề thi</h3>
+                            <span class="tools-card-desc">Biên tập câu hỏi, xáo trộn và xem lịch sử</span>
+                        </div>
+                    </div>
+
+                    <div class="tools-actions-list">
+                        <button type="button" class="tools-feature-btn" id="btn-tools-open-studio">
+                            <div class="tools-feature-icon">✏️</div>
+                            <div class="tools-feature-text">
+                                <div class="tools-feature-name">Question Studio</div>
+                                <div class="tools-feature-desc">Soạn thảo, thêm bớt câu hỏi, chỉnh sửa LaTeX/KaTeX</div>
+                            </div>
+                            <span class="tools-feature-arrow">→</span>
+                        </button>
+
+                        <button type="button" class="tools-feature-btn" id="btn-tools-shuffle">
+                            <div class="tools-feature-icon">🔀</div>
+                            <div class="tools-feature-text">
+                                <div class="tools-feature-name">Xáo trộn đề & Đáp án</div>
+                                <div class="tools-feature-desc">Đảo ngẫu nhiên vị trí câu hỏi và phương án A, B, C, D</div>
+                            </div>
+                            <span class="tools-feature-arrow">→</span>
+                        </button>
+
+                        <button type="button" class="tools-feature-btn" id="btn-tools-history">
+                            <div class="tools-feature-icon">📜</div>
+                            <div class="tools-feature-text">
+                                <div class="tools-feature-name">Lịch sử thi & Bảng điểm</div>
+                                <div class="tools-feature-desc">Xem lại điểm số, câu đúng/sai và đồng bộ đám mây</div>
+                            </div>
+                            <span class="tools-feature-arrow">→</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card 3: Phòng thi trực tuyến -->
+                <div class="tools-card-section">
+                    <div class="tools-card-header">
+                        <span class="tools-card-icon">🌐</span>
+                        <div>
+                            <h3 class="tools-card-title">Phòng thi trực tuyến (CBT Online)</h3>
+                            <span class="tools-card-desc">Tổ chức thi đồng bộ và theo dõi xếp hạng thời gian thực</span>
+                        </div>
+                    </div>
+
+                    <div class="tools-actions-list">
+                        <button type="button" class="tools-feature-btn" id="btn-tools-host-room">
+                            <div class="tools-feature-icon">🌐</div>
+                            <div class="tools-feature-text">
+                                <div class="tools-feature-name">Khởi tạo phòng thi (Mã PIN)</div>
+                                <div class="tools-feature-desc">Tạo mã PIN 6 số để học sinh vào thi cùng lúc trên các thiết bị</div>
+                            </div>
+                            <span class="tools-feature-arrow">→</span>
+                        </button>
+
+                        <button type="button" class="tools-feature-btn" id="btn-tools-leaderboard">
+                            <div class="tools-feature-icon">🏆</div>
+                            <div class="tools-feature-text">
+                                <div class="tools-feature-name">Bảng xếp hạng trực tiếp</div>
+                                <div class="tools-feature-desc">Xem điểm số, thời gian làm bài và thứ hạng thời gian thực</div>
+                            </div>
+                            <span class="tools-feature-arrow">→</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card 4: Trí tuệ Nhân tạo & OCR -->
+                <div class="tools-card-section">
+                    <div class="tools-card-header">
+                        <span class="tools-card-icon">🤖</span>
+                        <div>
+                            <h3 class="tools-card-title">Trí tuệ nhân tạo (AI Assistant)</h3>
+                            <span class="tools-card-desc">Quét ảnh đề OCR và phân tích bẫy câu hỏi</span>
+                        </div>
+                    </div>
+
+                    <div class="tools-actions-list">
+                        <button type="button" class="tools-feature-btn" id="btn-tools-ocr">
+                            <div class="tools-feature-icon">📸</div>
+                            <div class="tools-feature-text">
+                                <div class="tools-feature-name">Quét ảnh đề thi (AI OCR Vision)</div>
+                                <div class="tools-feature-desc">Chụp hoặc tải ảnh đề giấy để Gemini tự động trích xuất đề</div>
+                            </div>
+                            <span class="tools-feature-arrow">→</span>
+                        </button>
+
+                        <button type="button" class="tools-feature-btn" id="btn-tools-ai-key">
+                            <div class="tools-feature-icon">🔑</div>
+                            <div class="tools-feature-text">
+                                <div class="tools-feature-name">Cài đặt Gemini API Key</div>
+                                <div class="tools-feature-desc">Quản lý khóa API cá nhân để dùng AI miễn phí không giới hạn</div>
+                            </div>
+                            <span class="tools-feature-arrow">→</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="tools-modal-footer">
+                <div class="tools-modal-footer-tag">🛡️ OmniQuiz PRO • CBT Platform</div>
+                <button type="button" class="btn-action btn-primary" id="btn-done-tools" style="padding: 8px 24px;">✓ Hoàn tất</button>
             </div>
         </div>
     </div>

@@ -84,6 +84,10 @@
         };
         const iconEl = document.getElementById('txt-quick-theme-icon');
         if (iconEl) iconEl.textContent = themeIcons[theme] || '🎨';
+
+        document.querySelectorAll('.theme-choice-btn').forEach(b => {
+            b.classList.toggle('active', b.getAttribute('data-theme') === theme);
+        });
     }
 
     function isExamActiveUnsubmitted() {
@@ -209,26 +213,120 @@
             refreshUI();
         });
 
-        // Tools Dropdown Menu toggle
-        const toolsWrap = document.getElementById('tools-dropdown-wrap');
+        // Tools & Settings Center Modal
+        const toolsModal = document.getElementById('tools-modal');
         const btnToolsToggle = document.getElementById('btn-tools-toggle');
-        btnToolsToggle?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toolsWrap?.classList.toggle('open');
-            const isExp = toolsWrap?.classList.contains('open');
-            btnToolsToggle.setAttribute('aria-expanded', isExp ? 'true' : 'false');
+        const btnCloseTools = document.getElementById('btn-close-tools-modal');
+        const btnDoneTools = document.getElementById('btn-done-tools');
+
+        function openToolsModal() {
+            if (!toolsModal) return;
+            // Sync active theme state
+            const curTheme = QuizEngine.state.currentTheme || 'academic';
+            document.querySelectorAll('.theme-choice-btn').forEach(b => {
+                b.classList.toggle('active', b.getAttribute('data-theme') === curTheme);
+            });
+            // Sync active lang state
+            const curLang = QuizEngine.state.currentLang || 'vi';
+            document.querySelectorAll('.btn-lang-choice').forEach(b => {
+                b.classList.toggle('active', b.getAttribute('data-lang') === curLang);
+            });
+            toolsModal.style.display = 'flex';
+        }
+
+        function closeToolsModal() {
+            if (toolsModal) toolsModal.style.display = 'none';
+        }
+
+        btnToolsToggle?.addEventListener('click', openToolsModal);
+        btnCloseTools?.addEventListener('click', closeToolsModal);
+        btnDoneTools?.addEventListener('click', closeToolsModal);
+
+        // Theme choice buttons inside Tools modal
+        document.querySelectorAll('.theme-choice-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const theme = btn.getAttribute('data-theme');
+                if (theme) {
+                    QuizEngine.state.currentTheme = theme;
+                    applyTheme(theme);
+                    StorageManager.savePreference('theme', theme);
+                    document.querySelectorAll('.theme-choice-btn').forEach(b => b.classList.toggle('active', b === btn));
+                    const selTheme = document.getElementById('theme-selector');
+                    if (selTheme) selTheme.value = theme;
+                }
+            });
         });
-        document.addEventListener('click', (e) => {
-            if (toolsWrap && !toolsWrap.contains(e.target)) {
-                toolsWrap.classList.remove('open');
-                btnToolsToggle?.setAttribute('aria-expanded', 'false');
+
+        // Language toggle inside Tools modal
+        document.querySelectorAll('.btn-lang-choice').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const lang = btn.getAttribute('data-lang');
+                if (lang) {
+                    QuizEngine.state.currentLang = lang;
+                    StorageManager.savePreference('lang', lang);
+                    updateUILanguage(lang);
+                    document.querySelectorAll('.btn-lang-choice').forEach(b => b.classList.toggle('active', b === btn));
+                    const selLang = document.getElementById('lang-selector');
+                    if (selLang) selLang.value = lang;
+                    updateResetButtonState();
+                    refreshUI();
+                }
+            });
+        });
+
+        // Tools Modal Action Buttons
+        document.getElementById('btn-tools-open-studio')?.addEventListener('click', () => {
+            closeToolsModal();
+            handleOpenStudio();
+        });
+
+        document.getElementById('btn-tools-shuffle')?.addEventListener('click', () => {
+            closeToolsModal();
+            if (QuizEngine.state.isSubmitted) return;
+            if (confirm(t('confirmShuffle'))) {
+                QuizEngine.shuffle();
+                StorageManager.saveState(QuizEngine.state);
+                refreshUI();
             }
         });
-        toolsWrap?.querySelectorAll('.tools-menu-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                toolsWrap.classList.remove('open');
-                btnToolsToggle?.setAttribute('aria-expanded', 'false');
-            });
+
+        document.getElementById('btn-tools-history')?.addEventListener('click', () => {
+            closeToolsModal();
+            refreshHistoryModalUI();
+        });
+
+        document.getElementById('btn-tools-host-room')?.addEventListener('click', () => {
+            closeToolsModal();
+            if (!QuizEngine.state.questions || QuizEngine.state.questions.length === 0) {
+                alert(QuizEngine.state.currentLang === 'vi'
+                    ? 'Chưa có đề thi nào trong hệ thống! Vui lòng tải đề thi hoặc chọn đề mẫu trước khi mở phòng.'
+                    : 'No exam loaded! Please load a quiz first before hosting a room.');
+                return;
+            }
+            if (window.RoomManager) {
+                RoomManager.openHostModal(QuizEngine.state.questions);
+            }
+        });
+
+        document.getElementById('btn-tools-leaderboard')?.addEventListener('click', () => {
+            closeToolsModal();
+            if (window.RoomManager) {
+                RoomManager.openLeaderboardModal();
+            }
+        });
+
+        document.getElementById('btn-tools-ocr')?.addEventListener('click', () => {
+            closeToolsModal();
+            if (typeof AITutor !== 'undefined') {
+                AITutor.openImageOcrModal();
+            }
+        });
+
+        document.getElementById('btn-tools-ai-key')?.addEventListener('click', () => {
+            closeToolsModal();
+            if (typeof AITutor !== 'undefined') {
+                AITutor.openApiKeySettingsModal();
+            }
         });
 
         // Smart AI Tutor Trigger Buttons
@@ -520,7 +618,7 @@
         });
 
         // Phase 3: Question Studio (Interactive Preview & Editor)
-        const handleOpenStudio = () => {
+        function handleOpenStudio() {
             const current = (QuizEngine.state.questions && QuizEngine.state.questions.length > 0)
                 ? QuizEngine.state.questions
                 : null;
@@ -529,7 +627,7 @@
                     loadExamFromQuestions(updatedQuestions, 'Đề thi tùy chỉnh (Question Studio)');
                 });
             }
-        };
+        }
 
         document.getElementById('btn-open-studio')?.addEventListener('click', handleOpenStudio);
         document.getElementById('btn-open-studio-hero')?.addEventListener('click', handleOpenStudio);

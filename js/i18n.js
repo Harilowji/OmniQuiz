@@ -373,4 +373,9 @@ function updateUILanguage(lang) {
     if (lblIncorrect && lblIncorrect.childNodes[0]) {
         lblIncorrect.childNodes[0].nodeValue = trans.lblIncorrect + ' ';
     }
+
+    // Sync language choice buttons in Tools modal
+    document.querySelectorAll('.btn-lang-choice').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+    });
 }

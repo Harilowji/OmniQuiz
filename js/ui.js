@@ -604,19 +604,32 @@ const UIManager = (() => {
 
     function toggleMobilePalette() {
         const sidebar = document.getElementById('palette-section');
+        const backdrop = document.getElementById('palette-drawer-backdrop');
+        const fab = document.getElementById('btn-mobile-palette-toggle');
         if (sidebar) {
-            sidebar.classList.toggle('mobile-drawer');
+            const isOpening = !sidebar.classList.contains('mobile-drawer');
+            sidebar.classList.toggle('mobile-drawer', isOpening);
+            document.body.classList.toggle('mobile-drawer-open', isOpening);
+            if (backdrop) backdrop.style.display = isOpening ? 'block' : 'none';
+            if (fab) fab.style.display = isOpening ? 'none' : 'inline-flex';
             const closeBtn = document.getElementById('btn-close-palette-drawer');
             if (closeBtn) {
-                closeBtn.style.display = sidebar.classList.contains('mobile-drawer') ? 'inline-flex' : 'none';
+                closeBtn.style.display = isOpening ? 'inline-flex' : 'none';
             }
         }
     }
 
     function closeMobilePalette() {
         const sidebar = document.getElementById('palette-section');
+        const backdrop = document.getElementById('palette-drawer-backdrop');
+        const fab = document.getElementById('btn-mobile-palette-toggle');
         if (sidebar && sidebar.classList.contains('mobile-drawer')) {
             sidebar.classList.remove('mobile-drawer');
+            document.body.classList.remove('mobile-drawer-open');
+            if (backdrop) backdrop.style.display = 'none';
+            if (fab && typeof QuizEngine !== 'undefined' && QuizEngine.state.currentMode !== 'flashcard') {
+                fab.style.display = 'inline-flex';
+            }
             const closeBtn = document.getElementById('btn-close-palette-drawer');
             if (closeBtn) closeBtn.style.display = 'none';
         }
@@ -900,6 +913,31 @@ const UIManager = (() => {
             });
         }
 
+        const toolsModal = document.getElementById('tools-modal');
+        if (toolsModal) {
+            toolsModal.addEventListener('click', (e) => {
+                if (e.target === toolsModal) {
+                    toolsModal.style.display = 'none';
+                }
+            });
+        }
+
+        const authModal = document.getElementById('auth-modal');
+        if (authModal) {
+            authModal.addEventListener('click', (e) => {
+                if (e.target === authModal) {
+                    authModal.style.display = 'none';
+                }
+            });
+        }
+
+        const paletteBackdrop = document.getElementById('palette-drawer-backdrop');
+        if (paletteBackdrop) {
+            paletteBackdrop.addEventListener('click', () => {
+                closeMobilePalette();
+            });
+        }
+
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeLightbox();
@@ -911,6 +949,15 @@ const UIManager = (() => {
                 if (hModal) hModal.style.display = 'none';
                 const lModal = document.getElementById('room-leaderboard-modal');
                 if (lModal) lModal.style.display = 'none';
+                const tModal = document.getElementById('tools-modal');
+                if (tModal) tModal.style.display = 'none';
+                const aModal = document.getElementById('auth-modal');
+                if (aModal) aModal.style.display = 'none';
+                if (typeof AITutor !== 'undefined') {
+                    if (AITutor.closeApiKeySettingsModal) AITutor.closeApiKeySettingsModal();
+                    if (AITutor.closeImageOcrModal) AITutor.closeImageOcrModal();
+                }
+                closeMobilePalette();
             }
         });
 
