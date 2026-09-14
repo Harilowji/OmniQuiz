@@ -7,8 +7,11 @@
 
 const ApiClient = (() => {
     // Determine default API Base URL (relative path works on same host, or fallback to localhost:3000)
-    const isLocalFile = window.location.protocol === 'file:';
-    const DEFAULT_BASE_URL = isLocalFile ? 'http://localhost:3000/api' : '/api';
+    const isLocalFile = typeof window !== 'undefined' && window.location && window.location.protocol === 'file:';
+    const isDifferentDevPort = typeof window !== 'undefined' && window.location && 
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && 
+        window.location.port !== '3000' && window.location.port !== '';
+    const DEFAULT_BASE_URL = (isLocalFile || isDifferentDevPort) ? 'http://localhost:3000/api' : '/api';
     
     const STORAGE_KEY_TOKEN = 'omni_auth_token';
     const STORAGE_KEY_USER = 'omni_auth_user';

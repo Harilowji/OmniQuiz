@@ -563,7 +563,10 @@ const QuestionStudio = (() => {
         open,
         close,
         init,
-        getCurrentQuestions: () => currentQuestions
+        getCurrentQuestions: () => {
+            saveCurrentQuestionFromForm();
+            return currentQuestions;
+        }
     };
 })();
 

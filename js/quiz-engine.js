@@ -96,7 +96,7 @@ const QuizEngine = (() => {
         state.questions = newQuestions || [];
         state.userAnswers = {};
         state.evaluatedQuestions = new Set();
-        state.flaggedQuestions.clear();
+        state.flaggedQuestions = new Set();
         state.customImages = {};
         state.isSubmitted = false;
         state.incorrectQData = [];
@@ -187,8 +187,8 @@ const QuizEngine = (() => {
         state.questions = filteredQuestions;
         state.customImages = filteredImages;
         state.userAnswers = {};
-        state.evaluatedQuestions.clear();
-        state.flaggedQuestions.clear();
+        state.evaluatedQuestions = new Set();
+        state.flaggedQuestions = new Set();
         state.isSubmitted = false;
         state.incorrectQData = [];
         state.violationCount = 0;
@@ -371,8 +371,8 @@ const QuizEngine = (() => {
 
         // Reset answers and flags for a fresh randomized test
         state.userAnswers = {};
-        state.evaluatedQuestions.clear();
-        state.flaggedQuestions.clear();
+        state.evaluatedQuestions = new Set();
+        state.flaggedQuestions = new Set();
         state.incorrectQData = [];
         state.questionTimeSpent = {};
     }

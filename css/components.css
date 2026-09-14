@@ -291,7 +291,7 @@
     background: var(--option-hover-bg);
     border-color: var(--primary-color);
     transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(99, 102, 241, 0.08);
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--primary-color) 12%, transparent);
 }
 .option-indicator {
     width: 30px;
@@ -308,16 +308,16 @@
     transition: all 0.2s ease;
 }
 .option.selected {
-    background: rgba(99, 102, 241, 0.06);
+    background: color-mix(in srgb, var(--primary-color) 10%, transparent);
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-color) 25%, transparent);
     font-weight: 600;
 }
 .option.selected .option-indicator {
     background: var(--primary-color);
     border-color: var(--primary-color);
     color: #ffffff;
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--primary-color) 40%, transparent);
 }
 .option.correct {
     background: var(--correct-bg) !important;
@@ -3195,113 +3195,6 @@ body.focus-mode {
     border-color: var(--primary-color);
 }
 
-/* Full-Stack System Architecture Modal */
-.arch-modal-card {
-    max-width: 840px;
-    width: 95%;
-    max-height: 88vh;
-    overflow-y: auto;
-    border-radius: 20px;
-    background: var(--card-bg);
-    border: 1.5px solid var(--card-border);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    padding: 24px;
-}
-.arch-grid-9 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin: 16px 0;
-}
-.arch-item {
-    background: var(--option-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 12px 14px;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    transition: transform 0.2s ease, border-color 0.2s ease;
-}
-.arch-item:hover {
-    transform: translateY(-2px);
-    border-color: var(--primary-color);
-}
-.arch-icon {
-    font-size: 1.6em;
-    line-height: 1;
-}
-.arch-title {
-    font-size: 0.9em;
-    font-weight: 700;
-    color: var(--heading-color);
-    margin-bottom: 2px;
-}
-.arch-desc {
-    font-size: 0.78em;
-    opacity: 0.8;
-    line-height: 1.35;
-}
-.arch-tag {
-    display: inline-block;
-    margin-top: 4px;
-    padding: 2px 6px;
-    font-size: 0.7em;
-    font-weight: 700;
-    border-radius: 4px;
-    background: rgba(16, 185, 129, 0.15);
-    color: #059669;
-}
-
-/* 12-Step Lifecycle Flowchart */
-.arch-steps-container {
-    background: var(--option-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 14px;
-    padding: 16px;
-    margin: 16px 0;
-}
-.arch-steps-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-.arch-step-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    font-size: 0.85em;
-    font-weight: 500;
-}
-.arch-step-num {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #4f46e5, #06b6d4);
-    color: #ffffff;
-    font-weight: 800;
-    font-size: 0.8em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-.arch-step-detail {
-    flex: 1;
-}
-.arch-step-actor {
-    font-weight: 700;
-    color: var(--primary-color);
-}
-@media (max-width: 768px) {
-    .arch-grid-9 {
-        grid-template-columns: 1fr;
-    }
-}
 
 
 

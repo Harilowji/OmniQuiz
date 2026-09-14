@@ -212,7 +212,7 @@ router.delete('/exams/:id', authenticate(true), (req, res) => {
  */
 router.post('/submissions', authenticate(false), (req, res) => {
     try {
-        const { examId, studentName, studentSbd, answers, timeSpentSeconds, violations } = req.body;
+        const { examId, studentName, studentSbd, answers, timeSpentSeconds, violations, score, title, correctCount, totalQuestions } = req.body;
         if (!examId) {
             return res.status(400).json({ success: false, error: 'Thiếu mã đề thi (examId)!' });
         }
@@ -224,7 +224,11 @@ router.post('/submissions', authenticate(false), (req, res) => {
             studentSbd,
             answers: answers || {},
             timeSpentSeconds,
-            violations
+            violations,
+            score,
+            title,
+            correctCount,
+            totalQuestions
         });
 
         res.status(201).json({

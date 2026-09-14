@@ -190,7 +190,18 @@ function loadDB() {
 function saveDB() {
     try {
         ensureDataDir();
-        fs.writeFileSync(DB_FILE, JSON.stringify(dbMemory, null, 2), 'utf8');
+        const tmpFile = `${DB_FILE}.${Date.now()}.${Math.random().toString(36).substring(2, 6)}.tmp`;
+        fs.writeFileSync(tmpFile, JSON.stringify(dbMemory, null, 2), 'utf8');
+        try {
+            if (fs.existsSync(DB_FILE)) {
+                fs.copyFileSync(tmpFile, DB_FILE);
+                fs.unlinkSync(tmpFile);
+            } else {
+                fs.renameSync(tmpFile, DB_FILE);
+            }
+        } catch (copyErr) {
+            fs.writeFileSync(DB_FILE, JSON.stringify(dbMemory, null, 2), 'utf8');
+        }
     } catch (e) {
         console.error('[Database] Disk write error:', e.message);
     }
@@ -313,71 +324,97 @@ const Database = {
     },
 
     // Server-Side Exam Submission & Evaluation (Zero Cheat Guarantee)
-    evaluateAndSaveSubmission({ examId, userId = null, studentName, studentSbd = '', answers = {}, timeSpentSeconds = 0, violations = 0 }) {
+    evaluateAndSaveSubmission({ examId, userId = null, studentName, studentSbd = '', answers = {}, timeSpentSeconds = 0, violations = 0, score: clientScore = null, title = null, correctCount: clientCorrect = null, totalQuestions: clientTotal = null }) {
         const db = loadDB();
         const exam = db.exams.find(e => e.id === examId);
-        if (!exam) {
-            throw new Error('Đề thi không tồn tại!');
+
+        if (exam) {
+            const questions = exam.questions || [];
+            let correctCount = 0;
+            let incorrectCount = 0;
+            let unattemptedCount = 0;
+
+            const detailedReview = questions.map((q, idx) => {
+                const userAns = Array.isArray(answers[idx]) ? answers[idx] : [];
+                const correctAns = Array.isArray(q.answers) ? q.answers : [];
+
+                const isAttempted = userAns.length > 0;
+                let isCorrect = false;
+
+                if (isAttempted) {
+                    isCorrect = userAns.length === correctAns.length &&
+                        userAns.every(val => correctAns.includes(Number(val)));
+                    if (isCorrect) correctCount++;
+                    else incorrectCount++;
+                } else {
+                    unattemptedCount++;
+                }
+
+                return {
+                    questionIndex: idx,
+                    questionText: q.q,
+                    options: q.options,
+                    userAnswers: userAns,
+                    correctAnswers: correctAns,
+                    isCorrect,
+                    isAttempted,
+                    explanation: q.explanation || ''
+                };
+            });
+
+            const totalQuestions = questions.length;
+            const rawScore = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
+            const score = Math.round(rawScore * 10) / 10; // e.g. 85.5
+
+            const submission = {
+                id: 'sub_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+                examId,
+                examTitle: exam.title,
+                userId: userId || null,
+                studentName: studentName || 'Thí sinh tự do',
+                studentSbd,
+                score,
+                totalQuestions,
+                correctCount,
+                incorrectCount,
+                unattemptedCount,
+                timeSpentSeconds: Number(timeSpentSeconds) || 0,
+                violations: Number(violations) || 0,
+                detailedReview,
+                submittedAt: new Date().toISOString()
+            };
+
+            db.submissions.unshift(submission);
+            saveDB();
+            return submission;
         }
 
-        const questions = exam.questions || [];
-        let correctCount = 0;
-        let incorrectCount = 0;
-        let unattemptedCount = 0;
+        // Support custom uploaded or imported exam submissions
+        const total = typeof clientTotal === 'number' ? clientTotal : (Object.keys(answers || {}).length || 1);
+        const correct = typeof clientCorrect === 'number' ? clientCorrect : 0;
+        const finalScore = typeof clientScore === 'number' ? clientScore : Math.round((correct / total) * 100);
 
-        const detailedReview = questions.map((q, idx) => {
-            const userAns = Array.isArray(answers[idx]) ? answers[idx] : [];
-            const correctAns = Array.isArray(q.answers) ? q.answers : [];
-
-            const isAttempted = userAns.length > 0;
-            let isCorrect = false;
-
-            if (isAttempted) {
-                isCorrect = userAns.length === correctAns.length &&
-                    userAns.every(val => correctAns.includes(Number(val)));
-                if (isCorrect) correctCount++;
-                else incorrectCount++;
-            } else {
-                unattemptedCount++;
-            }
-
-            return {
-                questionIndex: idx,
-                questionText: q.q,
-                options: q.options,
-                userAnswers: userAns,
-                correctAnswers: correctAns,
-                isCorrect,
-                isAttempted,
-                explanation: q.explanation || ''
-            };
-        });
-
-        const totalQuestions = questions.length;
-        const rawScore = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
-        const score = Math.round(rawScore * 10) / 10; // e.g. 85.5
-
-        const submission = {
+        const customSubmission = {
             id: 'sub_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
-            examId,
-            examTitle: exam.title,
+            examId: examId || 'custom_exam',
+            examTitle: title || 'Bài thi trắc nghiệm (Tùy chỉnh)',
             userId: userId || null,
             studentName: studentName || 'Thí sinh tự do',
             studentSbd,
-            score,
-            totalQuestions,
-            correctCount,
-            incorrectCount,
-            unattemptedCount,
+            score: finalScore,
+            totalQuestions: total,
+            correctCount: correct,
+            incorrectCount: Math.max(0, total - correct),
+            unattemptedCount: 0,
             timeSpentSeconds: Number(timeSpentSeconds) || 0,
             violations: Number(violations) || 0,
-            detailedReview,
+            detailedReview: [],
             submittedAt: new Date().toISOString()
         };
 
-        db.submissions.unshift(submission);
+        db.submissions.unshift(customSubmission);
         saveDB();
-        return submission;
+        return customSubmission;
     },
 
     getSubmissionsByUser(userId) {

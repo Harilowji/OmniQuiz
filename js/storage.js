@@ -384,7 +384,11 @@ const StorageManager = (() => {
         // 3. Trigger Full-Stack Backend Database Sync if server is online
         if (typeof ApiClient !== 'undefined' && ApiClient.isOnline()) {
             ApiClient.submitExam({
-                examId: record.examId || 'exam_default_math',
+                examId: record.examId || 'custom_exam',
+                title: record.title || 'Bài thi trắc nghiệm',
+                score: record.score100 || 0,
+                correctCount: record.correctCount || 0,
+                totalQuestions: record.totalQuestions || 0,
                 studentName: record.studentName || (ApiClient.getCurrentUser() ? ApiClient.getCurrentUser().username : 'Thí sinh tự do'),
                 answers: record.userAnswers || {},
                 timeSpentSeconds: record.durationSpent || 0,

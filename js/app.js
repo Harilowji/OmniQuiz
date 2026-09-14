@@ -73,6 +73,17 @@
         const isFocus = document.body.classList.contains('focus-mode');
         document.body.className = 'theme-' + theme;
         if (isFocus) document.body.classList.add('focus-mode');
+
+        const themeIcons = {
+            academic: '🎯',
+            sepia: '📖',
+            emerald: '🌿',
+            cyberpunk: '🌌',
+            minimalist: '⚪',
+            playful: '🍑'
+        };
+        const iconEl = document.getElementById('txt-quick-theme-icon');
+        if (iconEl) iconEl.textContent = themeIcons[theme] || '🎨';
     }
 
     function isExamActiveUnsubmitted() {
@@ -164,6 +175,28 @@
             QuizEngine.state.currentTheme = theme;
             applyTheme(theme);
             StorageManager.savePreference('theme', theme);
+        });
+
+        // Quick Theme Cycle Toggle Button
+        document.getElementById('btn-quick-theme')?.addEventListener('click', () => {
+            const themeCycle = ['academic', 'sepia', 'emerald', 'cyberpunk', 'minimalist', 'playful'];
+            const themeNames = {
+                academic: 'Slate Focus (Tập trung)',
+                sepia: 'Warm Sepia (Giấy êm mắt)',
+                emerald: 'Sage Calm (Thảo mộc dịu)',
+                cyberpunk: 'Nordic Dark (Đêm dịu mắt)',
+                minimalist: 'Clean Minimalist (Tối giản)',
+                playful: 'Soft Peach (Gam ấm nhẹ)'
+            };
+            const current = QuizEngine.state.currentTheme || 'academic';
+            const nextIdx = (themeCycle.indexOf(current) + 1) % themeCycle.length;
+            const nextTheme = themeCycle[nextIdx];
+            QuizEngine.state.currentTheme = nextTheme;
+            applyTheme(nextTheme);
+            StorageManager.savePreference('theme', nextTheme);
+            const selTheme = document.getElementById('theme-selector');
+            if (selTheme) selTheme.value = nextTheme;
+            UIManager.showToast(`🎨 ${themeNames[nextTheme] || nextTheme}`);
         });
 
         // Language selector
@@ -775,13 +808,6 @@
         const profileView = document.getElementById('auth-profile-view');
         const authAlertBox = document.getElementById('auth-alert-box');
 
-        const archModal = document.getElementById('fullstack-arch-modal');
-        const btnCloseArch = document.getElementById('btn-close-arch-modal');
-        const btnViewArch = document.getElementById('btn-view-architecture');
-        const btnRefreshHealth = document.getElementById('btn-refresh-health');
-        const archLiveStats = document.getElementById('arch-live-stats');
-        const archServerTag = document.getElementById('arch-server-tag');
-
         function showAuthAlert(msg, isError = true) {
             if (!authAlertBox) return;
             authAlertBox.style.display = 'block';
@@ -809,6 +835,28 @@
                 if (nameEl) nameEl.textContent = user.username || 'Thí sinh';
                 if (emailEl) emailEl.textContent = user.email || '';
                 if (badgeEl) badgeEl.textContent = `VAI TRÒ: ${(user.role || 'student').toUpperCase()}`;
+
+                // Teacher options
+                const hostBtn = document.getElementById('btn-profile-host-room');
+                if (hostBtn) {
+                    hostBtn.style.display = (user.role === 'teacher' || user.role === 'admin') ? 'flex' : 'none';
+                }
+
+                // Compute student stats from history
+                const history = (typeof StorageManager !== 'undefined' && StorageManager.getHistoryFromLocalStorage)
+                    ? StorageManager.getHistoryFromLocalStorage()
+                    : [];
+                const statExams = document.getElementById('profile-stat-exams');
+                const statAvg = document.getElementById('profile-stat-avg');
+                if (statExams) statExams.textContent = history.length;
+                if (statAvg) {
+                    if (history.length > 0) {
+                        const avg = history.reduce((sum, h) => sum + (parseFloat(h.score10) || 0), 0) / history.length;
+                        statAvg.textContent = `${avg.toFixed(1)}/10`;
+                    } else {
+                        statAvg.textContent = '--';
+                    }
+                }
             } else {
                 if (btnAuth) btnAuth.classList.remove('is-logged-in');
                 if (authBtnLabel) authBtnLabel.textContent = 'Tài khoản';
@@ -828,30 +876,18 @@
                 badge.classList.remove('offline', 'error');
                 if (badgeText) badgeText.textContent = '🟢 Server Online';
                 badge.title = 'Máy chủ Node.js REST API & CSDL đang kết nối hoàn hảo!';
-                if (archServerTag) archServerTag.textContent = `Node.js ${healthData?.stats?.nodeVersion || 'Online'}`;
-                if (archLiveStats && healthData && healthData.stats) {
-                    archLiveStats.innerHTML = `
-                        <strong>Trạng thái:</strong> ${healthData.status.toUpperCase()} | 
-                        <strong>Uptime:</strong> ${Math.round(healthData.stats.uptime)}s | 
-                        <strong>Tài khoản:</strong> ${healthData.stats.totalUsers} | 
-                        <strong>Đề thi CSDL:</strong> ${healthData.stats.totalExams} | 
-                        <strong>Bài đã nộp:</strong> ${healthData.stats.totalSubmissions}
-                    `;
-                }
             } else {
                 badge.classList.add('offline');
                 badge.classList.remove('error');
                 if (badgeText) badgeText.textContent = '⚪ Chế độ Offline';
                 badge.title = 'Máy chủ chưa kết nối - Ứng dụng tự động chạy Offline PWA!';
-                if (archLiveStats) {
-                    archLiveStats.innerHTML = `<em>Máy chủ API chưa kết nối. Toàn bộ tính năng đang hoạt động an toàn ở chế độ Offline Client-Side (PWA & LocalStorage).</em>`;
-                }
             }
         }
 
         if (window.ApiClient) {
             ApiClient.onStatusChange((isOnline, healthData) => {
                 updateServerStatusUI(isOnline, healthData);
+                if (isOnline) refreshCloudExamDropdown();
             });
             ApiClient.onAuthChange(() => {
                 updateAuthUI();
@@ -972,35 +1008,124 @@
             if (authModal) authModal.style.display = 'none';
         });
 
-        // Open/Close Architecture Modal
-        const openArchModal = async () => {
-            if (archModal) {
-                archModal.style.display = 'flex';
-                if (window.ApiClient) {
-                    const health = await ApiClient.checkHealth();
-                    updateServerStatusUI(ApiClient.isOnline(), health);
+        // Profile Action: View History
+        document.getElementById('btn-profile-view-history')?.addEventListener('click', () => {
+            if (authModal) authModal.style.display = 'none';
+            UIManager.showHistoryModal();
+            if (typeof renderHistoryList === 'function') renderHistoryList();
+        });
+
+        // Profile Action: Host Room (Teachers)
+        document.getElementById('btn-profile-host-room')?.addEventListener('click', () => {
+            if (authModal) authModal.style.display = 'none';
+            if (window.RoomManager) {
+                const currentQs = QuizEngine.state.questions && QuizEngine.state.questions.length > 0 
+                    ? QuizEngine.state.questions 
+                    : (window.QuestionStudio ? QuestionStudio.getCurrentQuestions() : []);
+                RoomManager.openHostModal(currentQs);
+            } else {
+                UIManager.showToast('Tính năng phòng thi đang tải...');
+            }
+        });
+
+        // Question Studio Action: Save to Cloud Database
+        document.getElementById('btn-studio-save-cloud')?.addEventListener('click', async () => {
+            if (!window.ApiClient || !ApiClient.isOnline()) {
+                UIManager.showToast('⚠️ Cần kết nối máy chủ để lưu đề lên đám mây!', true);
+                return;
+            }
+            const user = ApiClient.getCurrentUser();
+            if (!user) {
+                UIManager.showToast('⚠️ Vui lòng đăng nhập trước khi lưu đề lên máy chủ!', true);
+                if (authModal) authModal.style.display = 'flex';
+                return;
+            }
+            if (window.QuestionStudio) {
+                const qs = QuestionStudio.getCurrentQuestions();
+                if (!qs || qs.length === 0) {
+                    UIManager.showToast('⚠️ Bộ câu hỏi đang trống!', true);
+                    return;
+                }
+                const defaultName = `Đề thi ${user.username || 'Giáo viên'} - ${new Date().toLocaleDateString('vi-VN')}`;
+                const title = prompt('Nhập tên đề thi để lưu lên Cloud:', defaultName);
+                if (!title || !title.trim()) return;
+                try {
+                    UIManager.showToast('⏳ Đang lưu đề thi lên máy chủ...', false);
+                    const created = await ApiClient.createExam({
+                        title: title.trim(),
+                        questions: qs,
+                        durationMinutes: QuizEngine.state.durationMinutes || 45,
+                        tags: ['studio', 'custom']
+                    });
+                    UIManager.showToast(`✅ Đã lưu đề "${created.title}" thành công lên máy chủ!`);
+                    await refreshCloudExamDropdown();
+                } catch (err) {
+                    UIManager.showToast(`❌ Lỗi lưu đề: ${err.message}`, true);
                 }
             }
-        };
-        badge?.addEventListener('click', openArchModal);
-        btnViewArch?.addEventListener('click', openArchModal);
-        btnCloseArch?.addEventListener('click', () => {
-            if (archModal) archModal.style.display = 'none';
         });
-        btnRefreshHealth?.addEventListener('click', async () => {
+
+        // Server Status Badge: Click to test health & ping latency
+        badge?.addEventListener('click', async () => {
             if (window.ApiClient) {
+                const t0 = performance.now();
                 const health = await ApiClient.checkHealth();
+                const latency = Math.round(performance.now() - t0);
                 updateServerStatusUI(ApiClient.isOnline(), health);
-                UIManager.showToast('Đã cập nhật trạng thái máy chủ!');
+                if (ApiClient.isOnline()) {
+                    UIManager.showToast(`🟢 OmniQuiz Cloud Online (Độ trễ: ${latency}ms)`);
+                } else {
+                    UIManager.showToast('⚪ Chế độ Offline PWA (Đang lưu bài thi cục bộ)');
+                }
             }
         });
     }
 
+    async function refreshCloudExamDropdown() {
+        const optgroup = document.getElementById('optgroup-cloud-exams');
+        if (!optgroup || !window.ApiClient) return;
+        try {
+            const exams = await ApiClient.getExams();
+            if (Array.isArray(exams) && exams.length > 0) {
+                optgroup.innerHTML = exams.map(e => 
+                    `<option value="cloud_${e.id}">🌐 ${e.title} (${e.totalQuestions || (e.questions ? e.questions.length : 0)} câu - ${e.durationMinutes || 45}p)</option>`
+                ).join('');
+                optgroup.style.display = '';
+            } else {
+                optgroup.innerHTML = `<option disabled>Chưa có đề trên máy chủ</option>`;
+            }
+        } catch (err) {
+            console.warn('Cannot fetch cloud exams:', err);
+            optgroup.style.display = 'none';
+        }
+    }
+
     async function loadQuestions() {
+        // Fetch cloud exams for dropdown on load
+        refreshCloudExamDropdown();
+
         // Wire sample exam button
         document.getElementById('btn-load-sample')?.addEventListener('click', async () => {
             const selectEl = document.getElementById('sample-subject-select');
             const subjectKey = selectEl ? selectEl.value : 'math_50';
+
+            // Check if selected is from Cloud Database
+            if (subjectKey.startsWith('cloud_')) {
+                const examId = subjectKey.replace('cloud_', '');
+                try {
+                    UIManager.showToast('⏳ Đang tải đề thi từ máy chủ...', false);
+                    const examData = await ApiClient.getExamById(examId);
+                    if (examData && examData.questions && examData.questions.length > 0) {
+                        document.getElementById('upload-section').style.display = 'none';
+                        loadExamFromQuestions(examData.questions, examData.title, examData.durationMinutes);
+                        UIManager.showToast(`✅ Đã nạp đề "${examData.title}"!`);
+                        return;
+                    }
+                } catch (err) {
+                    alert('Không thể tải đề từ máy chủ: ' + err.message);
+                    return;
+                }
+            }
 
             // 1. Try bundled sample banks first (fastest, offline-safe, 0 network failure)
             if (typeof SampleBanks !== 'undefined' && SampleBanks[subjectKey]) {
@@ -1531,8 +1656,8 @@
             const saved = StorageManager.loadState();
             if (saved && !saved.isSubmitted && saved.questionCount === parsed.length) {
                 QuizEngine.state.userAnswers = saved.answers || {};
-                QuizEngine.state.evaluatedQuestions = saved.evaluated || new Set();
-                QuizEngine.state.flaggedQuestions = saved.flagged || new Set();
+                QuizEngine.state.evaluatedQuestions = saved.evaluated instanceof Set ? saved.evaluated : new Set(saved.evaluated || []);
+                QuizEngine.state.flaggedQuestions = saved.flagged instanceof Set ? saved.flagged : new Set(saved.flagged || []);
                 QuizEngine.state.customImages = saved.customImages || {};
                 QuizEngine.state.isSubmitted = false;
                 QuizEngine.state.timeLeft = saved.timeLeft !== undefined ? saved.timeLeft : (QuizEngine.state.durationMinutes > 0 ? QuizEngine.state.durationMinutes * 60 : -1);
