@@ -155,6 +155,9 @@ const I18N = {
         badgeThemeMinimalist: "Tối giản",
         badgeThemePlayful: "Gam ấm",
         toolsLangLabel: "🌐 Ngôn ngữ:",
+        toolsSoundLabel: "🔊 Hiệu ứng âm thanh:",
+        soundOn: "🔔 Bật",
+        soundOff: "🔇 Tắt (Tối ưu phản hồi)",
         toolsCard2Title: "Công cụ soạn thảo & Đề thi",
         toolsCard2Desc: "Biên tập câu hỏi, xáo trộn và xem lịch sử",
         toolsStudioName: "Question Studio",
@@ -415,6 +418,9 @@ const I18N = {
         badgeThemeMinimalist: "Minimalist",
         badgeThemePlayful: "Soft Warm",
         toolsLangLabel: "🌐 Language:",
+        toolsSoundLabel: "🔊 Sound Effects:",
+        soundOn: "🔔 On",
+        soundOff: "🔇 Off (Max Speed)",
         toolsCard2Title: "Authoring Tools & Exam Utilities",
         toolsCard2Desc: "Edit questions, shuffle items, and view exam records",
         toolsStudioName: "Question Studio",
@@ -563,11 +569,12 @@ function updateUILanguage(lang) {
 
         // Stats & Palette
         'lbl-answered': trans.lblAnswered,
-        'lbl-unattempted-stat': trans.lblUnattempted,
+        'txt-lbl-correct': trans.lblCorrect,
+        'txt-lbl-incorrect': trans.lblIncorrect,
+        'txt-lbl-unattempted': trans.lblUnattempted,
         'finish-btn': trans.btnSubmit,
         'txt-btn-submit-aside': trans.btnSubmitAside,
         'btn-shuffle': trans.btnShuffle,
-        'btn-reset': trans.btnReset,
         'txt-leg-correct': trans.legCorrect,
         'txt-leg-incorrect': trans.legIncorrect,
         'txt-leg-answered': trans.legAnswered,
@@ -581,6 +588,7 @@ function updateUILanguage(lang) {
         'txt-modal-incorrect': trans.modalIncorrect,
         'txt-modal-unattempted': trans.modalUnattempted,
         'txt-modal-review': trans.modalReview,
+        'txt-modal-retake': trans.modalRetake,
         'txt-modal-export': trans.modalExport,
         'txt-modal-new-quiz': trans.modalNewQuiz,
         'txt-modal-pacing': trans.lblPacing,
@@ -606,6 +614,9 @@ function updateUILanguage(lang) {
         'badge-theme-minimalist': trans.badgeThemeMinimalist,
         'badge-theme-playful': trans.badgeThemePlayful,
         'txt-tools-lang-label': trans.toolsLangLabel,
+        'txt-tools-sound-label': trans.toolsSoundLabel,
+        'btn-sound-on': trans.soundOn,
+        'btn-sound-off': trans.soundOff,
         'txt-tools-card2-title': trans.toolsCard2Title,
         'txt-tools-card2-desc': trans.toolsCard2Desc,
         'txt-tools-f-studio-name': trans.toolsStudioName,
@@ -814,14 +825,31 @@ function updateUILanguage(lang) {
         if (p) p.innerText = trans.welcomeSubtitle;
     }
 
-    // Stats bar labels
-    const lblCorrect = document.getElementById('lbl-correct');
-    if (lblCorrect && lblCorrect.childNodes[0]) {
-        lblCorrect.childNodes[0].nodeValue = trans.lblCorrect + ' ';
+    // Update Palette filter chips labels with current count numbers
+    const fltAll = document.getElementById('flt-all');
+    const fltAns = document.getElementById('flt-answered');
+    const fltFlg = document.getElementById('flt-flagged');
+    const fltUna = document.getElementById('flt-unanswered');
+    const fltInc = document.getElementById('flt-incorrect');
+    if (fltAll) {
+        const num = (fltAll.innerText.match(/\((\d+)\)/) || ['', '0'])[1];
+        fltAll.innerText = `${trans.fltAll} (${num})`;
     }
-    const lblIncorrect = document.getElementById('lbl-incorrect');
-    if (lblIncorrect && lblIncorrect.childNodes[0]) {
-        lblIncorrect.childNodes[0].nodeValue = trans.lblIncorrect + ' ';
+    if (fltAns) {
+        const num = (fltAns.innerText.match(/\((\d+)\)/) || ['', '0'])[1];
+        fltAns.innerText = `${trans.fltAnswered} (${num})`;
+    }
+    if (fltFlg) {
+        const num = (fltFlg.innerText.match(/\((\d+)\)/) || ['', '0'])[1];
+        fltFlg.innerText = `${trans.fltFlagged} (${num})`;
+    }
+    if (fltUna) {
+        const num = (fltUna.innerText.match(/\((\d+)\)/) || ['', '0'])[1];
+        fltUna.innerText = `${trans.fltUnanswered} (${num})`;
+    }
+    if (fltInc) {
+        const num = (fltInc.innerText.match(/\((\d+)\)/) || ['', '0'])[1];
+        fltInc.innerText = `${trans.fltIncorrect || '❌ Câu sai'} (${num})`;
     }
 
     // Sync language choice buttons in Tools modal

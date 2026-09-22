@@ -231,6 +231,10 @@
             document.querySelectorAll('.btn-lang-choice').forEach(b => {
                 b.classList.toggle('active', b.getAttribute('data-lang') === curLang);
             });
+            // Sync active sound state
+            const isSoundOn = AudioManager.isSoundEnabled();
+            document.getElementById('btn-sound-on')?.classList.toggle('active', isSoundOn);
+            document.getElementById('btn-sound-off')?.classList.toggle('active', !isSoundOn);
             toolsModal.style.display = 'flex';
         }
 
@@ -270,6 +274,18 @@
                     if (selLang) selLang.value = lang;
                     updateResetButtonState();
                     refreshUI();
+                }
+            });
+        });
+
+        // Sound toggle inside Tools modal
+        document.querySelectorAll('.btn-sound-choice').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const soundOn = btn.getAttribute('data-sound') === 'true';
+                AudioManager.setSoundEnabled(soundOn);
+                document.querySelectorAll('.btn-sound-choice').forEach(b => b.classList.toggle('active', b === btn));
+                if (soundOn) {
+                    AudioManager.playCorrect();
                 }
             });
         });
@@ -1880,13 +1896,22 @@
             QuizEngine.state.isSubmitted,
             QuizEngine.state.evaluatedQuestions
         );
-        refreshPalette();
+        UIManager.updateSinglePaletteButton(
+            qIndex,
+            QuizEngine.state.questions,
+            QuizEngine.state.userAnswers,
+            QuizEngine.state.flaggedQuestions,
+            QuizEngine.state.currentMode,
+            QuizEngine.state.isSubmitted,
+            QuizEngine.state.evaluatedQuestions
+        );
         UIManager.updateStats(
             QuizEngine.state.questions,
             QuizEngine.state.userAnswers,
             QuizEngine.state.currentMode,
             QuizEngine.state.isSubmitted,
-            QuizEngine.state.evaluatedQuestions
+            QuizEngine.state.evaluatedQuestions,
+            QuizEngine.state.flaggedQuestions
         );
         UIManager.popAnsweredPaletteButton(qIndex);
     }
@@ -1903,7 +1928,23 @@
             QuizEngine.state.isSubmitted,
             QuizEngine.state.evaluatedQuestions
         );
-        refreshPalette();
+        UIManager.updateSinglePaletteButton(
+            qIndex,
+            QuizEngine.state.questions,
+            QuizEngine.state.userAnswers,
+            QuizEngine.state.flaggedQuestions,
+            QuizEngine.state.currentMode,
+            QuizEngine.state.isSubmitted,
+            QuizEngine.state.evaluatedQuestions
+        );
+        UIManager.updateStats(
+            QuizEngine.state.questions,
+            QuizEngine.state.userAnswers,
+            QuizEngine.state.currentMode,
+            QuizEngine.state.isSubmitted,
+            QuizEngine.state.evaluatedQuestions,
+            QuizEngine.state.flaggedQuestions
+        );
     }
 
     function onCheckAnswerClicked(qIndex) {
@@ -1931,13 +1972,22 @@
             QuizEngine.state.isSubmitted,
             QuizEngine.state.evaluatedQuestions
         );
-        refreshPalette();
+        UIManager.updateSinglePaletteButton(
+            qIndex,
+            QuizEngine.state.questions,
+            QuizEngine.state.userAnswers,
+            QuizEngine.state.flaggedQuestions,
+            QuizEngine.state.currentMode,
+            QuizEngine.state.isSubmitted,
+            QuizEngine.state.evaluatedQuestions
+        );
         UIManager.updateStats(
             QuizEngine.state.questions,
             QuizEngine.state.userAnswers,
             QuizEngine.state.currentMode,
             QuizEngine.state.isSubmitted,
-            QuizEngine.state.evaluatedQuestions
+            QuizEngine.state.evaluatedQuestions,
+            QuizEngine.state.flaggedQuestions
         );
         UIManager.popAnsweredPaletteButton(qIndex);
     }

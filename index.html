@@ -18,13 +18,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- External Libraries: html2pdf, mammoth.js (DOCX) & pdf.js (PDF) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
-        if (window.pdfjsLib) {
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        }
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.pdfjsLib) {
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            }
+        });
     </script>
 
     <!-- KaTeX Fast Math & Chemistry (mhchem) Rendering -->
@@ -234,12 +236,12 @@
                         <div class="stats-numbers">
                             <span id="lbl-answered">Đã làm:</span> <strong id="total-answered">0</strong>/<strong id="total-questions">0</strong>
                             <span style="margin: 0 6px; opacity: 0.4;">|</span>
-                            <span id="lbl-correct" style="color: #22c55e;">Đúng: <strong id="correct-count">0</strong></span>
+                            <span id="lbl-correct" style="color: #22c55e;"><span id="txt-lbl-correct">Đúng:</span> <strong id="correct-count">0</strong></span>
                             <span style="margin: 0 6px; opacity: 0.4;">|</span>
-                            <span id="lbl-incorrect" style="color: #ef4444;">Sai: <strong id="incorrect-count">0</strong></span>
+                            <span id="lbl-incorrect" style="color: #ef4444;"><span id="txt-lbl-incorrect">Sai:</span> <strong id="incorrect-count">0</strong></span>
                             <span id="stat-unattempted-wrap" style="display: none;">
                                 <span style="margin: 0 6px; opacity: 0.4;">|</span>
-                                <span id="lbl-unattempted-stat" style="color: #94a3b8;">Chưa làm: <strong id="unattempted-count">0</strong></span>
+                                <span id="lbl-unattempted-stat" style="color: #94a3b8;"><span id="txt-lbl-unattempted">Chưa làm:</span> <strong id="unattempted-count">0</strong></span>
                             </span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 10px;">
@@ -932,6 +934,16 @@
                             <option value="vi">Tiếng Việt</option>
                             <option value="en">English</option>
                         </select>
+                    </div>
+
+                    <div class="tools-lang-row" style="margin-top: 10px;">
+                        <span id="txt-tools-sound-label" style="font-weight: 600; font-size: 0.9em; display: flex; align-items: center; gap: 6px;">
+                            🔊 Âm thanh hiệu ứng:
+                        </span>
+                        <div class="tools-lang-toggle">
+                            <button type="button" class="btn-sound-choice active" id="btn-sound-on" data-sound="true">🔔 Bật</button>
+                            <button type="button" class="btn-sound-choice" id="btn-sound-off" data-sound="false">🔇 Tắt</button>
+                        </div>
                     </div>
                 </div>
 
