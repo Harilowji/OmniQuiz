@@ -1876,17 +1876,15 @@
         const changed = QuizEngine.selectOption(qIndex, oIndex);
         if (!changed) return;
 
-        StorageManager.saveState(QuizEngine.state);
-
+        let evalResult = null;
         if (QuizEngine.state.currentMode === 'practice') {
             const q = QuizEngine.state.questions[qIndex];
             if (q.type === 'single') {
-                const correct = QuizEngine.evaluateQuestion(qIndex);
-                if (correct) AudioManager.playCorrect();
-                else AudioManager.playIncorrect();
+                evalResult = QuizEngine.evaluateQuestion(qIndex);
             }
         }
 
+        // 1. UPDATE DOM IMMEDIATELY (Sub-millisecond instant visual response)
         UIManager.updateSingleQuestion(
             qIndex,
             QuizEngine.state.questions,
@@ -1913,12 +1911,21 @@
             QuizEngine.state.evaluatedQuestions,
             QuizEngine.state.flaggedQuestions
         );
-        UIManager.popAnsweredPaletteButton(qIndex);
+
+        // 2. Audio chime only if enabled (silent by default for max performance)
+        if (evalResult !== null && !AudioManager.isMuted()) {
+            if (evalResult) AudioManager.playCorrect();
+            else AudioManager.playIncorrect();
+        }
+
+        // 3. Non-blocking debounced save (0ms execution in click handler)
+        StorageManager.saveState(QuizEngine.state);
     }
 
     function onFlagToggled(qIndex) {
         QuizEngine.toggleFlag(qIndex);
-        StorageManager.saveState(QuizEngine.state);
+
+        // 1. UPDATE DOM FIRST
         UIManager.updateSingleQuestion(
             qIndex,
             QuizEngine.state.questions,
@@ -1945,6 +1952,9 @@
             QuizEngine.state.evaluatedQuestions,
             QuizEngine.state.flaggedQuestions
         );
+
+        // 2. Debounced save
+        StorageManager.saveState(QuizEngine.state);
     }
 
     function onCheckAnswerClicked(qIndex) {
@@ -1959,10 +1969,7 @@
         const correct = QuizEngine.evaluateQuestion(qIndex);
         if (correct === null) return;
 
-        if (correct) AudioManager.playCorrect();
-        else AudioManager.playIncorrect();
-
-        StorageManager.saveState(QuizEngine.state);
+        // 1. UPDATE DOM FIRST
         UIManager.updateSingleQuestion(
             qIndex,
             QuizEngine.state.questions,
@@ -1989,7 +1996,15 @@
             QuizEngine.state.evaluatedQuestions,
             QuizEngine.state.flaggedQuestions
         );
-        UIManager.popAnsweredPaletteButton(qIndex);
+
+        // 2. Audio if enabled
+        if (!AudioManager.isMuted()) {
+            if (correct) AudioManager.playCorrect();
+            else AudioManager.playIncorrect();
+        }
+
+        // 3. Debounced save
+        StorageManager.saveState(QuizEngine.state);
     }
 
     function onImageAttached(qIndex, base64) {

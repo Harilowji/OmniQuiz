@@ -5,7 +5,7 @@
  */
 const AudioManager = (() => {
     let audioCtx = null;
-    let isSoundEnabled = localStorage.getItem('quiz_sound_enabled') !== 'false';
+    let isSoundEnabled = localStorage.getItem('quiz_sound_enabled') === 'true'; // Default FALSE (0ms latency, zero audio overhead)
 
     function getAudioContext() {
         if (!audioCtx) {

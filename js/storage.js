@@ -81,9 +81,10 @@ const StorageManager = (() => {
 
     // ================= ACTIVE EXAM STATE MANAGEMENT =================
 
+    let debouncedSaveTimer = null;
     let debouncedIdbTimer = null;
 
-    function saveState(state) {
+    function saveStateImmediate(state) {
         if (!state) return;
         const data = {
             answers: state.userAnswers || {},
@@ -103,18 +104,15 @@ const StorageManager = (() => {
             updatedAt: Date.now()
         };
 
-        // 1. Ultra-fast Synchronous Backup to LocalStorage (<0.1ms, zero latency)
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         } catch (e) {
             try {
-                // Strip heavy customImages if localStorage quota is exceeded
                 const lightData = Object.assign({}, data, { customImages: {} });
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(lightData));
             } catch (e2) {}
         }
 
-        // 2. Debounced Async Save to IndexedDB (Batched every 1s, eliminates disk I/O thrashing)
         if (debouncedIdbTimer) clearTimeout(debouncedIdbTimer);
         debouncedIdbTimer = setTimeout(() => {
             getDB().then(db => {
@@ -131,7 +129,27 @@ const StorageManager = (() => {
                     console.warn('[Storage] IndexedDB debounced save error:', err);
                 }
             });
-        }, 1000);
+        }, 1200);
+    }
+
+    function saveState(state) {
+        if (!state) return;
+        // Non-blocking debounce (250ms): UI updates instantly without waiting for disk serialization
+        if (debouncedSaveTimer) clearTimeout(debouncedSaveTimer);
+        debouncedSaveTimer = setTimeout(() => {
+            saveStateImmediate(state);
+        }, 250);
+    }
+
+    if (typeof window !== 'undefined') {
+        window.addEventListener('beforeunload', () => {
+            if (debouncedSaveTimer) {
+                clearTimeout(debouncedSaveTimer);
+            }
+            if (typeof QuizEngine !== 'undefined' && QuizEngine.state) {
+                saveStateImmediate(QuizEngine.state);
+            }
+        });
     }
 
     function loadState() {

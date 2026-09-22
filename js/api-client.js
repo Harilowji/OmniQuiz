@@ -308,13 +308,17 @@ const ApiClient = (() => {
         return apiBaseUrl;
     }
 
-    // Auto initialize upon loading
-    async function init() {
-        console.log('[ApiClient] Initializing REST API connection to:', apiBaseUrl);
-        await checkHealth();
-
-        if (authToken) {
-            await getMe();
+    // Auto initialize silently in background (never blocks UI rendering)
+    function init() {
+        if (typeof window !== 'undefined' && window.location && window.location.protocol !== 'file:') {
+            setTimeout(async () => {
+                try {
+                    await checkHealth();
+                    if (authToken) {
+                        await getMe();
+                    }
+                } catch (e) {}
+            }, 800);
         }
     }
 

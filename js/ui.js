@@ -697,10 +697,7 @@ const UIManager = (() => {
     function scrollToQuestion(qIndex) {
         const block = document.getElementById('qblock-' + qIndex);
         if (block) {
-            block.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            block.classList.remove('target-pulse');
-            void block.offsetWidth;
-            block.classList.add('target-pulse');
+            block.scrollIntoView({ behavior: 'auto', block: 'start' });
             setActiveQuestion(qIndex);
         }
     }
