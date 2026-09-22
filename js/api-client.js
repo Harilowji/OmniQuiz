@@ -57,8 +57,14 @@ const ApiClient = (() => {
             config.body = JSON.stringify(config.body);
         }
 
+        const controller = new AbortController();
+        const timeoutMs = options.timeout || 1200;
+        const timeoutTimer = setTimeout(() => controller.abort(), timeoutMs);
+        config.signal = controller.signal;
+
         try {
             const res = await fetch(url, config);
+            clearTimeout(timeoutTimer);
             const data = await res.json().catch(() => ({}));
             
             if (!res.ok) {
@@ -71,8 +77,9 @@ const ApiClient = (() => {
 
             return data;
         } catch (err) {
-            // Check if network error (server offline)
-            if (err.name === 'TypeError' && err.message.includes('fetch')) {
+            clearTimeout(timeoutTimer);
+            // Check if network error or timeout (server offline)
+            if (err.name === 'AbortError' || (err.name === 'TypeError' && err.message.includes('fetch'))) {
                 setOnlineStatus(false);
                 throw new Error('Không thể kết nối đến máy chủ API (Máy chủ đang tắt hoặc mất mạng)');
             }

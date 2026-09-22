@@ -15,7 +15,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@500;700;900&family=Quicksand:wght@500;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- External Libraries: html2pdf, mammoth.js (DOCX) & pdf.js (PDF) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -33,35 +33,8 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/mhchem.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
 
-    <!-- Supabase BaaS Client for Cloud Sync & PostgreSQL -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <!-- MathJax 3 Configuration with mhchem for Chemistry & Physics (Secondary Fallback) -->
-    <script>
-        window.MathJax = {
-            loader: { load: ['[tex]/mhchem'] },
-            tex: {
-                packages: {'[+]': ['mhchem']},
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-                processEscapes: true
-            },
-            options: {
-                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-            },
-            startup: {
-                pageReady: () => {
-                    return MathJax.startup.defaultPageReady().then(() => {
-                        window.isMathJaxReady = true;
-                        if (typeof window.onMathJaxReady === 'function') {
-                            window.onMathJaxReady();
-                        }
-                    });
-                }
-            }
-        };
-    </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Supabase BaaS Client for Cloud Sync (Optional) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- Modular Stylesheets -->
     <link rel="stylesheet" href="css/main.css">
@@ -117,14 +90,14 @@
                     ⚙️ <span class="btn-tools-text" id="txt-btn-tools">Tiện ích</span>
                 </button>
 
-                <!-- Server Connection Status Badge -->
-                <button type="button" class="server-status-pill" id="server-status-badge" title="Trạng thái kết nối máy chủ OmniQuiz Cloud">
+                <!-- Server Connection Status Badge (Hidden by default to keep UI distraction-free) -->
+                <button type="button" class="server-status-pill" id="server-status-badge" title="Trạng thái kết nối máy chủ OmniQuiz Cloud" style="display: none;">
                     <span class="status-dot"></span>
                     <span class="status-label" id="server-status-text">Đang kết nối...</span>
                 </button>
 
-                <!-- User Authentication & Profile Button -->
-                <button type="button" class="btn-action btn-auth" id="btn-auth-toggle" title="Đăng nhập / Quản lý tài khoản">
+                <!-- User Authentication & Profile Button (Accessible from Tools modal) -->
+                <button type="button" class="btn-action btn-auth" id="btn-auth-toggle" title="Đăng nhập / Quản lý tài khoản" style="display: none;">
                     <span>👤</span> <span id="auth-btn-label">Tài khoản</span>
                 </button>
 

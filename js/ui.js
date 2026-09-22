@@ -252,16 +252,12 @@ const UIManager = (() => {
         // Initialize scroll spy after rendering
         setupScrollSpy(questions);
 
-        // Ultra-Fast KaTeX Math & Chemistry Rendering with Progressive MathJax Fallback
+        // Ultra-Fast KaTeX Math & Chemistry Rendering
         typesetMath(container);
     }
 
-    let mathObserver = null;
-
     function typesetMath(container) {
         if (!container) return;
-
-        // 1. Fast Synchronous KaTeX rendering (Instantaneous, eliminates math freezing/broken formulas)
         if (typeof renderMathInElement === 'function') {
             try {
                 renderMathInElement(container, {
@@ -274,64 +270,9 @@ const UIManager = (() => {
                     throwOnError: false,
                     ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
                 });
-                return;
             } catch (e) {
-                console.warn('[KaTeX] Render error, falling back to MathJax:', e);
+                console.warn('[KaTeX] Render error:', e);
             }
-        }
-
-        // 2. Fallback to MathJax 3 Progressive Typesetting
-        typesetMathJaxProgressively(container);
-    }
-
-    function typesetMathJaxProgressively(container) {
-        if (!container || !window.MathJax || typeof MathJax.typesetPromise !== 'function') return;
-
-        if (mathObserver) {
-            mathObserver.disconnect();
-            mathObserver = null;
-        }
-
-        const blocks = Array.from(container.querySelectorAll('.question-block'));
-        if (blocks.length === 0) return;
-
-        // Fast path: if 5 questions or fewer, typeset all together
-        if (blocks.length <= 5) {
-            MathJax.typesetPromise([container]).catch(() => {});
-            return;
-        }
-
-        // Medium/large exam: immediately typeset first 3 visible questions
-        const immediateBatch = blocks.slice(0, 3);
-        MathJax.typesetPromise(immediateBatch).catch(() => {});
-
-        // Progressive rendering via IntersectionObserver
-        if ('IntersectionObserver' in window) {
-            mathObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        observer.unobserve(entry.target);
-                        if (window.MathJax && typeof MathJax.typesetPromise === 'function') {
-                            MathJax.typesetPromise([entry.target]).catch(() => {});
-                        }
-                    }
-                });
-            }, { rootMargin: '350px 0px' });
-
-            blocks.slice(3).forEach(b => mathObserver.observe(b));
-        } else {
-            let idx = 3;
-            function processNextChunk() {
-                if (idx >= blocks.length) return;
-                const chunk = blocks.slice(idx, idx + 4);
-                idx += 4;
-                MathJax.typesetPromise(chunk).then(() => {
-                    setTimeout(processNextChunk, 80);
-                }).catch(() => {
-                    setTimeout(processNextChunk, 80);
-                });
-            }
-            setTimeout(processNextChunk, 100);
         }
     }
 
@@ -1345,7 +1286,6 @@ const UIManager = (() => {
         showAntiCheatModal,
         hideAntiCheatModal,
         typesetMath,
-        typesetMathJaxProgressively,
         showHistoryModal,
         hideHistoryModal,
         showFullscreenLockout,

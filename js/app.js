@@ -1190,10 +1190,9 @@
                 ).join('');
                 optgroup.style.display = '';
             } else {
-                optgroup.innerHTML = `<option disabled>Chưa có đề trên máy chủ</option>`;
+                optgroup.style.display = 'none';
             }
         } catch (err) {
-            console.warn('Cannot fetch cloud exams:', err);
             optgroup.style.display = 'none';
         }
     }
@@ -1844,16 +1843,6 @@
             QuizEngine.state.evaluatedQuestions
         );
     }
-
-    // Reactive MathJax hook: Only activates as fallback when KaTeX is unavailable
-    window.onMathJaxReady = () => {
-        if (typeof renderMathInElement !== 'function') {
-            const container = document.getElementById('quiz-container');
-            if (container && typeof UIManager !== 'undefined' && UIManager.typesetMathJaxProgressively) {
-                UIManager.typesetMathJaxProgressively(container);
-            }
-        }
-    };
 
     function refreshPalette() {
         UIManager.renderPalette(
