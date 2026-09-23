@@ -24,14 +24,16 @@ body::before {
 /* Elevation for Core Panels */
 .modal-content,
 .upload-studio-card {
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .top-navbar,
 .palette-sidebar,
 .sticky-stats-bar {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
@@ -42,17 +44,18 @@ body::before {
     --bg-gradient: #f8fafc;
     --text-color: #0f172a;
     --heading-color: #0f172a;
-    --card-bg: rgba(255, 255, 255, 0.96);
-    --card-border: #e2e8f0;
-    --card-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.03);
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --card-border: rgba(226, 232, 240, 0.9);
+    --card-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
     --option-bg: #f8fafc;
     --option-hover-bg: #f1f5f9;
     --option-border: #cbd5e1;
     --primary-color: #2563eb;
     --primary-hover: #1d4ed8;
-    --exp-bg: #f8fafc;
+    --primary-gradient: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    --exp-bg: rgba(241, 245, 249, 0.85);
     --exp-border: #3b82f6;
-    --stats-bg: rgba(255, 255, 255, 0.95);
+    --stats-bg: rgba(255, 255, 255, 0.94);
     --correct-bg: #f0fdf4;
     --correct-border: #22c55e;
     --correct-text: #15803d;
@@ -60,14 +63,15 @@ body::before {
     --incorrect-border: #ef4444;
     --incorrect-text: #b91c1c;
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --border-radius: 14px;
+    --border-radius: 16px;
 }
 
 body.theme-academic::before {
     background-color: #f8fafc;
     background-image:
-        radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.05) 0px, transparent 50%);
+        radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.06) 0px, transparent 55%),
+        radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.06) 0px, transparent 55%),
+        radial-gradient(at 50% 50%, rgba(168, 85, 247, 0.03) 0px, transparent 65%);
 }
 
 /* ==========================================================================
@@ -79,15 +83,16 @@ body.theme-sepia {
     --heading-color: #1c1917;
     --card-bg: rgba(255, 255, 255, 0.95);
     --card-border: #e7dfd5;
-    --card-shadow: 0 4px 18px -2px rgba(68, 58, 52, 0.06);
+    --card-shadow: 0 10px 30px -5px rgba(68, 58, 52, 0.06);
     --option-bg: #fcfbf8;
     --option-hover-bg: #f5f0e6;
     --option-border: #dcd3c5;
     --primary-color: #b45309;
     --primary-hover: #92400e;
+    --primary-gradient: linear-gradient(135deg, #b45309 0%, #d97706 100%);
     --exp-bg: #fcfbf8;
     --exp-border: #d97706;
-    --stats-bg: rgba(255, 255, 255, 0.95);
+    --stats-bg: rgba(255, 255, 255, 0.94);
     --correct-bg: #f0fdf4;
     --correct-border: #16a34a;
     --correct-text: #166534;
@@ -95,14 +100,14 @@ body.theme-sepia {
     --incorrect-border: #dc2626;
     --incorrect-text: #991b1b;
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --border-radius: 14px;
+    --border-radius: 16px;
 }
 
 body.theme-sepia::before {
     background-color: #fbf8f2;
     background-image:
-        radial-gradient(at 10% 10%, rgba(180, 83, 9, 0.04) 0px, transparent 50%),
-        radial-gradient(at 90% 90%, rgba(217, 119, 6, 0.04) 0px, transparent 50%);
+        radial-gradient(at 10% 10%, rgba(180, 83, 9, 0.05) 0px, transparent 55%),
+        radial-gradient(at 90% 90%, rgba(217, 119, 6, 0.05) 0px, transparent 55%);
 }
 
 /* ==========================================================================
@@ -114,15 +119,16 @@ body.theme-emerald {
     --heading-color: #0b1e16;
     --card-bg: rgba(255, 255, 255, 0.96);
     --card-border: #d1ded7;
-    --card-shadow: 0 4px 20px -2px rgba(20, 40, 32, 0.06);
+    --card-shadow: 0 10px 30px -5px rgba(20, 40, 32, 0.06);
     --option-bg: #f7faf8;
     --option-hover-bg: #eaf2ee;
     --option-border: #bfd4c9;
     --primary-color: #059669;
     --primary-hover: #047857;
+    --primary-gradient: linear-gradient(135deg, #059669 0%, #10b981 100%);
     --exp-bg: #f7faf8;
     --exp-border: #10b981;
-    --stats-bg: rgba(255, 255, 255, 0.95);
+    --stats-bg: rgba(255, 255, 255, 0.94);
     --correct-bg: #ecfdf5;
     --correct-border: #10b981;
     --correct-text: #065f46;
@@ -130,14 +136,14 @@ body.theme-emerald {
     --incorrect-border: #f43f5e;
     --incorrect-text: #9f1239;
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --border-radius: 14px;
+    --border-radius: 16px;
 }
 
 body.theme-emerald::before {
     background-color: #f3f6f4;
     background-image:
-        radial-gradient(at 15% 15%, rgba(5, 150, 105, 0.05) 0px, transparent 50%),
-        radial-gradient(at 85% 85%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+        radial-gradient(at 15% 15%, rgba(5, 150, 105, 0.06) 0px, transparent 55%),
+        radial-gradient(at 85% 85%, rgba(16, 185, 129, 0.06) 0px, transparent 55%);
 }
 
 /* ==========================================================================
@@ -147,17 +153,18 @@ body.theme-cyberpunk {
     --bg-gradient: #0b0f19;
     --text-color: #f1f5f9;
     --heading-color: #38bdf8;
-    --card-bg: rgba(17, 24, 39, 0.94);
+    --card-bg: rgba(17, 24, 39, 0.92);
     --card-border: rgba(56, 189, 248, 0.22);
-    --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+    --card-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
     --option-bg: rgba(31, 41, 55, 0.85);
     --option-hover-bg: rgba(43, 56, 75, 0.95);
     --option-border: rgba(148, 163, 184, 0.28);
     --primary-color: #38bdf8;
     --primary-hover: #0284c7;
+    --primary-gradient: linear-gradient(135deg, #38bdf8 0%, #6366f1 100%);
     --exp-bg: rgba(17, 24, 39, 0.96);
     --exp-border: #6366f1;
-    --stats-bg: rgba(17, 24, 39, 0.94);
+    --stats-bg: rgba(17, 24, 39, 0.92);
     --correct-bg: rgba(6, 78, 59, 0.55);
     --correct-border: #10b981;
     --correct-text: #6ee7b7;
@@ -165,25 +172,25 @@ body.theme-cyberpunk {
     --incorrect-border: #ef4444;
     --incorrect-text: #fca5a5;
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --border-radius: 14px;
+    --border-radius: 16px;
 }
 
 body.theme-cyberpunk::before {
     background-color: #0b0f19;
     background-image:
-        radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.10) 0px, transparent 40%),
-        radial-gradient(circle at 90% 90%, rgba(99, 102, 241, 0.10) 0px, transparent 40%);
+        radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.12) 0px, transparent 45%),
+        radial-gradient(circle at 90% 90%, rgba(99, 102, 241, 0.12) 0px, transparent 45%);
 }
 
 body.theme-cyberpunk .top-navbar,
 body.theme-cyberpunk .question-block,
 body.theme-cyberpunk .palette-sidebar,
 body.theme-cyberpunk .upload-studio-card {
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
 }
 
 body.theme-cyberpunk .option:hover {
-    box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.22);
     border-color: var(--primary-color);
 }
 
@@ -196,15 +203,16 @@ body.theme-minimalist {
     --heading-color: #09090b;
     --card-bg: rgba(255, 255, 255, 0.96);
     --card-border: #e4e4e7;
-    --card-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04);
     --option-bg: #fafafa;
     --option-hover-bg: #f4f4f5;
     --option-border: #d4d4d8;
     --primary-color: #18181b;
     --primary-hover: #27272a;
+    --primary-gradient: linear-gradient(135deg, #18181b 0%, #3f3f46 100%);
     --exp-bg: #f4f4f5;
     --exp-border: #71717a;
-    --stats-bg: rgba(255, 255, 255, 0.96);
+    --stats-bg: rgba(255, 255, 255, 0.95);
     --correct-bg: #f0fdf4;
     --correct-border: #22c55e;
     --correct-text: #15803d;
@@ -212,7 +220,7 @@ body.theme-minimalist {
     --incorrect-border: #ef4444;
     --incorrect-text: #b91c1c;
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --border-radius: 12px;
+    --border-radius: 14px;
 }
 
 body.theme-minimalist::before {
@@ -231,15 +239,16 @@ body.theme-playful {
     --heading-color: #c2410c;
     --card-bg: rgba(255, 255, 255, 0.96);
     --card-border: #fed7aa;
-    --card-shadow: 0 4px 20px -2px rgba(234, 88, 12, 0.06);
+    --card-shadow: 0 10px 30px -5px rgba(234, 88, 12, 0.06);
     --option-bg: #fffbf8;
     --option-hover-bg: #ffedd5;
     --option-border: #fdba74;
     --primary-color: #ea580c;
     --primary-hover: #c2410c;
+    --primary-gradient: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
     --exp-bg: #fff7ed;
     --exp-border: #ea580c;
-    --stats-bg: rgba(255, 255, 255, 0.95);
+    --stats-bg: rgba(255, 255, 255, 0.94);
     --correct-bg: #ecfdf5;
     --correct-border: #10b981;
     --correct-text: #065f46;
@@ -253,6 +262,7 @@ body.theme-playful {
 body.theme-playful::before {
     background-color: #fffbf8;
     background-image:
-        radial-gradient(circle at 10% 10%, rgba(251, 146, 60, 0.06) 0px, transparent 45%),
-        radial-gradient(circle at 90% 90%, rgba(254, 215, 170, 0.06) 0px, transparent 45%);
+        radial-gradient(circle at 10% 10%, rgba(251, 146, 60, 0.07) 0px, transparent 50%),
+        radial-gradient(circle at 90% 90%, rgba(254, 215, 170, 0.07) 0px, transparent 50%);
 }
+

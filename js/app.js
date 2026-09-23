@@ -155,10 +155,10 @@
         const container = document.getElementById('quiz-container');
         if (container) {
             container.innerHTML = `
-                <div id="empty-quiz-welcome" style="text-align: center; padding: 50px 20px; opacity: 0.85;">
-                    <div style="font-size: 2.5em; margin-bottom: 10px;">🎓</div>
-                    <h3 style="margin-bottom: 6px; font-weight: 700;">${t('welcomeTitle')}</h3>
-                    <p style="font-size: 0.95em; opacity: 0.8;">${t('welcomeSubtitle')}</p>
+                <div id="empty-quiz-welcome" class="empty-quiz-card">
+                    <div class="empty-quiz-icon-ring">🎓</div>
+                    <h3 class="empty-quiz-title">${t('welcomeTitle')}</h3>
+                    <p class="empty-quiz-desc">${t('welcomeSubtitle')}</p>
                 </div>
             `;
         }
