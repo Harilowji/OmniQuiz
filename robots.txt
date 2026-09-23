@@ -1,0 +1,11 @@
+# robots.txt for OmniQuiz PRO - Multi-Subject CBT Platform
+# https://omniquiz.app/
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /data/
+Disallow: /tests/
+
+# Sitemap location
+Sitemap: https://omniquiz.app/sitemap.xml
