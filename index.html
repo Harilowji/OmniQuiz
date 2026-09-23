@@ -181,8 +181,8 @@
                             <div class="dropzone-icon-ring">
                                 <span class="dropzone-icon">📂</span>
                             </div>
-                            <h3 class="dropzone-title">Tải lên file đề thi</h3>
-                            <p class="dropzone-hint">Kéo thả file vào đây hoặc bấm nút duyệt file từ thiết bị</p>
+                            <h3 class="dropzone-title" id="txt-dropzone-title">Tải lên file đề thi</h3>
+                            <p class="dropzone-hint" id="txt-dropzone-hint">Kéo thả file vào đây hoặc bấm nút duyệt file từ thiết bị</p>
                             
                             <div class="format-badges-list">
                                 <span class="fmt-badge pdf">.PDF (Auto-crop)</span>
@@ -213,8 +213,8 @@
                             <div class="curated-header">
                                 <span class="curated-icon">📚</span>
                                 <div>
-                                    <h3 class="curated-title">Kho đề thi mẫu chuẩn</h3>
-                                    <p class="curated-subtitle">Chọn nhanh môn học để bắt đầu ôn luyện ngay</p>
+                                    <h3 class="curated-title" id="txt-curated-title">Kho đề thi mẫu chuẩn</h3>
+                                    <p class="curated-subtitle" id="txt-curated-subtitle">Chọn nhanh môn học để bắt đầu ôn luyện ngay</p>
                                 </div>
                             </div>
 
@@ -341,6 +341,7 @@
                     <div class="legend-item"><div class="legend-dot" style="background:#10b981;"></div> <span id="txt-leg-correct">Đúng</span></div>
                     <div class="legend-item"><div class="legend-dot" style="background:#ef4444;"></div> <span id="txt-leg-incorrect">Sai</span></div>
                     <div class="legend-item"><div class="legend-dot" style="background:#3b82f6;"></div> <span id="txt-leg-answered">Đã chọn</span></div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#f59e0b;"></div> <span id="txt-leg-flagged">Cần xem</span></div>
                     <div class="legend-item"><div class="legend-dot" style="background:#f1f5f9; border: 1.5px dashed #94a3b8;"></div> <span id="txt-leg-unattempted">Chưa làm</span></div>
                 </div>
 
@@ -788,8 +789,8 @@
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span style="font-size: 1.4em;">🛡️</span>
                     <div>
-                        <h3 style="margin: 0; font-size: 1.2em; color: var(--heading-color);">Tài khoản OmniQuiz PRO</h3>
-                        <p style="margin: 0; font-size: 0.8em; opacity: 0.75;">Xác thực máy chủ bảo mật JWT & RBAC</p>
+                        <h3 id="txt-auth-title" style="margin: 0; font-size: 1.2em; color: var(--heading-color);">Tài khoản OmniQuiz PRO</h3>
+                        <p id="txt-auth-subtitle" style="margin: 0; font-size: 0.8em; opacity: 0.75;">Xác thực máy chủ bảo mật JWT & RBAC</p>
                     </div>
                 </div>
                 <button type="button" class="btn-action btn-history-action btn-del" id="btn-close-auth-modal" style="padding: 4px 10px;">✕</button>

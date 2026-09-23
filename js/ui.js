@@ -41,7 +41,8 @@ const UIManager = (() => {
             const safeQText = (typeof QuestionParser !== 'undefined' && QuestionParser.formatMathText) 
                 ? QuestionParser.formatMathText(q.q) 
                 : q.q;
-            title.innerHTML = `Q${qIndex + 1}. ${safeQText}`;
+            const qPrefix = `${t('questionLabel') || 'Câu'} ${qIndex + 1}:`;
+            title.innerHTML = `<span class="q-num-prefix">${qPrefix}</span> ${safeQText}`;
 
             if (isEvaluated) {
                 const badge = document.createElement('span');
@@ -397,6 +398,11 @@ const UIManager = (() => {
         }
 
         let countAnswered = 0;
+        let countIncorrect = 0;
+        const countFlagged = (typeof flaggedQuestions !== 'undefined' && flaggedQuestions && flaggedQuestions.size !== undefined)
+            ? flaggedQuestions.size 
+            : 0;
+
         // Full scan only when initializing or filtering
         questions.forEach((q, qIndex) => {
             const btn = document.getElementById('pbtn-' + qIndex);
@@ -634,11 +640,13 @@ const UIManager = (() => {
         if (typeof onFilterChange === 'function') onFilterChange();
     }
 
-    function updateStats(questions, userAnswers, mode, isSubmitted, evaluatedQuestions) {
+    function updateStats(questions, userAnswers, mode, isSubmitted, evaluatedQuestions, flaggedQuestions) {
         let answered = 0;
         let correct = 0;
         let incorrect = 0;
         let unattempted = 0;
+
+        const isEvaluationActive = isSubmitted || mode === 'practice';
 
         questions.forEach((q, qIndex) => {
             const ans = userAnswers[qIndex] || [];
@@ -646,9 +654,9 @@ const UIManager = (() => {
             if (hasAns) answered++;
             else unattempted++;
 
-            const isEvaluated = isSubmitted || (mode === 'practice' && evaluatedQuestions && evaluatedQuestions.has(qIndex));
-            if (isEvaluated) {
-                if (hasAns) {
+            if (isEvaluationActive && hasAns) {
+                const isEvaluated = isSubmitted || (evaluatedQuestions && evaluatedQuestions.has(qIndex));
+                if (isEvaluated) {
                     if (QuizEngine.isAnswerCorrect(q, ans)) {
                         correct++;
                     } else {
@@ -688,7 +696,7 @@ const UIManager = (() => {
         if (elBar) elBar.style.width = pct + '%';
 
         // Synchronize Palette Counters & Circular Progress in the same loop
-        const countFlagged = (flaggedQuestions && flaggedQuestions.size !== undefined)
+        const countFlagged = (typeof flaggedQuestions !== 'undefined' && flaggedQuestions && flaggedQuestions.size !== undefined)
             ? flaggedQuestions.size 
             : (typeof QuizEngine !== 'undefined' && QuizEngine.state && QuizEngine.state.flaggedQuestions ? QuizEngine.state.flaggedQuestions.size : 0);
         updatePaletteCounters(questions, answered, incorrect, countFlagged, mode, isSubmitted);

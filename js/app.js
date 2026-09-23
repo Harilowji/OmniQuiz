@@ -1856,7 +1856,8 @@
             QuizEngine.state.userAnswers,
             QuizEngine.state.currentMode,
             QuizEngine.state.isSubmitted,
-            QuizEngine.state.evaluatedQuestions
+            QuizEngine.state.evaluatedQuestions,
+            QuizEngine.state.flaggedQuestions
         );
     }
 

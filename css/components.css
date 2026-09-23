@@ -289,25 +289,26 @@
     font-weight: 500;
     font-size: 1.02em;
     line-height: 1.5;
-    transition: border-color 0.12s ease, background-color 0.12s ease, box-shadow 0.12s ease, transform 0.12s ease;
+    transition: none; /* Instant CBT interaction: zero delay */
     display: flex;
     align-items: center;
     gap: 14px;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 .option:hover {
     background: var(--option-hover-bg);
     border-color: var(--primary-color);
-    transform: translateY(-1px);
 }
 .option:active {
-    transform: translateY(0);
+    background: var(--option-hover-bg);
 }
 .option-indicator {
     width: 34px;
     height: 34px;
     border-radius: 10px;
     border: 1.5px solid var(--option-border);
-    background: color-mix(in srgb, var(--option-border) 25%, transparent);
+    background: rgba(148, 163, 184, 0.12);
     color: var(--text-color);
     display: flex;
     align-items: center;
@@ -316,26 +317,27 @@
     font-weight: 800;
     letter-spacing: 0.02em;
     flex-shrink: 0;
-    transition: border-color 0.1s ease, background 0.1s ease, color 0.1s ease;
+    transition: none; /* Instant feedback */
 }
 .option.selected {
     transition: none !important;
-    background: color-mix(in srgb, var(--primary-color) 8%, var(--card-bg));
+    background: rgba(37, 99, 235, 0.08);
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-color) 25%, transparent), 0 4px 12px color-mix(in srgb, var(--primary-color) 12%, transparent);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
     font-weight: 600;
 }
 .option.selected .option-indicator {
+    transition: none !important;
     background: var(--primary-color);
     border-color: var(--primary-color);
     color: #ffffff;
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--primary-color) 40%, transparent);
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
 }
 .option.correct {
     background: var(--correct-bg) !important;
     border-color: var(--correct-border) !important;
     color: var(--correct-text) !important;
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--correct-border) 25%, transparent) !important;
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.25) !important;
 }
 .option.correct .option-indicator {
     background: var(--correct-border);
@@ -346,7 +348,7 @@
     background: var(--incorrect-bg) !important;
     border-color: var(--incorrect-border) !important;
     color: var(--incorrect-text) !important;
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--incorrect-border) 25%, transparent) !important;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.25) !important;
 }
 .option.incorrect .option-indicator {
     background: var(--incorrect-border);
@@ -549,24 +551,21 @@
     position: relative;
     user-select: none;
     outline: none;
-    transition: border-color 0.12s ease, background 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
+    transition: none; /* Instant CBT feedback: 0ms */
 }
 .palette-btn:hover {
     border-color: var(--primary-color);
-    transform: scale(1.08);
     z-index: 2;
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--primary-color) 20%, transparent);
 }
 .palette-btn:active {
-    transform: scale(0.96);
+    opacity: 0.85;
 }
 
 /* Azota Active ScrollSpy: Question currently centered on screen */
 .palette-btn.current-viewing {
     border-color: var(--primary-color) !important;
-    background: color-mix(in srgb, var(--primary-color) 16%, var(--option-bg)) !important;
-    box-shadow: 0 0 0 2.5px var(--primary-color);
-    transform: scale(1.08);
+    background: rgba(37, 99, 235, 0.12) !important;
+    box-shadow: 0 0 0 2px var(--primary-color);
     z-index: 3;
     font-weight: 900;
 }
@@ -851,8 +850,6 @@ body.theme-cyberpunk .badge-q-unattempted {
     box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.02);
     padding: 34px 30px;
     margin-bottom: 28px;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
 }
 .studio-header {
     text-align: center;
