@@ -1358,3 +1358,8 @@ const UIManager = (() => {
         hideSubmitConfirmModal
     };
 })();
+
+// Attach to global window
+if (typeof window !== 'undefined') {
+    window.UIManager = UIManager;
+}

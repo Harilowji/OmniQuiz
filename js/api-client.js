@@ -368,6 +368,10 @@ const ApiClient = (() => {
     };
 })();
 
+if (typeof window !== 'undefined') {
+    window.ApiClient = ApiClient;
+}
+
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = ApiClient;
 }

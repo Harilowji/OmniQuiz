@@ -129,6 +129,7 @@
         QuizEngine.state.targetEndTime = null;
         QuizEngine.state.incorrectQData = [];
         document.body.classList.remove('focus-mode');
+        document.body.classList.remove('quiz-active');
 
         // Reset file input
         const fileInput = document.getElementById('file-input');
@@ -1898,11 +1899,15 @@
                 FlashcardEngine.setActive(false);
             }
 
+            const uploadSec = document.getElementById('upload-section');
+            if (uploadSec) uploadSec.style.display = 'none';
+
+            document.body.classList.add('quiz-active');
             document.getElementById('quiz-container').style.display = 'block';
             document.getElementById('stats-section').style.display = 'block';
             document.getElementById('palette-section').style.display = 'block';
             const fab = document.getElementById('btn-mobile-palette-toggle');
-            if (fab) fab.style.display = 'inline-flex';
+            if (fab) fab.style.display = (window.innerWidth <= 960) ? 'inline-flex' : 'none';
 
             if (QuizEngine.state.currentMode === 'exam' && !QuizEngine.state.isSubmitted) {
                 document.body.classList.add('focus-mode');

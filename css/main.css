@@ -55,9 +55,18 @@ body {
 
 .app-layout {
     display: grid;
-    grid-template-columns: 1fr 340px;
+    grid-template-columns: 1fr;
     gap: 28px;
     align-items: start;
+    transition: grid-template-columns 0.25s ease;
+}
+
+/* Automatically allocate 340px for question palette sidebar when active */
+.app-layout:has(#palette-section:not([style*="display: none"])) {
+    grid-template-columns: 1fr 340px;
+}
+body.quiz-active .app-layout {
+    grid-template-columns: 1fr 340px;
 }
 
 .quiz-main {
@@ -69,7 +78,9 @@ body {
     body {
         padding: 14px 12px 60px 12px;
     }
-    .app-layout {
+    .app-layout,
+    .app-layout:has(#palette-section:not([style*="display: none"])),
+    body.quiz-active .app-layout {
         grid-template-columns: 1fr;
         gap: 20px;
     }

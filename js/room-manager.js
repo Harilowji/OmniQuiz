@@ -530,6 +530,11 @@ const RoomManager = (() => {
     };
 })();
 
+// Attach to global window
+if (typeof window !== 'undefined') {
+    window.RoomManager = RoomManager;
+}
+
 // Auto initialize on DOM ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', RoomManager.init);

@@ -90,6 +90,21 @@
     border-color: var(--primary-color);
 }
 
+.controls-group #btn-reset {
+    background: color-mix(in srgb, #ef4444 10%, var(--option-bg)) !important;
+    color: #ef4444 !important;
+    border-color: color-mix(in srgb, #ef4444 25%, transparent) !important;
+    box-shadow: none !important;
+    transition: all 0.15s ease;
+}
+.controls-group #btn-reset:hover {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+    border-color: #ef4444 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25) !important;
+}
+
 /* BUTTONS & SELECTS (PILL GEOMETRY) */
 .custom-select, .btn-action {
     padding: 7px 15px;
@@ -445,6 +460,7 @@
     padding: 20px;
     max-height: calc(100vh - 100px);
     overflow-y: auto;
+    overflow-x: hidden;
     scrollbar-width: thin;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
@@ -494,11 +510,16 @@
     padding: 4px;
     border-radius: var(--r-pill, 9999px);
     border: 1px solid var(--card-border);
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.palette-filters::-webkit-scrollbar {
+    display: none;
 }
 .filter-chip {
-    flex: 1;
+    flex: 1 0 auto;
     text-align: center;
-    padding: 5px 6px;
+    padding: 5px 8px;
     border-radius: var(--r-pill, 9999px);
     font-size: 0.74em;
     font-weight: 700;
@@ -748,12 +769,20 @@ body.theme-cyberpunk .badge-q-unattempted {
     transform: scale(0.96);
 }
 
+@media (min-width: 961px) {
+    .floating-palette-fab,
+    #btn-mobile-palette-toggle {
+        display: none !important;
+    }
+}
+
 @media (max-width: 960px) {
     .palette-sidebar:not(.mobile-drawer) {
         display: none !important;
     }
-    .floating-palette-fab {
-        display: inline-flex;
+    .floating-palette-fab,
+    #btn-mobile-palette-toggle {
+        display: inline-flex !important;
         align-items: center;
         gap: 8px;
     }
@@ -821,7 +850,7 @@ body.theme-cyberpunk .badge-q-unattempted {
 }
 .modal-stats-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(95px, 1fr));
     gap: 12px;
     margin: 22px 0;
 }
@@ -2888,17 +2917,12 @@ body.mobile-drawer-open .floating-palette-fab {
 
 .theme-name {
     flex: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 0.9em;
+    font-weight: 700;
 }
 
 .theme-badge {
-    font-size: 0.72em;
-    opacity: 0.65;
-    background: rgba(125, 125, 125, 0.12);
-    padding: 1px 6px;
-    border-radius: 99px;
+    display: none;
 }
 
 /* Language selector */

@@ -618,11 +618,17 @@ ${questionsPrompt}`;
     }
 
     /**
-     * Strip math tags for snippet display
+     * Strip math tags for snippet display while keeping formula text readable
      */
     function stripMathTags(str) {
         if (!str) return '';
-        return str.replace(/\$\$[\s\S]*?\$\$/g, '[Công thức]').replace(/\$[^\$]*?\$/g, '[CT]');
+        return str
+            .replace(/\$\$(.*?)\$\$/g, ' $1 ')
+            .replace(/\$(.*?)\$/g, '$1')
+            .replace(/\\(?:frac|text|mathrm|mathbf|sqrt)\b/g, '')
+            .replace(/[{}]/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
     }
 
     /**
@@ -1151,6 +1157,11 @@ ${questionsPrompt}`;
         }
     };
 })();
+
+// Attach to global window
+if (typeof window !== 'undefined') {
+    window.QuestionStudio = QuestionStudio;
+}
 
 // Auto initialize on DOM ready
 if (document.readyState === 'loading') {

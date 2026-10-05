@@ -547,6 +547,10 @@ const QuizEngine = (() => {
     };
 })();
 
+if (typeof window !== 'undefined') {
+    window.QuizEngine = QuizEngine;
+}
+
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = QuizEngine;
 }

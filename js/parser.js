@@ -760,6 +760,10 @@ const QuestionParser = (() => {
     };
 })();
 
+if (typeof window !== 'undefined') {
+    window.QuestionParser = QuestionParser;
+}
+
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = QuestionParser;
 }
