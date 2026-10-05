@@ -35,6 +35,10 @@ body::before {
     height: 100vh;
     z-index: -1;
     pointer-events: none;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
     transition: opacity 0.35s ease, background 0.35s ease;
 }
 
@@ -63,25 +67,27 @@ body::before {
     to { opacity: 1; transform: scale(1); }
 }
 
-/* Elevation & Layering for Core Panels */
+/* Elevation & Layering for Core Panels - High Performance GPU Composited */
 .modal-content {
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .upload-studio-card {
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    contain: content;
+    transform: translateZ(0);
+    transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .top-navbar,
 .palette-sidebar,
 .sticky-stats-bar {
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    contain: layout style;
+    transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 /* ==========================================================================
