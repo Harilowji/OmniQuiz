@@ -1,0 +1,27 @@
+{
+  "name": "OmniQuiz Pro - Multi-Subject CBT Platform",
+  "short_name": "OmniQuiz",
+  "description": "Nền tảng thi và ôn tập trắc nghiệm trực tuyến đa môn học hỗ trợ công thức LaTeX, đa giao diện và nhập đề Word .docx, .pdf, .txt",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "assets/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/favicon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "assets/logo.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png"
+    }
+  ]
+}

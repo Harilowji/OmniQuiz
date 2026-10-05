@@ -5,6 +5,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const apiRouter = require('./server/api');
 
 const app = express();
@@ -22,8 +23,12 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 // Mount RESTful API Router
 app.use('/api', apiRouter);
 
-// Serve Frontend Static Files
-app.use(express.static(path.join(__dirname), {
+// Serve Frontend Static Files (prioritize dist/ if production build exists)
+const distDir = path.join(__dirname, 'dist');
+const hasDist = fs.existsSync(path.join(distDir, 'index.html'));
+const staticDir = hasDist ? distDir : path.join(__dirname);
+
+app.use(express.static(staticDir, {
     maxAge: '1d',
     setHeaders: (res, filePath) => {
         if (filePath.endsWith('sw.js') || filePath.endsWith('manifest.json')) {
@@ -37,7 +42,8 @@ app.get('*', (req, res) => {
     if (req.path.startsWith('/api/')) {
         return res.status(404).json({ success: false, error: 'Endpoint API không tồn tại!' });
     }
-    res.sendFile(path.join(__dirname, 'index.html'));
+    const targetIndex = hasDist ? path.join(distDir, 'index.html') : path.join(__dirname, 'index.html');
+    res.sendFile(targetIndex);
 });
 
 // Error handling middleware

@@ -6,6 +6,9 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
+    "dev:vite": "vite",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
     "test": "node tests/api.test.js"
   },
   "keywords": [
@@ -22,10 +25,26 @@
   "author": "Harilowji",
   "license": "MIT",
   "dependencies": {
+    "@supabase/supabase-js": "^2.117.2",
+    "canvas-confetti": "^1.9.4",
+    "chart.js": "^4.5.1",
     "cors": "^2.8.5",
-    "express": "^4.21.2"
+    "dexie": "^4.4.6",
+    "express": "^4.21.2",
+    "jspdf": "^4.2.1",
+    "katex": "^0.19.0",
+    "lucide": "^1.52.0",
+    "mammoth": "^1.13.0",
+    "pdfjs-dist": "^6.4.299"
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/katex": "^0.16.8",
+    "@types/node": "^26.6.4",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.2"
   }
 }
