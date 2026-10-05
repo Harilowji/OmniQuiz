@@ -1,7 +1,22 @@
 /* themes.css - Design Systems & Eye-Comfort Color Palettes
- * Specifically engineered for prolonged cognitive focus, reduced eye fatigue,
- * and ergonomic contrast compliance (WCAG AAA).
+ * Sameko & BinBox Studio Architecture:
+ * - Material 3 Expressive + Frosted Glass Layering
+ * - Soft pastel tonal surfaces, high eye comfort for prolonged exam sessions
+ * - Restrained black shadows, zero distracting neon glow
+ * - Geometric shape scale (--r-xs through --r-pill)
  */
+
+:root {
+    --r-xs: 6px;
+    --r-sm: 10px;
+    --r-md: 14px;
+    --r-lg: 20px;
+    --r-xl: 26px;
+    --r-pill: 9999px;
+    --border-radius: 18px;
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --header-height: 56px;
+}
 
 /* Base Shared Pseudo-Element for Calming Ambient Backgrounds */
 body {
@@ -18,69 +33,72 @@ body::before {
     height: 100vh;
     z-index: -1;
     pointer-events: none;
-    transition: opacity 0.4s ease, background 0.4s ease;
+    transition: opacity 0.3s ease, background 0.3s ease;
 }
 
-/* Elevation for Core Panels */
+/* Elevation & Layering for Core Panels */
 .modal-content {
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .upload-studio-card {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .top-navbar,
 .palette-sidebar,
 .sticky-stats-bar {
-    /* Pure 0ms rendering: No backdrop blur on sticky/scrolling panels */
-    transition: background 0.2s ease, border-color 0.2s ease;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* ==========================================================================
-   1. Slate Focus Theme (Default: Modern Precision, Crisp Indigo, WCAG AAA)
+   1. Sameko Ocean Studio (Default: Crisp Pastel Ocean, Eye-Comfort, WCAG AAA)
    ========================================================================== */
 :root, body.theme-academic {
-    --bg-gradient: #f8fafc;
-    --text-color: #0f172a;
+    --bg-gradient: #f0f6fc;
+    --text-color: #1e293b;
     --heading-color: #0f172a;
-    --card-bg: rgba(255, 255, 255, 0.95);
-    --card-border: rgba(226, 232, 240, 0.9);
-    --card-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
-    --option-bg: #f8fafc;
-    --option-hover-bg: #f1f5f9;
-    --option-border: #cbd5e1;
-    --primary-color: #2563eb;
-    --primary-hover: #1d4ed8;
-    --primary-gradient: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
-    --exp-bg: rgba(241, 245, 249, 0.85);
-    --exp-border: #3b82f6;
-    --stats-bg: rgba(255, 255, 255, 0.94);
+    --card-bg: rgba(255, 255, 255, 0.88);
+    --card-border: rgba(186, 215, 243, 0.7);
+    --card-shadow: 0 10px 30px -5px rgba(50, 110, 160, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+    --option-bg: #f8fbff;
+    --option-hover-bg: #eaf3fd;
+    --option-border: #cbdff1;
+    --primary-color: #0284c7;
+    --primary-hover: #0369a1;
+    --primary-gradient: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+    --exp-bg: rgba(240, 249, 255, 0.9);
+    --exp-border: #0284c7;
+    --stats-bg: rgba(255, 255, 255, 0.92);
     --correct-bg: #f0fdf4;
-    --correct-border: #22c55e;
+    --correct-border: #16a34a;
     --correct-text: #15803d;
     --incorrect-bg: #fef2f2;
     --incorrect-border: #ef4444;
     --incorrect-text: #b91c1c;
-    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --border-radius: 16px;
 }
 
 body.theme-academic::before {
-    background-color: #f8fafc;
-    background-image: radial-gradient(at 50% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 65%);
+    background-color: #f0f6fc;
+    background-image: 
+        radial-gradient(at 10% 10%, rgba(2, 132, 199, 0.06) 0px, transparent 55%),
+        radial-gradient(at 90% 90%, rgba(14, 165, 233, 0.05) 0px, transparent 55%);
 }
 
 /* ==========================================================================
-   2. Warm Sepia Theme (Kindle/Paper Book Inspiration: Eye Comfort for Long Sessions)
+   2. Warm Sepia Theme (Kindle/Paper Book Inspiration: Long Reading Focus)
    ========================================================================== */
 body.theme-sepia {
     --bg-gradient: #fbf8f2;
     --text-color: #292524;
     --heading-color: #1c1917;
-    --card-bg: rgba(255, 255, 255, 0.95);
+    --card-bg: rgba(255, 255, 255, 0.92);
     --card-border: #e7dfd5;
     --card-shadow: 0 10px 30px -5px rgba(68, 58, 52, 0.06);
     --option-bg: #fcfbf8;
@@ -91,15 +109,13 @@ body.theme-sepia {
     --primary-gradient: linear-gradient(135deg, #b45309 0%, #d97706 100%);
     --exp-bg: #fcfbf8;
     --exp-border: #d97706;
-    --stats-bg: rgba(255, 255, 255, 0.94);
+    --stats-bg: rgba(255, 255, 255, 0.92);
     --correct-bg: #f0fdf4;
     --correct-border: #16a34a;
     --correct-text: #166534;
     --incorrect-bg: #fef2f2;
     --incorrect-border: #dc2626;
     --incorrect-text: #991b1b;
-    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --border-radius: 16px;
 }
 
 body.theme-sepia::before {
@@ -110,13 +126,13 @@ body.theme-sepia::before {
 }
 
 /* ==========================================================================
-   3. Sage Calm Theme (Soft Herbal Mint: Stress Relief & Heart-Rate Calming)
+   3. Sage Calm Theme (Soft Herbal Mint: Stress Relief & Clarity)
    ========================================================================== */
 body.theme-emerald {
     --bg-gradient: #f3f6f4;
     --text-color: #142820;
     --heading-color: #0b1e16;
-    --card-bg: rgba(255, 255, 255, 0.96);
+    --card-bg: rgba(255, 255, 255, 0.92);
     --card-border: #d1ded7;
     --card-shadow: 0 10px 30px -5px rgba(20, 40, 32, 0.06);
     --option-bg: #f7faf8;
@@ -127,15 +143,13 @@ body.theme-emerald {
     --primary-gradient: linear-gradient(135deg, #059669 0%, #10b981 100%);
     --exp-bg: #f7faf8;
     --exp-border: #10b981;
-    --stats-bg: rgba(255, 255, 255, 0.94);
+    --stats-bg: rgba(255, 255, 255, 0.92);
     --correct-bg: #ecfdf5;
     --correct-border: #10b981;
     --correct-text: #065f46;
     --incorrect-bg: #fff1f2;
     --incorrect-border: #f43f5e;
     --incorrect-text: #9f1239;
-    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --border-radius: 16px;
 }
 
 body.theme-emerald::before {
@@ -146,51 +160,37 @@ body.theme-emerald::before {
 }
 
 /* ==========================================================================
-   4. Nordic Dark Theme (Deep Navy Slate: Soothing Low-Light Exam Mode)
+   4. Sameko Midnight Slate (Deep Navy Slate: Soothing Low-Light Exam Mode)
    ========================================================================== */
 body.theme-cyberpunk {
-    --bg-gradient: #0b0f19;
+    --bg-gradient: #0b1329;
     --text-color: #f1f5f9;
     --heading-color: #38bdf8;
-    --card-bg: rgba(17, 24, 39, 0.92);
-    --card-border: rgba(56, 189, 248, 0.22);
-    --card-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
-    --option-bg: rgba(31, 41, 55, 0.85);
-    --option-hover-bg: rgba(43, 56, 75, 0.95);
-    --option-border: rgba(148, 163, 184, 0.28);
+    --card-bg: rgba(15, 23, 42, 0.88);
+    --card-border: rgba(56, 189, 248, 0.2);
+    --card-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+    --option-bg: rgba(30, 41, 59, 0.7);
+    --option-hover-bg: rgba(51, 65, 85, 0.85);
+    --option-border: rgba(148, 163, 184, 0.25);
     --primary-color: #38bdf8;
     --primary-hover: #0284c7;
-    --primary-gradient: linear-gradient(135deg, #38bdf8 0%, #6366f1 100%);
-    --exp-bg: rgba(17, 24, 39, 0.96);
-    --exp-border: #6366f1;
-    --stats-bg: rgba(17, 24, 39, 0.92);
+    --primary-gradient: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+    --exp-bg: rgba(15, 23, 42, 0.95);
+    --exp-border: #38bdf8;
+    --stats-bg: rgba(15, 23, 42, 0.92);
     --correct-bg: rgba(6, 78, 59, 0.55);
     --correct-border: #10b981;
     --correct-text: #6ee7b7;
     --incorrect-bg: rgba(127, 29, 29, 0.55);
     --incorrect-border: #ef4444;
     --incorrect-text: #fca5a5;
-    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --border-radius: 16px;
 }
 
 body.theme-cyberpunk::before {
-    background-color: #0b0f19;
+    background-color: #0b1329;
     background-image:
-        radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.12) 0px, transparent 45%),
-        radial-gradient(circle at 90% 90%, rgba(99, 102, 241, 0.12) 0px, transparent 45%);
-}
-
-body.theme-cyberpunk .top-navbar,
-body.theme-cyberpunk .question-block,
-body.theme-cyberpunk .palette-sidebar,
-body.theme-cyberpunk .upload-studio-card {
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
-}
-
-body.theme-cyberpunk .option:hover {
-    box-shadow: 0 0 14px rgba(56, 189, 248, 0.22);
-    border-color: var(--primary-color);
+        radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.1) 0px, transparent 45%),
+        radial-gradient(circle at 90% 90%, rgba(2, 132, 199, 0.1) 0px, transparent 45%);
 }
 
 /* ==========================================================================
@@ -200,7 +200,7 @@ body.theme-minimalist {
     --bg-gradient: #fafafa;
     --text-color: #18181b;
     --heading-color: #09090b;
-    --card-bg: rgba(255, 255, 255, 0.96);
+    --card-bg: rgba(255, 255, 255, 0.94);
     --card-border: #e4e4e7;
     --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04);
     --option-bg: #fafafa;
@@ -211,15 +211,13 @@ body.theme-minimalist {
     --primary-gradient: linear-gradient(135deg, #18181b 0%, #3f3f46 100%);
     --exp-bg: #f4f4f5;
     --exp-border: #71717a;
-    --stats-bg: rgba(255, 255, 255, 0.95);
+    --stats-bg: rgba(255, 255, 255, 0.92);
     --correct-bg: #f0fdf4;
     --correct-border: #22c55e;
     --correct-text: #15803d;
     --incorrect-bg: #fef2f2;
     --incorrect-border: #ef4444;
     --incorrect-text: #b91c1c;
-    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --border-radius: 14px;
 }
 
 body.theme-minimalist::before {
@@ -236,7 +234,7 @@ body.theme-playful {
     --bg-gradient: #fffbf8;
     --text-color: #37302f;
     --heading-color: #c2410c;
-    --card-bg: rgba(255, 255, 255, 0.96);
+    --card-bg: rgba(255, 255, 255, 0.94);
     --card-border: #fed7aa;
     --card-shadow: 0 10px 30px -5px rgba(234, 88, 12, 0.06);
     --option-bg: #fffbf8;
@@ -247,15 +245,13 @@ body.theme-playful {
     --primary-gradient: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
     --exp-bg: #fff7ed;
     --exp-border: #ea580c;
-    --stats-bg: rgba(255, 255, 255, 0.94);
+    --stats-bg: rgba(255, 255, 255, 0.92);
     --correct-bg: #ecfdf5;
     --correct-border: #10b981;
     --correct-text: #065f46;
     --incorrect-bg: #fff1f2;
     --incorrect-border: #f43f5e;
     --incorrect-text: #9f1239;
-    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --border-radius: 16px;
 }
 
 body.theme-playful::before {
@@ -264,4 +260,3 @@ body.theme-playful::before {
         radial-gradient(circle at 10% 10%, rgba(251, 146, 60, 0.07) 0px, transparent 50%),
         radial-gradient(circle at 90% 90%, rgba(254, 215, 170, 0.07) 0px, transparent 50%);
 }
-
