@@ -85,209 +85,221 @@ body::before {
 }
 
 /* ==========================================================================
-   1. Sameko Ocean Studio (Default: Crisp Pastel Ocean, Soft Waves, Eye-Comfort)
+   1. Sameko Kawaii Light (Ocean Saba Default: Crisp Marine, Eye Comfort)
    ========================================================================== */
-:root, body.theme-academic {
-    --bg-gradient: #dceef9;
-    --text-color: #2a5a75;
-    --heading-color: #1a425b;
-    --card-bg: rgba(255, 255, 255, 0.92);
-    --card-border: rgba(180, 215, 240, 0.85);
-    --card-shadow: 0 12px 36px rgba(90, 155, 200, 0.16), 0 4px 12px rgba(90, 155, 200, 0.08);
-    --option-bg: rgba(255, 255, 255, 0.88);
-    --option-hover-bg: #ebf6fc;
+:root, body.theme-academic, body.theme-kawaii-light {
+    --bg-gradient: #e8f4fc;
+    --text-color: #2a4a5a;
+    --heading-color: #1a3a50;
+    --card-bg: rgba(255, 255, 255, 0.94);
+    --card-border: #a0c8e0;
+    --card-shadow: 0 12px 36px rgba(74, 155, 201, 0.18), 0 4px 12px rgba(74, 155, 201, 0.08);
+    --option-bg: rgba(240, 248, 255, 0.88);
+    --option-hover-bg: #eff8fe;
     --option-border: #bce2f5;
-    --primary-color: #3b8ec8;
-    --primary-hover: #2977ad;
-    --primary-gradient: linear-gradient(135deg, #4a9cd6 0%, #317db2 100%);
-    --exp-bg: rgba(235, 247, 254, 0.95);
-    --exp-border: #6ebbdf;
+    --primary-color: #4a9bc9;
+    --primary-hover: #3a8ab8;
+    --primary-gradient: linear-gradient(135deg, #4a9bc9 0%, #3a8ab8 100%);
+    --exp-bg: rgba(232, 244, 252, 0.95);
+    --exp-border: #4a9bc9;
     --stats-bg: rgba(255, 255, 255, 0.94);
     --correct-bg: #eafaf1;
-    --correct-border: #52b788;
-    --correct-text: #2d6a4f;
+    --correct-border: #5dbe8a;
+    --correct-text: #1b7d3f;
     --incorrect-bg: #fff1f2;
-    --incorrect-border: #f87171;
-    --incorrect-text: #dc2626;
-    --accent-pink: #eb6b9d;
-    --accent-mint: #52b788;
+    --incorrect-border: #e55a5a;
+    --incorrect-text: #a8071a;
+    --accent-pink: #ff8fab;
+    --accent-mint: #5dbe8a;
 }
 
-body.theme-academic::before {
-    background-color: #d8edf8;
+body.theme-academic::before, body.theme-kawaii-light::before {
+    background-color: #e8f4fc;
     background-image: 
-        radial-gradient(circle at 12% 15%, rgba(255, 255, 255, 0.85) 0%, transparent 45%),
-        radial-gradient(circle at 88% 18%, rgba(160, 204, 232, 0.55) 0%, transparent 50%),
-        radial-gradient(circle at 50% 82%, rgba(188, 226, 245, 0.65) 0%, transparent 60%),
-        radial-gradient(circle at 85% 85%, rgba(235, 107, 157, 0.14) 0%, transparent 35%);
+        radial-gradient(circle at 12% 15%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),
+        radial-gradient(circle at 88% 18%, rgba(188, 226, 245, 0.6) 0%, transparent 50%),
+        radial-gradient(circle at 50% 82%, rgba(208, 232, 245, 0.7) 0%, transparent 60%),
+        radial-gradient(circle at 85% 85%, rgba(255, 143, 171, 0.15) 0%, transparent 35%);
 }
 
 /* ==========================================================================
-   2. Warm Sepia Theme (Kindle/Paper Book Inspiration: Long Reading Focus)
+   2. Sameko Sakura Pastel (True Cherry Blossom: Soft, Dreamy, Gentle)
    ========================================================================== */
-body.theme-sepia {
-    --bg-gradient: #fbf8f2;
-    --text-color: #292524;
-    --heading-color: #1c1917;
-    --card-bg: rgba(255, 255, 255, 0.92);
-    --card-border: #e7dfd5;
-    --card-shadow: 0 10px 30px -5px rgba(68, 58, 52, 0.06);
-    --option-bg: #fcfbf8;
-    --option-hover-bg: #f5f0e6;
-    --option-border: #dcd3c5;
-    --primary-color: #b45309;
-    --primary-hover: #92400e;
-    --primary-gradient: linear-gradient(135deg, #b45309 0%, #d97706 100%);
-    --exp-bg: #fcfbf8;
-    --exp-border: #d97706;
-    --stats-bg: rgba(255, 255, 255, 0.92);
-    --correct-bg: #f0fdf4;
-    --correct-border: #16a34a;
-    --correct-text: #166534;
-    --incorrect-bg: #fef2f2;
-    --incorrect-border: #dc2626;
-    --incorrect-text: #991b1b;
+body.theme-playful, body.theme-sakura {
+    --bg-gradient: #fff5f8;
+    --text-color: #5d4a4d;
+    --heading-color: #8b5f65;
+    --card-bg: rgba(255, 245, 250, 0.94);
+    --card-border: #ffcad4;
+    --card-shadow: 0 12px 36px rgba(255, 182, 193, 0.22), 0 4px 12px rgba(255, 105, 180, 0.12);
+    --option-bg: #fff0f5;
+    --option-hover-bg: #ffe4e1;
+    --option-border: #ffcad4;
+    --primary-color: #ff9aaf;
+    --primary-hover: #ff758f;
+    --primary-gradient: linear-gradient(135deg, #ff9aaf 0%, #ff758f 100%);
+    --exp-bg: #fff0f5;
+    --exp-border: #ff9aaf;
+    --stats-bg: rgba(255, 245, 250, 0.94);
+    --correct-bg: #f2fbf2;
+    --correct-border: #b8e2b8;
+    --correct-text: #2d8a2d;
+    --incorrect-bg: #fff5f5;
+    --incorrect-border: #ffb3b3;
+    --incorrect-text: #c0392b;
+    --accent-pink: #ff758f;
+    --accent-mint: #b8e2b8;
 }
 
-body.theme-sepia::before {
-    background-color: #fbf8f2;
-    background-image:
-        radial-gradient(at 10% 10%, rgba(180, 83, 9, 0.05) 0px, transparent 55%),
-        radial-gradient(at 90% 90%, rgba(217, 119, 6, 0.05) 0px, transparent 55%);
+body.theme-playful::before, body.theme-sakura::before {
+    background-color: #fff5f8;
+    background-image: 
+        radial-gradient(circle at 10% 12%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),
+        radial-gradient(circle at 90% 15%, rgba(255, 202, 212, 0.55) 0%, transparent 50%),
+        radial-gradient(circle at 50% 85%, rgba(255, 228, 225, 0.7) 0%, transparent 60%),
+        radial-gradient(circle at 85% 85%, rgba(255, 154, 175, 0.2) 0%, transparent 40%);
 }
 
 /* ==========================================================================
-   3. Sage Calm Theme (Soft Herbal Mint: Stress Relief & Clarity)
+   3. Sameko Kawaii Dark (Deep Ocean Slate: Night Exam Eye Comfort)
    ========================================================================== */
-body.theme-emerald {
-    --bg-gradient: #f3f6f4;
-    --text-color: #142820;
-    --heading-color: #0b1e16;
-    --card-bg: rgba(255, 255, 255, 0.92);
-    --card-border: #d1ded7;
-    --card-shadow: 0 10px 30px -5px rgba(20, 40, 32, 0.06);
-    --option-bg: #f7faf8;
-    --option-hover-bg: #eaf2ee;
-    --option-border: #bfd4c9;
-    --primary-color: #059669;
-    --primary-hover: #047857;
-    --primary-gradient: linear-gradient(135deg, #059669 0%, #10b981 100%);
-    --exp-bg: #f7faf8;
-    --exp-border: #10b981;
-    --stats-bg: rgba(255, 255, 255, 0.92);
-    --correct-bg: #ecfdf5;
-    --correct-border: #10b981;
-    --correct-text: #065f46;
-    --incorrect-bg: #fff1f2;
-    --incorrect-border: #f43f5e;
-    --incorrect-text: #9f1239;
+body.theme-cyberpunk, body.theme-kawaii-dark {
+    --bg-gradient: #0d1a25;
+    --text-color: #e0f0ff;
+    --heading-color: #88c9ea;
+    --card-bg: rgba(26, 37, 48, 0.95);
+    --card-border: #3a6075;
+    --card-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+    --option-bg: #1a2a3a;
+    --option-hover-bg: #243040;
+    --option-border: #3a6075;
+    --primary-color: #88c9ea;
+    --primary-hover: #5eb7e0;
+    --primary-gradient: linear-gradient(135deg, #88c9ea 0%, #5eb7e0 100%);
+    --exp-bg: rgba(21, 37, 53, 0.97);
+    --exp-border: #88c9ea;
+    --stats-bg: rgba(26, 37, 48, 0.95);
+    --correct-bg: rgba(125, 206, 160, 0.15);
+    --correct-border: #7dcea0;
+    --correct-text: #7dcea0;
+    --incorrect-bg: rgba(255, 107, 107, 0.15);
+    --incorrect-border: #ff6b6b;
+    --incorrect-text: #ff6b6b;
+    --accent-pink: #ff6b6b;
+    --accent-mint: #7dcea0;
 }
 
-body.theme-emerald::before {
-    background-color: #f3f6f4;
-    background-image:
-        radial-gradient(at 15% 15%, rgba(5, 150, 105, 0.06) 0px, transparent 55%),
-        radial-gradient(at 85% 85%, rgba(16, 185, 129, 0.06) 0px, transparent 55%);
+body.theme-cyberpunk::before, body.theme-kawaii-dark::before {
+    background-color: #0d1a25;
+    background-image: 
+        radial-gradient(circle at 10% 10%, rgba(136, 201, 234, 0.12) 0px, transparent 45%),
+        radial-gradient(circle at 90% 90%, rgba(94, 183, 224, 0.12) 0px, transparent 45%);
 }
 
 /* ==========================================================================
-   4. Sameko Midnight Slate (Deep Navy Slate: Soothing Low-Light Exam Mode)
+   4. Sameko Nord (Arctic Frost Calm: High Contrast, Soothing Blue-Grey)
    ========================================================================== */
-body.theme-cyberpunk {
-    --bg-gradient: #0b1329;
-    --text-color: #f1f5f9;
-    --heading-color: #38bdf8;
-    --card-bg: rgba(15, 23, 42, 0.88);
-    --card-border: rgba(56, 189, 248, 0.2);
+body.theme-emerald, body.theme-nord {
+    --bg-gradient: #242933;
+    --text-color: #eceff4;
+    --heading-color: #88c0d0;
+    --card-bg: rgba(46, 52, 64, 0.95);
+    --card-border: #4c566a;
     --card-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
-    --option-bg: rgba(30, 41, 59, 0.7);
-    --option-hover-bg: rgba(51, 65, 85, 0.85);
-    --option-border: rgba(148, 163, 184, 0.25);
-    --primary-color: #38bdf8;
-    --primary-hover: #0284c7;
-    --primary-gradient: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
-    --exp-bg: rgba(15, 23, 42, 0.95);
-    --exp-border: #38bdf8;
-    --stats-bg: rgba(15, 23, 42, 0.92);
-    --correct-bg: rgba(6, 78, 59, 0.55);
-    --correct-border: #10b981;
-    --correct-text: #6ee7b7;
-    --incorrect-bg: rgba(127, 29, 29, 0.55);
-    --incorrect-border: #ef4444;
-    --incorrect-text: #fca5a5;
+    --option-bg: #2e3440;
+    --option-hover-bg: #3b4252;
+    --option-border: #4c566a;
+    --primary-color: #88c0d0;
+    --primary-hover: #8fbcbb;
+    --primary-gradient: linear-gradient(135deg, #88c0d0 0%, #8fbcbb 100%);
+    --exp-bg: rgba(36, 41, 51, 0.97);
+    --exp-border: #88c0d0;
+    --stats-bg: rgba(46, 52, 64, 0.95);
+    --correct-bg: rgba(163, 190, 140, 0.15);
+    --correct-border: #a3be8c;
+    --correct-text: #a3be8c;
+    --incorrect-bg: rgba(191, 97, 106, 0.15);
+    --incorrect-border: #bf616a;
+    --incorrect-text: #bf616a;
+    --accent-pink: #bf616a;
+    --accent-mint: #a3be8c;
 }
 
-body.theme-cyberpunk::before {
-    background-color: #0b1329;
-    background-image:
-        radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.1) 0px, transparent 45%),
-        radial-gradient(circle at 90% 90%, rgba(2, 132, 199, 0.1) 0px, transparent 45%);
-}
-
-/* ==========================================================================
-   5. Clean Minimalist Theme (Monochrome Studio, Pure Focus)
-   ========================================================================== */
-body.theme-minimalist {
-    --bg-gradient: #fafafa;
-    --text-color: #18181b;
-    --heading-color: #09090b;
-    --card-bg: rgba(255, 255, 255, 0.94);
-    --card-border: #e4e4e7;
-    --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04);
-    --option-bg: #fafafa;
-    --option-hover-bg: #f4f4f5;
-    --option-border: #d4d4d8;
-    --primary-color: #18181b;
-    --primary-hover: #27272a;
-    --primary-gradient: linear-gradient(135deg, #18181b 0%, #3f3f46 100%);
-    --exp-bg: #f4f4f5;
-    --exp-border: #71717a;
-    --stats-bg: rgba(255, 255, 255, 0.92);
-    --correct-bg: #f0fdf4;
-    --correct-border: #22c55e;
-    --correct-text: #15803d;
-    --incorrect-bg: #fef2f2;
-    --incorrect-border: #ef4444;
-    --incorrect-text: #b91c1c;
-}
-
-body.theme-minimalist::before {
-    background-color: #fafafa;
-    background-image:
-        radial-gradient(at 0% 0%, rgba(24, 24, 27, 0.03) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(24, 24, 27, 0.03) 0px, transparent 50%);
+body.theme-emerald::before, body.theme-nord::before {
+    background-color: #242933;
+    background-image: 
+        radial-gradient(circle at 15% 15%, rgba(136, 192, 208, 0.1) 0px, transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(143, 188, 187, 0.1) 0px, transparent 45%);
 }
 
 /* ==========================================================================
-   6. Soft Peach Theme (Warm Pastel Studio, Gentle & Welcoming)
+   5. Sameko Dracula (Cyber Vampire Neon / Pastel Glow)
    ========================================================================== */
-body.theme-playful {
-    --bg-gradient: #fffbf8;
-    --text-color: #37302f;
-    --heading-color: #c2410c;
-    --card-bg: rgba(255, 255, 255, 0.94);
-    --card-border: #fed7aa;
-    --card-shadow: 0 10px 30px -5px rgba(234, 88, 12, 0.06);
-    --option-bg: #fffbf8;
-    --option-hover-bg: #ffedd5;
-    --option-border: #fdba74;
-    --primary-color: #ea580c;
-    --primary-hover: #c2410c;
-    --primary-gradient: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
-    --exp-bg: #fff7ed;
-    --exp-border: #ea580c;
-    --stats-bg: rgba(255, 255, 255, 0.92);
-    --correct-bg: #ecfdf5;
-    --correct-border: #10b981;
-    --correct-text: #065f46;
-    --incorrect-bg: #fff1f2;
-    --incorrect-border: #f43f5e;
-    --incorrect-text: #9f1239;
+body.theme-minimalist, body.theme-dracula {
+    --bg-gradient: #21222c;
+    --text-color: #f8f8f2;
+    --heading-color: #ff79c6;
+    --card-bg: rgba(40, 42, 54, 0.95);
+    --card-border: #6272a4;
+    --card-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+    --option-bg: #282a36;
+    --option-hover-bg: #44475a;
+    --option-border: #6272a4;
+    --primary-color: #ff79c6;
+    --primary-hover: #ff92d0;
+    --primary-gradient: linear-gradient(135deg, #ff79c6 0%, #bd93f9 100%);
+    --exp-bg: rgba(33, 34, 44, 0.97);
+    --exp-border: #bd93f9;
+    --stats-bg: rgba(40, 42, 54, 0.95);
+    --correct-bg: rgba(80, 250, 123, 0.15);
+    --correct-border: #50fa7b;
+    --correct-text: #50fa7b;
+    --incorrect-bg: rgba(255, 85, 85, 0.15);
+    --incorrect-border: #ff5555;
+    --incorrect-text: #ff5555;
+    --accent-pink: #ff79c6;
+    --accent-mint: #50fa7b;
 }
 
-body.theme-playful::before {
-    background-color: #fffbf8;
-    background-image:
-        radial-gradient(circle at 10% 10%, rgba(251, 146, 60, 0.07) 0px, transparent 50%),
-        radial-gradient(circle at 90% 90%, rgba(254, 215, 170, 0.07) 0px, transparent 50%);
+body.theme-minimalist::before, body.theme-dracula::before {
+    background-color: #21222c;
+    background-image: 
+        radial-gradient(circle at 10% 10%, rgba(189, 147, 249, 0.12) 0px, transparent 45%),
+        radial-gradient(circle at 90% 90%, rgba(255, 121, 198, 0.12) 0px, transparent 45%);
+}
+
+/* ==========================================================================
+   6. Sameko Monokai (Vibrant Hacker Pro Syntax)
+   ========================================================================== */
+body.theme-sepia, body.theme-monokai {
+    --bg-gradient: #1e1f1c;
+    --text-color: #f8f8f2;
+    --heading-color: #a6e22e;
+    --card-bg: rgba(39, 40, 34, 0.95);
+    --card-border: #49483e;
+    --card-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+    --option-bg: #272822;
+    --option-hover-bg: #3e3d32;
+    --option-border: #49483e;
+    --primary-color: #a6e22e;
+    --primary-hover: #b8f32e;
+    --primary-gradient: linear-gradient(135deg, #a6e22e 0%, #b8f32e 100%);
+    --exp-bg: rgba(30, 31, 28, 0.97);
+    --exp-border: #a6e22e;
+    --stats-bg: rgba(39, 40, 34, 0.95);
+    --correct-bg: rgba(166, 226, 46, 0.15);
+    --correct-border: #a6e22e;
+    --correct-text: #a6e22e;
+    --incorrect-bg: rgba(249, 38, 114, 0.15);
+    --incorrect-border: #f92672;
+    --incorrect-text: #f92672;
+    --accent-pink: #f92672;
+    --accent-mint: #a6e22e;
+}
+
+body.theme-sepia::before, body.theme-monokai::before {
+    background-color: #1e1f1c;
+    background-image: 
+        radial-gradient(circle at 10% 10%, rgba(166, 226, 46, 0.12) 0px, transparent 45%),
+        radial-gradient(circle at 90% 90%, rgba(249, 38, 114, 0.1) 0px, transparent 45%);
 }

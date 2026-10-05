@@ -77,11 +77,11 @@
 
             const themeIcons = {
                 academic: '🌊',
-                sepia: '📜',
-                emerald: '🌿',
+                playful: '🌸',
                 cyberpunk: '🌌',
-                minimalist: '⚪',
-                playful: '🌸'
+                emerald: '❄️',
+                minimalist: '🧛',
+                sepia: '🌿'
             };
             const iconEl = document.getElementById('txt-quick-theme-icon');
             if (iconEl) iconEl.textContent = themeIcons[theme] || '🎨';
@@ -197,14 +197,14 @@
             void btnQuickTheme.offsetWidth; // re-trigger reflow
             btnQuickTheme.classList.add('btn-theme-spin');
 
-            const themeCycle = ['academic', 'sepia', 'emerald', 'cyberpunk', 'minimalist', 'playful'];
+            const themeCycle = ['academic', 'playful', 'cyberpunk', 'emerald', 'minimalist', 'sepia'];
             const themeNames = {
-                academic: 'Ocean Studio (Xanh dịu)',
-                sepia: 'Warm Sepia (Giấy êm mắt)',
-                emerald: 'Sage Calm (Thảo mộc dịu)',
-                cyberpunk: 'Midnight Slate (Đêm dịu mắt)',
-                minimalist: 'Clean Minimalist (Tối giản)',
-                playful: 'Sunset Blossom (Gam ấm nhẹ)'
+                academic: 'Sameko Kawaii Light (Ocean Saba)',
+                playful: 'Sameko Sakura (Pastel Pink)',
+                cyberpunk: 'Sameko Kawaii Dark (Deep Ocean)',
+                emerald: 'Sameko Nord (Arctic Frost)',
+                minimalist: 'Sameko Dracula (Cyber Vampire)',
+                sepia: 'Sameko Monokai (Hacker Pro)'
             };
             const current = QuizEngine.state.currentTheme || 'academic';
             const nextIdx = (themeCycle.indexOf(current) + 1) % themeCycle.length;
