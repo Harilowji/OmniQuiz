@@ -639,8 +639,12 @@
                 ? QuizEngine.state.questions
                 : null;
             if (window.QuestionStudio) {
+                const savedExam = StorageManager.loadCurrentExam();
                 QuestionStudio.open(current, (updatedQuestions) => {
                     loadExamFromQuestions(updatedQuestions, 'Đề thi tùy chỉnh (Question Studio)');
+                }, {
+                    rawText: savedExam ? savedExam.rawText : '',
+                    customImages: QuizEngine.state.customImages || {}
                 });
             }
         }
@@ -1573,7 +1577,7 @@
             setTimeout(() => {
                 UIManager.hideLoadingModal();
                 document.getElementById('upload-section').style.display = 'none';
-                setupQuiz(fullExtractedText, true, autoCroppedImages);
+                processExamUpload(fullExtractedText, true, autoCroppedImages);
 
                 if (detectedImagesCount > 0) {
                     UIManager.showToast(`✓ Đã tự động nhận diện & cắt ${detectedImagesCount} ảnh/code từ PDF!`);
@@ -1629,9 +1633,9 @@
                             .replace(/<br\s*\/?>/gi, '\n')
                             .replace(/<\/(?:p|div|h[1-6]|li)>/gi, '\n')
                             .replace(/<(?:p|div|h[1-6]|ul|ol)[\s\S]*?>/gi, '')
-                            .replace(/<(?!(?:\/?img\b))[^>]+>/gi, '');
+                            .replace(/<(?!(?:\/?(?:img|u|b|strong|ins)\b))[^>]+>/gi, '');
                         document.getElementById('upload-section').style.display = 'none';
-                        setupQuiz(text.trim(), true);
+                        processExamUpload(text.trim(), true);
                     }, 350);
                 })
                 .catch(function(err) {
@@ -1651,27 +1655,91 @@
             const reader = new FileReader();
             reader.onload = (evt) => {
                 document.getElementById('upload-section').style.display = 'none';
-                setupQuiz(evt.target.result, true);
+                processExamUpload(evt.target.result, true);
             };
             reader.readAsText(file, 'UTF-8');
+        }
+    }
+
+    /**
+     * Deep Exam Ingestion & Azota Question Studio Router
+     * Analyzes questions and declared answers before creating exam.
+     * If questions lack answers, automatically launches the Azota interactive studio!
+     */
+    function processExamUpload(rawText, isNewExam = true, initialCustomImages = null) {
+        if (!rawText || typeof rawText !== 'string' || !rawText.trim()) {
+            alert(QuizEngine.state.currentLang === 'vi'
+                ? 'Nội dung file rỗng hoặc không có dữ liệu văn bản!'
+                : 'File is empty or contains no text data!');
+            return;
+        }
+
+        const analysis = QuestionParser.analyzeAndParse(rawText);
+
+        if (analysis.total === 0) {
+            alert(QuizEngine.state.currentLang === 'vi'
+                ? 'Không tìm thấy câu hỏi trắc nghiệm hợp lệ trong tài liệu. Vui lòng kiểm tra lại định dạng file hoặc mở Question Studio để tạo câu hỏi thủ công!'
+                : 'No valid multiple choice questions detected. Please check your document format or open Question Studio!');
+            if (window.QuestionStudio) {
+                QuestionStudio.open([], (updatedQuestions) => {
+                    setupQuiz(updatedQuestions, true, initialCustomImages);
+                }, { rawText: rawText, autoOpened: true });
+            }
+            return;
+        }
+
+        // Attach custom images if passed from PDF cropper
+        if (initialCustomImages && Object.keys(initialCustomImages).length > 0) {
+            analysis.questions.forEach((q, idx) => {
+                if (initialCustomImages[idx] && !q.image) {
+                    q.image = initialCustomImages[idx];
+                }
+            });
+        }
+
+        // Core requirement check:
+        // If answers are missing, automatically open Azota Question Studio!
+        if (analysis.needsReview && window.QuestionStudio) {
+            QuestionStudio.open(analysis.questions, (updatedQuestions) => {
+                setupQuiz(updatedQuestions, true, initialCustomImages);
+            }, {
+                rawText: rawText,
+                autoOpened: true,
+                unansweredCount: analysis.unansweredCount,
+                total: analysis.total,
+                customImages: initialCustomImages
+            });
+            if (window.UIManager) {
+                UIManager.showToast(`⚠️ Đã phát hiện ${analysis.unansweredCount}/${analysis.total} câu hỏi chưa có đáp án trong file. Mở bảng ma trận Azota để hoàn tất.`);
+            }
+        } else {
+            // 100% of questions have valid answers detected from the document!
+            setupQuiz(analysis.questions, isNewExam, initialCustomImages);
+            if (window.UIManager) {
+                UIManager.showToast(`🎉 Phân tích tài liệu thành công: Đã bóc tách 100% (${analysis.total}/${analysis.total}) câu hỏi kèm đáp án chuẩn!`);
+            }
         }
     }
 
     function loadExamFromQuestions(questions, title = 'Bài thi trắc nghiệm', customDuration = null) {
         if (!Array.isArray(questions) || questions.length === 0) return;
 
-        let rawText = '';
-        questions.forEach((q, idx) => {
-            rawText += `Câu ${idx + 1}: ${q.q}\n`;
-            (q.options || []).forEach((opt, optIdx) => {
-                rawText += `${String.fromCharCode(65 + optIdx)}. ${opt}\n`;
+        let rawText = (typeof QuestionStudio !== 'undefined' && QuestionStudio.questionsToTxt)
+            ? QuestionStudio.questionsToTxt(questions)
+            : '';
+        if (!rawText) {
+            questions.forEach((q, idx) => {
+                rawText += `Câu ${idx + 1}: ${q.q}\n`;
+                (q.options || []).forEach((opt, optIdx) => {
+                    rawText += `${String.fromCharCode(65 + optIdx)}. ${opt}\n`;
+                });
+                if (q.answers && q.answers.length > 0) {
+                    rawText += `Đáp án: ${q.answers.map(a => String.fromCharCode(65 + a)).join(', ')}\n`;
+                }
+                if (q.explanation) rawText += `Lời giải: ${q.explanation}\n`;
+                rawText += '\n';
             });
-            if (q.answers && q.answers.length > 0) {
-                rawText += `Đáp án: ${q.answers.map(a => String.fromCharCode(65 + a)).join(', ')}\n`;
-            }
-            if (q.explanation) rawText += `Lời giải: ${q.explanation}\n`;
-            rawText += '\n';
-        });
+        }
 
         StorageManager.saveCurrentExam(rawText, '', QuizEngine.state.currentMode === 'exam');
         StorageManager.clearState();
@@ -1725,9 +1793,21 @@
         updateResetButtonState();
     }
 
-    function setupQuiz(rawText, isNewExam = false, initialCustomImages = null) {
-        const parsed = QuestionParser.parse(rawText);
-        if (parsed.length === 0) {
+    function setupQuiz(rawTextOrQuestions, isNewExam = false, initialCustomImages = null) {
+        let parsed = [];
+        let rawText = '';
+
+        if (Array.isArray(rawTextOrQuestions)) {
+            parsed = rawTextOrQuestions;
+            rawText = (typeof QuestionStudio !== 'undefined' && QuestionStudio.questionsToTxt)
+                ? QuestionStudio.questionsToTxt(parsed)
+                : '';
+        } else if (typeof rawTextOrQuestions === 'string') {
+            rawText = rawTextOrQuestions;
+            parsed = QuestionParser.parse(rawText);
+        }
+
+        if (!parsed || parsed.length === 0) {
             alert(QuizEngine.state.currentLang === 'vi' 
                 ? 'Không tìm thấy câu hỏi hợp lệ trong file. Vui lòng kiểm tra lại định dạng file!' 
                 : 'No valid questions found in the file. Please check the file format!');
@@ -1735,7 +1815,9 @@
         }
 
         // Save active exam text for refresh recovery (SEC-04 masked in exam mode)
-        StorageManager.saveCurrentExam(rawText, '', QuizEngine.state.currentMode === 'exam');
+        if (rawText) {
+            StorageManager.saveCurrentExam(rawText, '', QuizEngine.state.currentMode === 'exam');
+        }
 
         QuizEngine.setQuestions(parsed);
 

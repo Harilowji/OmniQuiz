@@ -351,7 +351,7 @@ const QuestionParser = (() => {
 
             for (let i = lines.length - 1; i >= Math.max(0, lines.length - 60); i--) {
                 const line = lines[i].trim();
-                const pairsInLine = (line.match(/(?:Câu\s*)?\b\d+[\s.:\-\)\=]+[A-E]\b/gi) || []).length;
+                const pairsInLine = (line.match(/(?:Câu\s*)?\b\d+[\s.:\-\)\=]*[A-H]\b/gi) || []).length;
                 if (pairsInLine >= 2 || (pairsInLine === 1 && line.length < 25)) {
                     answerPairCount += pairsInLine;
                     answerBlockStartIndex = i;
@@ -382,7 +382,7 @@ const QuestionParser = (() => {
                 const cleanRow1 = row1.replace(/^[|\s]*(?:câu|question|q|no)[\s|:.]*/i, '');
                 const cleanRow2 = row2.replace(/^[|\s]*(?:đ\/?a|đáp\s*án|key|ans)[\s|:.]*/i, '');
                 const qNums = (cleanRow1.match(/\b\d+\b/g) || []).map(Number);
-                const answers = cleanRow2.match(/\b[A-E]\b/g) || [];
+                const answers = cleanRow2.match(/\b[A-H]\b/g) || [];
                 if (qNums.length > 0 && qNums.length === answers.length) {
                     for (let k = 0; k < qNums.length; k++) {
                         keyMap[qNums[k]] = answers[k].toUpperCase().charCodeAt(0) - 65;
@@ -393,8 +393,8 @@ const QuestionParser = (() => {
             }
         }
 
-        // Parse standard pairs: 1.A, 1-A, 1: A, Câu 1: A, 1. A, 1) A
-        const pairRegex = /(?:Câu\s*)?\b(\d+)[\s.:\-\)\=]+([A-E])\b/gi;
+        // Parse standard pairs: 1A, 1.A, 1-A, 1: A, Câu 1: A, 1. A, 1) A
+        const pairRegex = /(?:Câu\s*)?\b(\d+)[\s.:\-\)\=]*([A-H])\b/gi;
         let p;
         while ((p = pairRegex.exec(tableText)) !== null) {
             const qNum = parseInt(p[1], 10);
@@ -460,25 +460,35 @@ const QuestionParser = (() => {
         let explanation = '';
         let readingState = 'q'; // 'q', 'exp'
 
-        const optRegex = /^(?:[\*\-\s]*[\(\[]?([A-E])[\)\]\.\:\*\-\/]+\s*)(.+)$/i;
-        const ansRegex = /^\s*(?:=>|->|⇒|→|[\*\-\>\•])?\s*\[?\s*(?:(?:Đáp\s*án(?:\s*đúng)?(?:\s*là)?|Đ\/?A|Chọn(?:\s*đáp\s*án)?|Answer|Key|Ans)[\s\:\=\]\.]*)\s*([A-E](?:\s*,\s*[A-E])*)/i;
-        const arrowOrBracketAnsRegex = /^\s*(?:=>|->|⇒|→)?\s*[\(\[]?\s*([A-E])\s*[\)\]\.]?\s*$/i;
+        const optRegex = /^(?:[\*\-\s]*[\(\[]?([A-H])[\)\]\.\:\*\-\/]+\s*)(.+)$/i;
+        const ansRegex = /^\s*(?:=>|->|⇒|→|[\*\-\>\•])?\s*\[?\s*(?:(?:Đáp\s*án(?:\s*đúng)?(?:\s*là)?|Đ\/?A|Chọn(?:\s*đáp\s*án)?|Answer|Key|Ans)[\s\:\=\]\.]*)\s*([A-H](?:\s*,\s*[A-H])*)/i;
+        const arrowOrBracketAnsRegex = /^\s*(?:=>|->|⇒|→)?\s*[\(\[]?\s*([A-H])\s*[\)\]\.]?\s*$/i;
         const expRegex = /^\s*[\*\-\>\•]?\s*\[?\s*(?:Lời\s*giải(?:\s*chi\s*tiết)?|Hướng\s*dẫn(?:\s*giải)?|Giải(?:\s*chi\s*tiết)?|Explanation|Solution)[\]\s\:\.]*(.*)$/i;
-        const expInlineAnsRegex = /(?:chọn(?:\s*đáp\s*án)?|đáp\s*án(?:\s*(?:đúng|là))?|key|answer)[\s\:\=]*([A-E])\b/i;
+        const expInlineAnsRegex = /(?:chọn(?:\s*đáp\s*án)?|đáp\s*án(?:\s*(?:đúng|là))?|key|answer)[\s\:\=]*([A-H])\b/i;
 
         // Remove initial header like "Câu 1:" or "1/" or "Câu 1 (2.0 điểm):" from first line
         let firstLine = lines[0].replace(/^(?:(?:Câu\s*hỏi|Câu|Question|Bài|Q)\s*\d+(?:\s*\([^\)]*\))?[\s:.\-\—\–\)\/]*|\d+(?:\s*\([^\)]*\))?[\s.:\)\/\-\>]\s*)/i, '').trim();
 
         // Check if inline answer exists in header e.g. "Câu 1: (Đáp án A) Cho hàm số..."
-        const headerAnsMatch = firstLine.match(/[\(\[]\s*(?:Đáp\s*án(?:\s*đúng)?|Chọn|Answer|Key)[\s\:\=]*([A-E])\s*[\)\]]/i);
+        const headerAnsMatch = firstLine.match(/[\(\[]\s*(?:Đáp\s*án(?:\s*đúng)?|Chọn|Answer|Key)[\s\:\=]*([A-H])\s*[\)\]]/i);
         if (headerAnsMatch) {
             answers.push(headerAnsMatch[1].toUpperCase().charCodeAt(0) - 65);
             firstLine = firstLine.replace(headerAnsMatch[0], '').trim();
         }
         questionText = firstLine;
 
+        function isMarkedOptionLine(str) {
+            return /^(?:<[ub]>|<strong>|<ins>|\*\*|\*|__|_)\s*[\(\[]?[A-H][\)\]\.\:\*\-\/]*\s*(?:<\/[ub]>|<\/strong>|<\/ins>|\*\*|\*|__|_)/i.test(str) ||
+                /^\s*\*+\s*[\(\[]?[A-H][\)\]\.\:\*\-\/]/i.test(str) ||
+                /^\s*[\(\[]?[A-H]\*+[\)\]\.\:\-\/]/i.test(str) ||
+                /[\(\[]\s*(?:đáp\s*án\s*đúng|đúng|correct|đ\/a|da)\s*[\)\]]\s*$/i.test(str) ||
+                /\*\s*$/.test(str) ||
+                str.includes('*');
+        }
+
         function cleanOptionText(text) {
             return text
+                .replace(/<\/?(?:u|b|strong|ins)>/gi, '')
                 .replace(/\s*\((?:đáp\s*án\s*đúng|đúng|correct|đ\/a|da)\)\s*$/gi, '')
                 .replace(/\s*\*+\s*$/, '')
                 .trim();
@@ -509,7 +519,7 @@ const QuestionParser = (() => {
                 if (answers.length === 0) {
                     const inline = line.match(expInlineAnsRegex) || line.match(ansRegex);
                     if (inline) {
-                        const letters = (inline[1] || '').toUpperCase().match(/[A-E]/g);
+                        const letters = (inline[1] || '').toUpperCase().match(/[A-H]/g);
                         if (letters) answers = letters.map(ch => ch.charCodeAt(0) - 65);
                     }
                 }
@@ -519,7 +529,7 @@ const QuestionParser = (() => {
             // Check for answer key declaration
             const ansMatch = line.match(ansRegex);
             if (ansMatch) {
-                const letters = ansMatch[1].toUpperCase().match(/[A-E]/g);
+                const letters = ansMatch[1].toUpperCase().match(/[A-H]/g);
                 if (letters && letters.length > 0) {
                     answers = letters.map(ch => ch.charCodeAt(0) - 65);
                 }
@@ -536,7 +546,8 @@ const QuestionParser = (() => {
             }
 
             // Check for multiple options on a single horizontal line (e.g. "A. 1   B. 2   C. 3   D. 4")
-            const inlineOpts = line.split(/(?=(?:^|\s{2,}|\t)[\*\-\s]*[\(\[]?[A-E][\)\]\.\:\*])/i)
+            const cleanLineInline = line.replace(/<\/?(?:u|b|strong|ins)>/gi, '');
+            const inlineOpts = cleanLineInline.split(/(?=(?:^|\s{2,}|\t)[\*\-\s]*[\(\[]?[A-H][\)\]\.\:\*])/i)
                 .map(s => s.trim())
                 .filter(Boolean);
 
@@ -544,7 +555,7 @@ const QuestionParser = (() => {
                 for (const item of inlineOpts) {
                     const m = item.match(optRegex);
                     if (m) {
-                        const isMarked = item.includes('*') || /\((?:đáp\s*án\s*đúng|đúng|correct|đ\/a|da)\)/i.test(item);
+                        const isMarked = isMarkedOptionLine(item);
                         if (isMarked && !answers.includes(options.length)) {
                             answers.push(options.length);
                         }
@@ -554,10 +565,11 @@ const QuestionParser = (() => {
                 continue;
             }
 
-            // Check single line option
-            const optMatch = line.match(optRegex);
+            // Check single line option (clean formatting tags around letter to match)
+            const cleanLine = line.replace(/<\/?(?:u|b|strong|ins)>/gi, '');
+            const optMatch = cleanLine.match(optRegex);
             if (optMatch) {
-                const isMarked = line.includes('*') || /\((?:đáp\s*án\s*đúng|đúng|correct|đ\/a|da)\)/i.test(line);
+                const isMarked = isMarkedOptionLine(line);
                 if (isMarked && !answers.includes(options.length)) {
                     answers.push(options.length);
                 }
@@ -572,7 +584,7 @@ const QuestionParser = (() => {
                 // Safety guard: if this line looks like an answer or explanation, never append to option text!
                 const lateAns = line.match(ansRegex);
                 if (lateAns) {
-                    const letters = lateAns[1].toUpperCase().match(/[A-E]/g);
+                    const letters = lateAns[1].toUpperCase().match(/[A-H]/g);
                     if (letters) answers = letters.map(ch => ch.charCodeAt(0) - 65);
                     continue;
                 }
@@ -588,13 +600,17 @@ const QuestionParser = (() => {
 
         // Default answer if none declared
         let isDefaultAnswer = false;
-        if (answers.length === 0) {
-            if (keyMap && keyMap[qNum] !== undefined) {
-                answers = [keyMap[qNum]];
-            } else if (options.length > 0) {
-                answers = [0];
-                isDefaultAnswer = true;
-            }
+        let answerSource = 'none';
+
+        if (answers.length > 0) {
+            answerSource = 'inline';
+        } else if (keyMap && keyMap[qNum] !== undefined) {
+            answers = [keyMap[qNum]];
+            answerSource = 'table';
+        } else if (options.length > 0) {
+            answers = [0];
+            isDefaultAnswer = true;
+            answerSource = 'unassigned';
         }
 
         const type = answers.length > 1 ? 'multiple' : 'single';
@@ -605,7 +621,9 @@ const QuestionParser = (() => {
             type: type,
             answers: answers,
             explanation: explanation.trim(),
-            isDefaultAnswer: isDefaultAnswer
+            isDefaultAnswer: isDefaultAnswer,
+            answerSource: answerSource,
+            qNum: qNum
         };
     }
 
@@ -649,8 +667,91 @@ const QuestionParser = (() => {
         return questions;
     }
 
+    /**
+     * Parse any answer key string (e.g. "1A 2B 3C", "1.A 2.B 3.C", "ABCDABCD...")
+     * Used both for document table extraction and the Azota Quick Key Paste tool.
+     */
+    function parseAnswerKeyString(str, startNum = 1) {
+        if (!str || typeof str !== 'string') return {};
+        const start = parseInt(startNum, 10) || 1;
+        const keyMap = {};
+        const pairRegex = /(?:Câu\s*)?\b(\d+)[\s.:\-\)\=]*([A-H])\b/gi;
+        let match;
+        let count = 0;
+        while ((match = pairRegex.exec(str)) !== null) {
+            const qNum = parseInt(match[1], 10);
+            const letter = match[2].toUpperCase();
+            keyMap[qNum] = letter.charCodeAt(0) - 65;
+            count++;
+        }
+        if (count === 0) {
+            const letters = str.toUpperCase().match(/\b[A-H]\b|[A-H]/g);
+            if (letters && letters.length >= 1) {
+                letters.forEach((letter, idx) => {
+                    keyMap[start + idx] = letter.charCodeAt(0) - 65;
+                });
+            }
+        }
+        return keyMap;
+    }
+
+    /**
+     * Deep Exam Analysis & Quality Health Evaluation
+     */
+    function analyzeAndParse(rawText) {
+        if (!rawText || typeof rawText !== 'string') {
+            return {
+                questions: [],
+                total: 0,
+                answeredCount: 0,
+                unansweredCount: 0,
+                confidence: 0,
+                needsReview: false,
+                rawText: '',
+                parsedDuration: null
+            };
+        }
+
+        const questions = parse(rawText);
+        let answeredCount = 0;
+        let unansweredCount = 0;
+
+        questions.forEach((q, idx) => {
+            q.index = idx;
+            if (q.isDefaultAnswer) {
+                unansweredCount++;
+                q.needsReview = true;
+            } else if (q.answers && q.answers.length > 0) {
+                answeredCount++;
+                q.needsReview = false;
+            } else {
+                unansweredCount++;
+                q.needsReview = true;
+                q.answers = [0];
+                q.isDefaultAnswer = true;
+            }
+        });
+
+        const total = questions.length;
+        const confidence = total > 0 ? Math.round((answeredCount / total) * 100) : 0;
+        const needsReview = unansweredCount > 0;
+
+        return {
+            questions,
+            total,
+            answeredCount,
+            unansweredCount,
+            confidence,
+            needsReview,
+            rawText,
+            parsedDuration: questions.parsedDuration || null
+        };
+    }
+
     return {
         parse,
+        analyzeAndParse,
+        parseAnswerKeyString,
         isValidQuestion,
         autoWrapMath,
         formatMathText,

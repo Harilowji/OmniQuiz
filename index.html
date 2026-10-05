@@ -580,7 +580,7 @@
         </div>
     </div>
 
-    <!-- PHASE 3: QUESTION STUDIO MODAL -->
+    <!-- PHASE 3: QUESTION STUDIO & AZOTA-LIKE ANSWER MATRIX MODAL -->
     <div class="modal-overlay" id="question-studio-modal" style="display: none; z-index: 99996;">
         <div class="modal-content studio-modal-card">
             <!-- Studio Header -->
@@ -588,98 +588,199 @@
                 <div class="studio-header-left">
                     <span style="font-size: 1.6em;">✨</span>
                     <div>
-                        <div class="studio-header-title" id="txt-studio-header-title">Question Studio - Biên Tập & Soạn Thảo Đề Thi</div>
-                        <div style="font-size: 0.82em; opacity: 0.75;" id="studio-total-count">0 câu hỏi</div>
+                        <div class="studio-header-title" id="txt-studio-header-title">Question Studio - Biên Tập & Ma Trận Đáp Án Azota</div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+                            <div style="font-size: 0.82em; opacity: 0.75;" id="studio-total-count">0 câu hỏi</div>
+                            <span id="studio-status-badge" class="studio-health-badge"></span>
+                        </div>
                     </div>
                 </div>
                 <div class="studio-header-actions">
-                    <button type="button" class="btn-action" id="btn-studio-quick-paste" title="Dán nhanh câu hỏi dạng văn bản hoặc OCR"><span id="txt-btn-studio-paste">📸 Dán nhanh / OCR</span></button>
+                    <button type="button" class="btn-action btn-azota-key" id="btn-studio-quick-key" title="Dán nhanh chuỗi đáp án (VD: 1A 2B 3C...)">⚡ Nhập nhanh đáp án</button>
+                    <button type="button" class="btn-action btn-ai-glow" id="btn-studio-ai-solve" title="Dùng AI giải và tự điền đáp án cho các câu còn thiếu">🤖 AI Tự điền</button>
+                    <button type="button" class="btn-action" id="btn-studio-quick-paste" title="Dán nhanh câu hỏi dạng văn bản hoặc OCR"><span id="txt-btn-studio-paste">📸 Dán câu hỏi / OCR</span></button>
                     <button type="button" class="btn-action" id="btn-studio-export-json" title="Tải về file JSON"><span id="txt-btn-studio-export-json">📥 Xuất JSON</span></button>
                     <button type="button" class="btn-action" id="btn-studio-export-txt" title="Tải về file TXT"><span id="txt-btn-studio-export-txt">📄 Xuất TXT</span></button>
                     <button type="button" class="btn-action btn-ai-glow" id="btn-studio-save-cloud" title="Lưu đề thi này vào Thư viện Máy chủ (CSDL Cloud)"><span id="txt-btn-studio-cloud">☁️ Lưu lên Máy chủ</span></button>
-                    <button type="button" class="btn-action btn-primary" id="btn-studio-apply" style="font-weight: 700;"><span id="txt-btn-studio-apply">💾 Áp dụng & Bắt đầu thi</span></button>
+                    <button type="button" class="btn-action btn-primary" id="btn-studio-apply" style="font-weight: 700;"><span id="txt-btn-studio-apply">💾 Áp dụng & Luyện tập</span></button>
                     <button type="button" class="btn-action btn-history-action btn-del" id="btn-close-studio" style="padding: 6px 12px;">✕</button>
                 </div>
             </div>
 
-            <!-- Studio Body Split -->
-            <div class="studio-body-split">
-                <!-- Left: Question List -->
-                <div class="studio-qlist-pane">
-                    <div class="studio-qlist-tools">
-                        <input type="text" class="custom-select" id="studio-search-q" placeholder="🔍 Tìm câu hỏi...">
-                        <div style="display: flex; gap: 6px;">
-                            <button type="button" class="btn-action btn-primary" id="btn-studio-add-q" style="flex: 1; justify-content: center; font-size: 0.85em;"><span id="txt-btn-studio-add-q">➕ Thêm câu mới</span></button>
-                        </div>
-                    </div>
-                    <div class="studio-qlist-items" id="studio-qlist">
-                        <!-- Rendered by editor.js -->
+            <!-- Azota Missing Answers Review Banner -->
+            <div id="studio-review-banner" class="azota-review-banner" style="display: none;">
+                <div class="azota-review-info">
+                    <span class="azota-review-icon">⚠️</span>
+                    <div>
+                        <div class="azota-review-title" id="studio-review-title">Phát hiện câu hỏi chưa có đáp án trong tài liệu!</div>
+                        <div class="azota-review-desc" id="studio-review-desc">Vui lòng click chọn đáp án trong bảng ma trận bên dưới hoặc dán chuỗi đáp án (VD: 1A 2B 3C...) để hoàn thiện bộ đề thi.</div>
                     </div>
                 </div>
+                <div class="azota-review-btns">
+                    <button type="button" class="btn-action btn-sm btn-primary" id="btn-banner-quick-key">⚡ Dán chuỗi đáp án (1A 2B...)</button>
+                    <button type="button" class="btn-action btn-sm btn-ai-glow" id="btn-banner-ai-solve">🤖 AI Giải tự động</button>
+                </div>
+            </div>
 
-                <!-- Right: Question Detail Editor & Live Preview -->
-                <div class="studio-form-pane">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h3 id="studio-current-q-index" style="color: var(--heading-color); font-size: 1.15em;">Câu 1</h3>
-                        <div style="display: flex; gap: 6px;">
-                            <button type="button" class="btn-action" id="btn-studio-move-up" title="Di chuyển lên trên">▲ Lên</button>
-                            <button type="button" class="btn-action" id="btn-studio-move-down" title="Di chuyển xuống dưới">▼ Xuống</button>
-                            <button type="button" class="btn-action btn-danger" id="btn-studio-del-q" title="Xóa câu hỏi này">🗑️ Xóa câu</button>
+            <!-- Studio Tab Bar Navigation -->
+            <div class="studio-tab-bar">
+                <div class="studio-tabs-group">
+                    <button type="button" class="studio-tab-btn active" data-view="matrix" id="tab-btn-matrix">
+                        🔢 Bảng đáp án ma trận Azota
+                        <span class="studio-tab-badge" id="badge-matrix-count">0</span>
+                    </button>
+                    <button type="button" class="studio-tab-btn" data-view="detail" id="tab-btn-detail">
+                        📋 Biên tập chi tiết câu hỏi
+                    </button>
+                    <button type="button" class="studio-tab-btn" data-view="source" id="tab-btn-source">
+                        📄 Văn bản tài liệu gốc
+                    </button>
+                </div>
+                <div class="studio-tab-right">
+                    <span id="studio-completeness-text" class="studio-completeness-text">Độ hoàn thiện: 100%</span>
+                </div>
+            </div>
+
+            <!-- PANE 1: AZOTA ANSWER MATRIX VIEW -->
+            <div class="studio-matrix-pane" id="studio-matrix-pane">
+                <div class="azota-matrix-toolbar">
+                    <div class="azota-filter-group">
+                        <button type="button" class="azota-filter-btn active" data-filter="all" id="azota-filter-all">Tất cả (<span id="azota-filter-all-count">0</span>)</button>
+                        <button type="button" class="azota-filter-btn filter-warn" data-filter="unanswered" id="azota-filter-unanswered">⚠️ Chưa có đáp án (<span id="azota-filter-unanswered-count">0</span>)</button>
+                        <button type="button" class="azota-filter-btn filter-success" data-filter="answered" id="azota-filter-answered">✓ Đã có đáp án (<span id="azota-filter-answered-count">0</span>)</button>
+                    </div>
+                    <div class="azota-matrix-actions">
+                        <input type="text" class="custom-select azota-search-input" id="azota-search-input" placeholder="🔍 Tìm kiếm nhanh câu hỏi...">
+                        <button type="button" class="btn-action btn-sm btn-primary" id="btn-matrix-quick-key">⚡ Nhập nhanh đáp án</button>
+                    </div>
+                </div>
+                <div class="azota-matrix-scroll" id="azota-matrix-scroll">
+                    <div class="azota-matrix-grid" id="azota-matrix-grid">
+                        <!-- Rendered by editor.js: Azota interactive rows -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANE 2: DETAILED QUESTION EDITOR VIEW -->
+            <div class="studio-detail-pane" id="studio-detail-pane" style="display: none;">
+                <div class="studio-body-split">
+                    <!-- Left: Question List -->
+                    <div class="studio-qlist-pane">
+                        <div class="studio-qlist-tools">
+                            <input type="text" class="custom-select" id="studio-search-q" placeholder="🔍 Tìm câu hỏi...">
+                            <div style="display: flex; gap: 6px;">
+                                <button type="button" class="btn-action btn-primary" id="btn-studio-add-q" style="flex: 1; justify-content: center; font-size: 0.85em;"><span id="txt-btn-studio-add-q">➕ Thêm câu mới</span></button>
+                            </div>
+                        </div>
+                        <div class="studio-qlist-items" id="studio-qlist">
+                            <!-- Rendered by editor.js -->
                         </div>
                     </div>
 
-                    <!-- Question Content -->
-                    <div>
-                        <div class="studio-form-section-title">Nội dung câu hỏi (Hỗ trợ công thức Toán/Hóa KaTeX $...$):</div>
-                        <textarea id="studio-input-q" class="custom-select" style="width: 100%; min-height: 90px; resize: vertical; font-family: inherit; font-size: 0.95em; line-height: 1.5; padding: 10px;"></textarea>
-                    </div>
-
-                    <!-- Type & Image -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-                        <div>
-                            <div class="studio-form-section-title">Loại câu hỏi:</div>
-                            <select id="studio-select-type" class="custom-select" style="width: 100%;">
-                                <option value="single">Single Choice (1 đáp án đúng)</option>
-                                <option value="multiple">Multiple Choice (Nhiều đáp án đúng)</option>
-                            </select>
+                    <!-- Right: Question Detail Editor & Live Preview -->
+                    <div class="studio-form-pane">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h3 id="studio-current-q-index" style="color: var(--heading-color); font-size: 1.15em;">Câu 1</h3>
+                            <div style="display: flex; gap: 6px;">
+                                <button type="button" class="btn-action" id="btn-studio-move-up" title="Di chuyển lên trên">▲ Lên</button>
+                                <button type="button" class="btn-action" id="btn-studio-move-down" title="Di chuyển xuống dưới">▼ Xuống</button>
+                                <button type="button" class="btn-action btn-danger" id="btn-studio-del-q" title="Xóa câu hỏi này">🗑️ Xóa câu</button>
+                            </div>
                         </div>
+
+                        <!-- Question Content -->
                         <div>
-                            <div class="studio-form-section-title">Ảnh minh họa (Tùy chọn):</div>
-                            <div style="display: flex; gap: 8px;">
-                                <input type="text" id="studio-input-imgurl" class="custom-select" placeholder="URL ảnh hoặc tải file..." style="flex: 1;">
-                                <label class="btn-action" style="cursor: pointer;">
-                                    📁 Duyệt
-                                    <input type="file" id="studio-file-img" accept="image/*" style="display: none;">
-                                </label>
+                            <div class="studio-form-section-title">Nội dung câu hỏi (Hỗ trợ công thức Toán/Hóa KaTeX $...$):</div>
+                            <textarea id="studio-input-q" class="custom-select" style="width: 100%; min-height: 90px; resize: vertical; font-family: inherit; font-size: 0.95em; line-height: 1.5; padding: 10px;"></textarea>
+                        </div>
+
+                        <!-- Type & Image -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                            <div>
+                                <div class="studio-form-section-title">Loại câu hỏi:</div>
+                                <select id="studio-select-type" class="custom-select" style="width: 100%;">
+                                    <option value="single">Single Choice (1 đáp án đúng)</option>
+                                    <option value="multiple">Multiple Choice (Nhiều đáp án đúng)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="studio-form-section-title">Ảnh minh họa (Tùy chọn):</div>
+                                <div style="display: flex; gap: 8px;">
+                                    <input type="text" id="studio-input-imgurl" class="custom-select" placeholder="URL ảnh hoặc tải file..." style="flex: 1;">
+                                    <label class="btn-action" style="cursor: pointer;">
+                                        📁 Duyệt
+                                        <input type="file" id="studio-file-img" accept="image/*" style="display: none;">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Options Editor -->
+                        <div>
+                            <div class="studio-form-section-title">
+                                <span>Các phương án lựa chọn (Tick chọn đáp án đúng):</span>
+                                <button type="button" class="btn-action" id="btn-studio-add-opt" style="font-size: 0.82em; padding: 4px 10px;">➕ Thêm phương án</button>
+                            </div>
+                            <div id="studio-options-container">
+                                <!-- Rendered by editor.js -->
+                            </div>
+                        </div>
+
+                        <!-- Explanation -->
+                        <div>
+                            <div class="studio-form-section-title">Lời giải chi tiết / Giải thích:</div>
+                            <textarea id="studio-input-exp" class="custom-select" style="width: 100%; min-height: 70px; resize: vertical; font-family: inherit; font-size: 0.9em; line-height: 1.5; padding: 10px;" placeholder="Nhập lời giải thích cho câu hỏi nếu có..."></textarea>
+                        </div>
+
+                        <!-- Live KaTeX Preview -->
+                        <div>
+                            <div class="studio-form-section-title">👁️ Xem trước trực tiếp (KaTeX & Markdown Live Preview):</div>
+                            <div id="studio-preview-box">
+                                <!-- Rendered by editor.js -->
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Options Editor -->
-                    <div>
-                        <div class="studio-form-section-title">
-                            <span>Các phương án lựa chọn (Tick chọn đáp án đúng):</span>
-                            <button type="button" class="btn-action" id="btn-studio-add-opt" style="font-size: 0.82em; padding: 4px 10px;">➕ Thêm phương án</button>
-                        </div>
-                        <div id="studio-options-container">
-                            <!-- Rendered by editor.js -->
-                        </div>
-                    </div>
-
-                    <!-- Explanation -->
-                    <div>
-                        <div class="studio-form-section-title">Lời giải chi tiết / Giải thích:</div>
-                        <textarea id="studio-input-exp" class="custom-select" style="width: 100%; min-height: 70px; resize: vertical; font-family: inherit; font-size: 0.9em; line-height: 1.5; padding: 10px;" placeholder="Nhập lời giải thích cho câu hỏi nếu có..."></textarea>
-                    </div>
-
-                    <!-- Live KaTeX Preview -->
-                    <div>
-                        <div class="studio-form-section-title">👁️ Xem trước trực tiếp (KaTeX & Markdown Live Preview):</div>
-                        <div id="studio-preview-box">
-                            <!-- Rendered by editor.js -->
-                        </div>
+            <!-- PANE 3: DOCUMENT RAW SOURCE TEXT VIEW -->
+            <div class="studio-source-pane" id="studio-source-pane" style="display: none;">
+                <div class="studio-source-toolbar">
+                    <div style="font-weight: 600; font-size: 0.9em; color: var(--heading-color);">📄 Văn bản gốc trích xuất từ tài liệu (Đối chiếu câu hỏi & đáp án):</div>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn-action btn-sm" id="btn-copy-source-text">📋 Sao chép</button>
+                        <button type="button" class="btn-action btn-sm btn-primary" id="btn-reparse-source">🔄 Phân tích lại từ văn bản này</button>
                     </div>
                 </div>
+                <textarea id="studio-source-textarea" class="custom-select studio-source-textarea" placeholder="Nội dung tài liệu gốc chưa có..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- QUICK KEY STRING (AZOTA KEY PASTE) MODAL -->
+    <div class="modal-overlay" id="quick-key-modal" style="display: none; z-index: 99999;">
+        <div class="modal-content quick-key-card">
+            <div class="quick-key-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.4em;">⚡</span>
+                    <h3 style="margin: 0; color: var(--heading-color); font-size: 1.15em;">Nhập nhanh chuỗi đáp án (Azota Key)</h3>
+                </div>
+                <button type="button" class="btn-action btn-history-action btn-del" id="btn-close-quick-key" style="padding: 4px 10px;">✕</button>
+            </div>
+            <div class="quick-key-body">
+                <p style="font-size: 0.88em; opacity: 0.85; margin-bottom: 12px; line-height: 1.5;">
+                    Dán chuỗi đáp án theo bất kỳ định dạng nào của giáo viên. Hệ thống tự động nhận diện và cập nhật vào ma trận đề thi ngay lập tức (0ms):<br>
+                    <code style="color: var(--primary-color);">1A 2B 3C 4D...</code> &bull; <code style="color: var(--primary-color);">1.A 2.B 3.C...</code> &bull; <code style="color: var(--primary-color);">Câu 1: A, Câu 2: B...</code> &bull; hoặc <code style="color: var(--primary-color);">ABCDABCD...</code>
+                </p>
+                <textarea id="input-quick-key-text" class="custom-select quick-key-textarea" rows="5" placeholder="Ví dụ: 1A 2B 3C 4D 5A 6C 7B 8D 9A 10D..."></textarea>
+                <div style="margin-top: 12px; display: flex; align-items: center; gap: 10px; font-size: 0.88em;">
+                    <label for="input-quick-key-start" style="font-weight: 600;">Bắt đầu từ câu số:</label>
+                    <input type="number" id="input-quick-key-start" class="custom-select" value="1" min="1" style="width: 75px; padding: 4px 8px; text-align: center;">
+                </div>
+            </div>
+            <div class="quick-key-footer">
+                <button type="button" class="btn-action" id="btn-cancel-quick-key">Hủy</button>
+                <button type="button" class="btn-action btn-primary" id="btn-apply-quick-key" style="font-weight: 700;">⚡ Áp dụng đáp án</button>
             </div>
         </div>
     </div>

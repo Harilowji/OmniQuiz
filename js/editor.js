@@ -1,21 +1,30 @@
 /**
  * editor.js - Question Studio & Interactive Exam Editor Module
- * Phase 3 EdTech Studio & Content Empowerment
- * Allows full in-browser visual inspection, KaTeX live preview, manual question editing,
- * adding/deleting choices, adjusting correct answers, and exporting/importing question banks.
+ * Phase 3 EdTech Studio & Azota-Like Interactive Answer Matrix
+ * 
+ * Features:
+ * - Azota-like 0ms Answer Matrix Grid (one-click instant key selection)
+ * - Quick Key String Importer (1A 2B 3C..., 1.A 2.B..., ABCD...)
+ * - AI Auto-Solve & Auto-Fill for unanswered questions (via Gemini)
+ * - Raw Document Text Viewer & Live Re-parser
+ * - Full Question Detailed Editor with Live KaTeX & Chemistry Preview
+ * - Full JSON/TXT import & export
  */
 
 const QuestionStudio = (() => {
     let currentQuestions = [];
     let activeQuestionIndex = 0;
     let onApplyCallback = null;
+    let currentRawSource = '';
+    let currentCustomImages = {};
+    let currentViewMode = 'matrix'; // 'matrix' | 'detail' | 'source'
+    let currentMatrixFilter = 'all'; // 'all' | 'unanswered' | 'answered'
 
     /**
      * Open Question Studio with a given list of questions
      */
-    function open(questions, onApply) {
+    function open(questions, onApply, options = {}) {
         if (!Array.isArray(questions) || questions.length === 0) {
-            // If empty, initialize with 1 default question
             currentQuestions = [createBlankQuestion(1)];
         } else {
             // Deep clone questions to prevent mutating active state until Applied
@@ -24,13 +33,32 @@ const QuestionStudio = (() => {
 
         activeQuestionIndex = 0;
         onApplyCallback = onApply;
+        currentRawSource = options.rawText || '';
+        currentCustomImages = options.customImages || {};
 
         const modal = document.getElementById('question-studio-modal');
         if (!modal) return;
 
         modal.style.display = 'flex';
+
+        // Check unanswered questions
+        const unansweredCount = countUnanswered();
+        const needsReview = options.autoOpened || unansweredCount > 0;
+
+        // Default to Azota matrix view
+        switchView('matrix');
+
+        if (needsReview && unansweredCount > 0) {
+            showReviewBanner(unansweredCount, currentQuestions.length);
+        } else {
+            hideReviewBanner();
+        }
+
+        updateHeaderStats();
+        renderAnswerMatrix();
         renderQuestionList();
         loadQuestionDetail(activeQuestionIndex);
+        updateSourceView();
     }
 
     /**
@@ -39,6 +67,488 @@ const QuestionStudio = (() => {
     function close() {
         const modal = document.getElementById('question-studio-modal');
         if (modal) modal.style.display = 'none';
+        closeQuickKeyModal();
+    }
+
+    /**
+     * Count how many questions are missing answers
+     */
+    function countUnanswered() {
+        return currentQuestions.filter(q => q.isDefaultAnswer || !q.answers || q.answers.length === 0).length;
+    }
+
+    /**
+     * Update Studio Header Statistics and Status Badge
+     */
+    function updateHeaderStats() {
+        const total = currentQuestions.length;
+        const unanswered = countUnanswered();
+        const answered = total - unanswered;
+        const completeness = total > 0 ? Math.round((answered / total) * 100) : 0;
+
+        const countEl = document.getElementById('studio-total-count');
+        if (countEl) countEl.innerText = `${total} câu hỏi`;
+
+        const badgeEl = document.getElementById('studio-status-badge');
+        if (badgeEl) {
+            if (unanswered === 0) {
+                badgeEl.className = 'studio-health-badge status-ok';
+                badgeEl.innerText = `✓ 100% Đầy đủ đáp án`;
+            } else {
+                badgeEl.className = 'studio-health-badge status-warn';
+                badgeEl.innerText = `⚠️ Còn ${unanswered} câu chưa có đáp án`;
+            }
+        }
+
+        const compText = document.getElementById('studio-completeness-text');
+        if (compText) {
+            compText.innerText = `Độ hoàn thiện: ${completeness}% (${answered}/${total} câu)`;
+            compText.style.color = unanswered === 0 ? '#10b981' : '#f59e0b';
+        }
+
+        const tabMatrixCount = document.getElementById('badge-matrix-count');
+        if (tabMatrixCount) {
+            tabMatrixCount.innerText = `${answered}/${total}`;
+        }
+
+        // Filter numbers
+        const fAll = document.getElementById('azota-filter-all-count');
+        const fUn = document.getElementById('azota-filter-unanswered-count');
+        const fAns = document.getElementById('azota-filter-answered-count');
+        if (fAll) fAll.innerText = String(total);
+        if (fUn) fUn.innerText = String(unanswered);
+        if (fAns) fAns.innerText = String(answered);
+    }
+
+    /**
+     * Show / Hide the Review Banner
+     */
+    function showReviewBanner(unanswered, total) {
+        const banner = document.getElementById('studio-review-banner');
+        if (!banner) return;
+        banner.style.display = 'flex';
+        const titleEl = document.getElementById('studio-review-title');
+        const descEl = document.getElementById('studio-review-desc');
+        if (titleEl) {
+            titleEl.innerText = `Phát hiện ${unanswered}/${total} câu hỏi chưa có đáp án trong tài liệu!`;
+        }
+        if (descEl) {
+            descEl.innerText = `Vui lòng click chọn đáp án trong bảng ma trận Azota bên dưới, hoặc dùng "Nhập nhanh đáp án" / "AI Tự điền" để hoàn tất bộ đề trước khi luyện tập.`;
+        }
+    }
+
+    function hideReviewBanner() {
+        const banner = document.getElementById('studio-review-banner');
+        if (banner) banner.style.display = 'none';
+    }
+
+    /**
+     * Switch View Tabs: 'matrix' | 'detail' | 'source'
+     */
+    function switchView(viewMode) {
+        currentViewMode = viewMode;
+
+        // Tab buttons
+        document.querySelectorAll('.studio-tab-btn').forEach(btn => {
+            if (btn.dataset.view === viewMode) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        // Panes
+        const matrixPane = document.getElementById('studio-matrix-pane');
+        const detailPane = document.getElementById('studio-detail-pane');
+        const sourcePane = document.getElementById('studio-source-pane');
+
+        if (matrixPane) matrixPane.style.display = viewMode === 'matrix' ? 'flex' : 'none';
+        if (detailPane) detailPane.style.display = viewMode === 'detail' ? 'flex' : 'none';
+        if (sourcePane) sourcePane.style.display = viewMode === 'source' ? 'flex' : 'none';
+
+        if (viewMode === 'matrix') {
+            renderAnswerMatrix();
+        } else if (viewMode === 'detail') {
+            renderQuestionList();
+            loadQuestionDetail(activeQuestionIndex);
+        } else if (viewMode === 'source') {
+            updateSourceView();
+        }
+    }
+
+    /**
+     * Render Azota Answer Matrix Grid (Instant 0ms Feedback)
+     */
+    function renderAnswerMatrix(filter = currentMatrixFilter, searchKeyword = '') {
+        const grid = document.getElementById('azota-matrix-grid');
+        if (!grid) return;
+
+        grid.innerHTML = '';
+        currentMatrixFilter = filter;
+        const kw = (searchKeyword || '').trim().toLowerCase();
+
+        currentQuestions.forEach((q, idx) => {
+            const isUnanswered = q.isDefaultAnswer || !q.answers || q.answers.length === 0;
+
+            // Apply filter
+            if (filter === 'unanswered' && !isUnanswered) return;
+            if (filter === 'answered' && isUnanswered) return;
+
+            // Apply search
+            if (kw && !((q.q || '').toLowerCase().includes(kw) || `câu ${idx + 1}`.includes(kw))) {
+                return;
+            }
+
+            const row = document.createElement('div');
+            row.className = `azota-row ${isUnanswered ? 'needs-answer' : 'has-answer'}`;
+            row.dataset.qIndex = String(idx);
+
+            const snippet = (stripMathTags(q.q || '') || '(Chưa có nội dung)').slice(0, 65);
+            const selectedLetters = (q.answers || []).map(a => String.fromCharCode(65 + a)).join(', ');
+
+            // Left side
+            const leftDiv = document.createElement('div');
+            leftDiv.className = 'azota-row-left';
+            leftDiv.innerHTML = `
+                <span class="azota-q-number">Câu ${idx + 1}</span>
+                <span class="azota-q-snippet" title="${escapeHtml(q.q || '')}">${escapeHtml(snippet)}...</span>
+                <span id="azota-badge-${idx}" class="${isUnanswered ? 'azota-badge-unanswered' : 'azota-badge-answered'}">
+                    ${isUnanswered ? '⚠️ Chưa chọn' : `✓ ${selectedLetters}`}
+                </span>
+            `;
+
+            // Clicking snippet opens detail editor for this question
+            leftDiv.querySelector('.azota-q-snippet').onclick = () => {
+                activeQuestionIndex = idx;
+                switchView('detail');
+            };
+
+            // Right side: Option Pills
+            const rightDiv = document.createElement('div');
+            rightDiv.className = 'azota-row-right';
+
+            const pillsContainer = document.createElement('div');
+            pillsContainer.className = 'azota-options-pills';
+
+            const numOpts = (q.options && q.options.length >= 2) ? q.options.length : 4;
+            for (let optIdx = 0; optIdx < numOpts; optIdx++) {
+                const letter = String.fromCharCode(65 + optIdx);
+                const isSelected = (q.answers || []).includes(optIdx) && !q.isDefaultAnswer;
+
+                const pill = document.createElement('button');
+                pill.type = 'button';
+                pill.className = `azota-opt-pill ${isSelected ? 'active' : ''}`;
+                pill.dataset.q = String(idx);
+                pill.dataset.opt = String(optIdx);
+                pill.title = `Chọn đáp án ${letter} cho Câu ${idx + 1}`;
+                pill.innerText = letter;
+
+                // 0ms Sub-millisecond Instant Click Handler
+                pill.onclick = (e) => {
+                    e.stopPropagation();
+                    handleMatrixPillClick(idx, optIdx, row, pillsContainer);
+                };
+
+                pillsContainer.appendChild(pill);
+            }
+
+            // Edit button
+            const editBtn = document.createElement('button');
+            editBtn.type = 'button';
+            editBtn.className = 'btn-action btn-sm azota-btn-edit';
+            editBtn.title = `Chỉnh sửa chi tiết Câu ${idx + 1}`;
+            editBtn.innerHTML = '✏️';
+            editBtn.onclick = () => {
+                activeQuestionIndex = idx;
+                switchView('detail');
+            };
+
+            rightDiv.appendChild(pillsContainer);
+            rightDiv.appendChild(editBtn);
+
+            row.appendChild(leftDiv);
+            row.appendChild(rightDiv);
+            grid.appendChild(row);
+        });
+
+        updateHeaderStats();
+    }
+
+    /**
+     * Handle Instant 0ms Answer Matrix Pill Click
+     */
+    function handleMatrixPillClick(qIdx, optIdx, rowEl, pillsContainer) {
+        if (qIdx < 0 || qIdx >= currentQuestions.length) return;
+        const q = currentQuestions[qIdx];
+        const letter = String.fromCharCode(65 + optIdx);
+
+        if (q.type === 'multiple') {
+            if (!Array.isArray(q.answers) || q.isDefaultAnswer) {
+                q.answers = [];
+            }
+            const existIdx = q.answers.indexOf(optIdx);
+            if (existIdx > -1) {
+                q.answers.splice(existIdx, 1);
+            } else {
+                q.answers.push(optIdx);
+                q.answers.sort((a, b) => a - b);
+            }
+            q.isDefaultAnswer = false;
+        } else {
+            // Single choice
+            q.answers = [optIdx];
+            q.isDefaultAnswer = false;
+        }
+
+        // Direct DOM update (0ms latency, zero re-rendering overhead!)
+        const isUnanswered = !q.answers || q.answers.length === 0;
+        pillsContainer.querySelectorAll('.azota-opt-pill').forEach(btn => {
+            const bOpt = parseInt(btn.dataset.opt, 10);
+            if (q.answers.includes(bOpt)) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        rowEl.className = `azota-row ${isUnanswered ? 'needs-answer' : 'has-answer'}`;
+        const badgeEl = document.getElementById(`azota-badge-${qIdx}`);
+        if (badgeEl) {
+            const selectedLetters = q.answers.map(a => String.fromCharCode(65 + a)).join(', ');
+            badgeEl.className = isUnanswered ? 'azota-badge-unanswered' : 'azota-badge-answered';
+            badgeEl.innerText = isUnanswered ? '⚠️ Chưa chọn' : `✓ ${selectedLetters}`;
+        }
+
+        updateHeaderStats();
+
+        // If all questions are now answered, hide the warning banner
+        if (countUnanswered() === 0) {
+            hideReviewBanner();
+        }
+    }
+
+    /**
+     * Quick Key String Modal (Azota Key Importer)
+     */
+    function openQuickKeyModal() {
+        const modal = document.getElementById('quick-key-modal');
+        if (!modal) return;
+        modal.style.display = 'flex';
+        const txt = document.getElementById('input-quick-key-text');
+        if (txt) {
+            txt.value = '';
+            txt.focus();
+        }
+        const start = document.getElementById('input-quick-key-start');
+        if (start) start.value = '1';
+    }
+
+    function closeQuickKeyModal() {
+        const modal = document.getElementById('quick-key-modal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    function applyQuickKeyString() {
+        const txtEl = document.getElementById('input-quick-key-text');
+        const startEl = document.getElementById('input-quick-key-start');
+        if (!txtEl || !txtEl.value.trim()) {
+            alert('Vui lòng nhập chuỗi đáp án (Ví dụ: 1A 2B 3C... hoặc ABCD...)!');
+            return;
+        }
+
+        const startNum = parseInt(startEl?.value || '1', 10) || 1;
+        const keyMap = QuestionParser.parseAnswerKeyString(txtEl.value, startNum);
+        const mappedKeys = Object.keys(keyMap);
+
+        if (mappedKeys.length === 0) {
+            alert('Không tìm thấy cặp đáp án hợp lệ trong chuỗi vừa dán. Vui lòng kiểm tra lại định dạng!');
+            return;
+        }
+
+        let appliedCount = 0;
+        mappedKeys.forEach(qNumStr => {
+            const qNum = parseInt(qNumStr, 10);
+            const qIdx = qNum - 1;
+            if (qIdx >= 0 && qIdx < currentQuestions.length) {
+                currentQuestions[qIdx].answers = [keyMap[qNum]];
+                currentQuestions[qIdx].isDefaultAnswer = false;
+                appliedCount++;
+            }
+        });
+
+        closeQuickKeyModal();
+        renderAnswerMatrix();
+        updateHeaderStats();
+
+        if (countUnanswered() === 0) {
+            hideReviewBanner();
+        }
+
+        if (window.UIManager) {
+            UIManager.showToast(`✓ Đã tự động cập nhật đáp án cho ${appliedCount} câu hỏi!`);
+        }
+    }
+
+    /**
+     * AI Auto-Solve for unanswered questions using Gemini API
+     */
+    async function triggerAiSolveForMissing() {
+        const missingIndices = [];
+        currentQuestions.forEach((q, idx) => {
+            if (q.isDefaultAnswer || !q.answers || q.answers.length === 0) {
+                missingIndices.push(idx);
+            }
+        });
+
+        if (missingIndices.length === 0) {
+            if (window.UIManager) {
+                UIManager.showToast('✓ Tất cả các câu hỏi trong đề đều đã có đáp án đầy đủ!');
+            } else {
+                alert('Tất cả các câu hỏi trong đề đều đã có đáp án đầy đủ!');
+            }
+            return;
+        }
+
+        if (typeof AITutor === 'undefined' || !AITutor.hasApiKey()) {
+            if (typeof AITutor !== 'undefined' && AITutor.openApiKeySettingsModal) {
+                AITutor.openApiKeySettingsModal('Vui lòng nhập Google Gemini API Key để kích hoạt AI Tự động giải và điền đáp án.');
+            } else {
+                alert('Chưa cấu hình Google Gemini API Key để sử dụng tính năng này.');
+            }
+            return;
+        }
+
+        if (window.UIManager) {
+            UIManager.showLoadingModal(
+                '🤖 AI đang phân tích và giải đề...',
+                `Đang đọc nội dung & suy luận đáp án chính xác cho ${missingIndices.length} câu hỏi...`
+            );
+        }
+
+        try {
+            // Build question prompt batch (up to 30 questions per request)
+            const batchIndices = missingIndices.slice(0, 30);
+            const questionsPrompt = batchIndices.map(i => {
+                const q = currentQuestions[i];
+                const opts = (q.options || []).map((o, optIdx) => `${String.fromCharCode(65 + optIdx)}. ${o}`).join('\n');
+                return `[Câu ${i + 1}]\n${q.q}\n${opts}`;
+            }).join('\n\n');
+
+            const systemPrompt = `Bạn là một giáo viên chuyên môn cao và chuyên gia giải đề thi trắc nghiệm Việt Nam.
+Hãy giải các câu hỏi trắc nghiệm dưới đây và xác định đáp án đúng chính xác nhất (chỉ chọn A, B, C, D, E, F...).
+Trả về DUY NHẤT một chuỗi JSON mảng (không giải thích thêm ngoài JSON):
+[
+  {
+    "qNum": 1,
+    "answer": "A",
+    "explanation": "Giải thích ngắn gọn 1-2 câu"
+  }
+]
+
+DANH SÁCH CÂU HỎI CẦN GIẢI:
+${questionsPrompt}`;
+
+            const responseText = await AITutor.askTutorGeneric(systemPrompt);
+            if (!responseText) throw new Error('AI không phản hồi.');
+
+            // Extract JSON
+            let cleanJson = responseText.trim();
+            const jsonMatch = cleanJson.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+            if (jsonMatch) cleanJson = jsonMatch[1].trim();
+
+            const parsedResults = JSON.parse(cleanJson);
+            let solvedCount = 0;
+
+            if (Array.isArray(parsedResults)) {
+                parsedResults.forEach(item => {
+                    const qNum = parseInt(item.qNum, 10);
+                    const qIdx = qNum - 1;
+                    if (qIdx >= 0 && qIdx < currentQuestions.length && item.answer) {
+                        const letter = String(item.answer).trim().toUpperCase();
+                        const ansIdx = letter.charCodeAt(0) - 65;
+                        if (ansIdx >= 0 && ansIdx < (currentQuestions[qIdx].options || []).length) {
+                            currentQuestions[qIdx].answers = [ansIdx];
+                            currentQuestions[qIdx].isDefaultAnswer = false;
+                            if (item.explanation && !currentQuestions[qIdx].explanation) {
+                                currentQuestions[qIdx].explanation = item.explanation;
+                            }
+                            solvedCount++;
+                        }
+                    }
+                });
+            }
+
+            if (window.UIManager) {
+                UIManager.hideLoadingModal();
+                renderAnswerMatrix();
+                updateHeaderStats();
+                if (countUnanswered() === 0) {
+                    hideReviewBanner();
+                }
+                UIManager.showToast(`🎉 AI đã tự động giải & điền thành công đáp án cho ${solvedCount} câu hỏi!`);
+            }
+        } catch (err) {
+            console.error('[Studio AI Solve Error]', err);
+            if (window.UIManager) {
+                UIManager.hideLoadingModal();
+                alert('Lỗi khi AI giải đề: ' + err.message + '\nBạn có thể chọn đáp án bằng tay trên bảng ma trận Azota.');
+            }
+        }
+    }
+
+    /**
+     * Raw Source View functions
+     */
+    function updateSourceView() {
+        const area = document.getElementById('studio-source-textarea');
+        if (area) {
+            area.value = currentRawSource || questionsToTxt(currentQuestions);
+        }
+    }
+
+    function copySourceText() {
+        const area = document.getElementById('studio-source-textarea');
+        if (area && area.value) {
+            navigator.clipboard.writeText(area.value).then(() => {
+                if (window.UIManager) UIManager.showToast('✓ Đã sao chép văn bản gốc vào bộ nhớ tạm!');
+            });
+        }
+    }
+
+    function reparseFromSource() {
+        const area = document.getElementById('studio-source-textarea');
+        if (!area || !area.value.trim()) return;
+
+        if (!confirm('Bạn có chắc muốn phân tích lại đề thi từ nội dung văn bản này? Các thay đổi thủ công chưa áp dụng sẽ được làm mới.')) {
+            return;
+        }
+
+        const newText = area.value.trim();
+        const analysis = QuestionParser.analyzeAndParse(newText);
+        if (analysis.questions.length === 0) {
+            alert('Không tìm thấy câu hỏi hợp lệ trong văn bản!');
+            return;
+        }
+
+        currentQuestions = analysis.questions;
+        currentRawSource = newText;
+        activeQuestionIndex = 0;
+
+        renderAnswerMatrix();
+        renderQuestionList();
+        loadQuestionDetail(activeQuestionIndex);
+        updateHeaderStats();
+
+        if (analysis.unansweredCount > 0) {
+            showReviewBanner(analysis.unansweredCount, analysis.total);
+            switchView('matrix');
+        } else {
+            hideReviewBanner();
+        }
+
+        if (window.UIManager) {
+            UIManager.showToast(`✓ Đã phân tích lại thành công ${analysis.total} câu hỏi!`);
+        }
     }
 
     /**
@@ -61,7 +571,7 @@ const QuestionStudio = (() => {
     }
 
     /**
-     * Render the left sidebar question list
+     * Render the left sidebar question list (for Detailed Editor)
      */
     function renderQuestionList(filterKeyword = '') {
         const listContainer = document.getElementById('studio-qlist');
@@ -76,9 +586,9 @@ const QuestionStudio = (() => {
 
             const item = document.createElement('div');
             item.className = 'studio-q-item' + (idx === activeQuestionIndex ? ' active' : '');
-            item.dataset.index = idx;
+            item.dataset.index = String(idx);
 
-            const hasWarning = !q.q || !q.options || q.options.length < 2 || !q.answers || q.answers.length === 0;
+            const hasWarning = !q.q || !q.options || q.options.length < 2 || !q.answers || q.answers.length === 0 || q.isDefaultAnswer;
             const badgeType = q.type === 'multiple' ? 'Nhiều đáp án' : '1 đáp án';
             const numOptions = q.options ? q.options.length : 0;
 
@@ -87,10 +597,10 @@ const QuestionStudio = (() => {
                     <span class="studio-q-num">Câu ${idx + 1}</span>
                     <span class="studio-q-badge ${q.type}">${badgeType}</span>
                 </div>
-                <div class="studio-q-snippet">${escapeHtml(stripMathTags(q.q)).slice(0, 70) || '(Chưa có nội dung)'}...</div>
+                <div class="studio-q-snippet">${escapeHtml(stripMathTags(q.q || '')).slice(0, 70) || '(Chưa có nội dung)'}...</div>
                 <div class="studio-q-meta">
                     <span>${numOptions} lựa chọn</span>
-                    ${hasWarning ? '<span class="studio-q-warn" title="Chưa hoàn thiện">⚠️ Thiếu dữ liệu</span>' : '<span>✓ Hợp lệ</span>'}
+                    ${hasWarning ? '<span class="studio-q-warn" title="Chưa có đáp án hoặc thiếu dữ liệu">⚠️ Thiếu đáp án</span>' : '<span>✓ Hợp lệ</span>'}
                 </div>
             `;
 
@@ -104,9 +614,7 @@ const QuestionStudio = (() => {
             listContainer.appendChild(item);
         });
 
-        // Update total counter
-        const countEl = document.getElementById('studio-total-count');
-        if (countEl) countEl.innerText = `${currentQuestions.length} câu hỏi`;
+        updateHeaderStats();
     }
 
     /**
@@ -155,10 +663,9 @@ const QuestionStudio = (() => {
             const row = document.createElement('div');
             row.className = 'studio-opt-row';
 
-            const isChecked = answers.includes(optIdx);
+            const isChecked = answers.includes(optIdx) && !q.isDefaultAnswer;
             const inputType = isMultiple ? 'checkbox' : 'radio';
-
-            const charCode = String.fromCharCode(65 + optIdx); // A, B, C, D...
+            const charCode = String.fromCharCode(65 + optIdx);
 
             row.innerHTML = `
                 <label class="studio-opt-check-label" title="Đánh dấu đáp án đúng">
@@ -184,6 +691,7 @@ const QuestionStudio = (() => {
             check.addEventListener('change', () => {
                 saveCurrentQuestionFromForm();
                 updateLivePreview();
+                updateHeaderStats();
             });
         });
 
@@ -195,16 +703,17 @@ const QuestionStudio = (() => {
                     return;
                 }
                 q.options.splice(optIdx, 1);
-                // Adjust correct answers array
-                q.answers = q.answers
+                q.answers = (q.answers || [])
                     .filter(a => a !== optIdx)
                     .map(a => (a > optIdx ? a - 1 : a));
                 if (q.answers.length === 0 && q.options.length > 0) {
-                    q.answers = [0]; // default fallback
+                    q.answers = [0];
+                    q.isDefaultAnswer = true;
                 }
                 renderOptionsForm(q);
                 saveCurrentQuestionFromForm();
                 updateLivePreview();
+                updateHeaderStats();
             });
         });
     }
@@ -243,6 +752,9 @@ const QuestionStudio = (() => {
             newAnswers.push(parseInt(chk.dataset.idx, 10));
         });
         q.answers = newAnswers;
+        if (newAnswers.length > 0) {
+            q.isDefaultAnswer = false;
+        }
     }
 
     /**
@@ -264,7 +776,7 @@ const QuestionStudio = (() => {
         let optionsHtml = '';
         (q.options || []).forEach((opt, idx) => {
             const char = String.fromCharCode(65 + idx);
-            const isCorrect = (q.answers || []).includes(idx);
+            const isCorrect = (q.answers || []).includes(idx) && !q.isDefaultAnswer;
             const formattedOpt = QuestionParser ? QuestionParser.formatMathText(opt) : escapeHtml(opt);
             optionsHtml += `
                 <div class="studio-preview-opt ${isCorrect ? 'correct-mark' : ''}">
@@ -292,7 +804,6 @@ const QuestionStudio = (() => {
             </div>
         `;
 
-        // Render KaTeX Math & Chemistry formulas in the preview
         if (window.renderMathInElement) {
             try {
                 window.renderMathInElement(previewContainer, {
@@ -321,7 +832,6 @@ const QuestionStudio = (() => {
         renderQuestionList();
         loadQuestionDetail(activeQuestionIndex);
 
-        // Scroll list to bottom
         const list = document.getElementById('studio-qlist');
         if (list) list.scrollTop = list.scrollHeight;
     }
@@ -343,6 +853,7 @@ const QuestionStudio = (() => {
         }
         renderQuestionList();
         loadQuestionDetail(activeQuestionIndex);
+        updateHeaderStats();
     }
 
     /**
@@ -379,32 +890,41 @@ const QuestionStudio = (() => {
      * Validate and Apply changes back to the main QuizEngine
      */
     function applyChanges() {
-        saveCurrentQuestionFromForm();
+        if (currentViewMode === 'detail') {
+            saveCurrentQuestionFromForm();
+        }
 
-        // Validate all questions
+        // Validate basic validity
         for (let i = 0; i < currentQuestions.length; i++) {
             const q = currentQuestions[i];
             if (!q.q || !q.q.trim()) {
                 alert(`Câu ${i + 1} chưa có nội dung! Vui lòng kiểm tra lại.`);
                 activeQuestionIndex = i;
-                renderQuestionList();
-                loadQuestionDetail(i);
+                switchView('detail');
                 return;
             }
             if (!q.options || q.options.length < 2) {
                 alert(`Câu ${i + 1} cần có ít nhất 2 phương án lựa chọn!`);
                 activeQuestionIndex = i;
-                renderQuestionList();
-                loadQuestionDetail(i);
+                switchView('detail');
                 return;
             }
-            if (!q.answers || q.answers.length === 0) {
-                alert(`Câu ${i + 1} chưa có đáp án đúng! Vui lòng chọn ít nhất 1 đáp án đúng.`);
-                activeQuestionIndex = i;
-                renderQuestionList();
-                loadQuestionDetail(i);
+        }
+
+        const un = countUnanswered();
+        if (un > 0) {
+            const proceed = confirm(`Đề thi vẫn còn ${un} câu hỏi chưa chọn đáp án. Bạn có muốn tự động gán đáp án mặc định (A) để bắt đầu luyện tập ngay không?`);
+            if (!proceed) {
+                switchView('matrix');
                 return;
             }
+            // Fallback unassigned questions to A
+            currentQuestions.forEach(q => {
+                if (q.isDefaultAnswer || !q.answers || q.answers.length === 0) {
+                    q.answers = [0];
+                    q.isDefaultAnswer = false;
+                }
+            });
         }
 
         if (typeof onApplyCallback === 'function') {
@@ -413,15 +933,39 @@ const QuestionStudio = (() => {
 
         close();
         if (window.UIManager) {
-            UIManager.showToast('✓ Đã cập nhật đề thi thành công từ Question Studio!');
+            UIManager.showToast('✓ Đã áp dụng đề thi thành công! Bắt đầu luyện tập ngay.');
         }
+    }
+
+    /**
+     * Serialize question array to clean text format
+     */
+    function questionsToTxt(questions) {
+        if (!Array.isArray(questions)) return '';
+        let txt = '';
+        questions.forEach((q, idx) => {
+            txt += `Câu ${idx + 1}: ${q.q}\n`;
+            (q.options || []).forEach((opt, optIdx) => {
+                const char = String.fromCharCode(65 + optIdx);
+                txt += `${char}. ${opt}\n`;
+            });
+            if (q.answers && q.answers.length > 0 && !q.isDefaultAnswer) {
+                const ansLetters = q.answers.map(a => String.fromCharCode(65 + a)).join(', ');
+                txt += `Đáp án: ${ansLetters}\n`;
+            }
+            if (q.explanation) {
+                txt += `Lời giải: ${q.explanation}\n`;
+            }
+            txt += '\n';
+        });
+        return txt;
     }
 
     /**
      * Export current question set to JSON file
      */
     function exportToJson() {
-        saveCurrentQuestionFromForm();
+        if (currentViewMode === 'detail') saveCurrentQuestionFromForm();
         const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(currentQuestions, null, 2));
         const dlAnchor = document.createElement('a');
         dlAnchor.setAttribute('href', dataStr);
@@ -435,24 +979,8 @@ const QuestionStudio = (() => {
      * Export to clean CBT formatted text
      */
     function exportToTxt() {
-        saveCurrentQuestionFromForm();
-        let txt = '';
-        currentQuestions.forEach((q, idx) => {
-            txt += `Câu ${idx + 1}: ${q.q}\n`;
-            (q.options || []).forEach((opt, optIdx) => {
-                const char = String.fromCharCode(65 + optIdx);
-                txt += `${char}. ${opt}\n`;
-            });
-            if (q.answers && q.answers.length > 0) {
-                const ansLetters = q.answers.map(a => String.fromCharCode(65 + a)).join(', ');
-                txt += `Đáp án: ${ansLetters}\n`;
-            }
-            if (q.explanation) {
-                txt += `Lời giải: ${q.explanation}\n`;
-            }
-            txt += '\n';
-        });
-
+        if (currentViewMode === 'detail') saveCurrentQuestionFromForm();
+        const txt = questionsToTxt(currentQuestions);
         const dataStr = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
         const dlAnchor = document.createElement('a');
         dlAnchor.setAttribute('href', dataStr);
@@ -489,7 +1017,53 @@ const QuestionStudio = (() => {
         document.getElementById('btn-studio-export-json')?.addEventListener('click', exportToJson);
         document.getElementById('btn-studio-export-txt')?.addEventListener('click', exportToTxt);
 
-        // Filter search input
+        // Tab Navigation
+        document.getElementById('tab-btn-matrix')?.addEventListener('click', () => switchView('matrix'));
+        document.getElementById('tab-btn-detail')?.addEventListener('click', () => switchView('detail'));
+        document.getElementById('tab-btn-source')?.addEventListener('click', () => switchView('source'));
+
+        // Quick Key Modal buttons
+        document.getElementById('btn-studio-quick-key')?.addEventListener('click', openQuickKeyModal);
+        document.getElementById('btn-banner-quick-key')?.addEventListener('click', openQuickKeyModal);
+        document.getElementById('btn-matrix-quick-key')?.addEventListener('click', openQuickKeyModal);
+        document.getElementById('btn-close-quick-key')?.addEventListener('click', closeQuickKeyModal);
+        document.getElementById('btn-cancel-quick-key')?.addEventListener('click', closeQuickKeyModal);
+        document.getElementById('btn-apply-quick-key')?.addEventListener('click', applyQuickKeyString);
+
+        // AI Auto Solve buttons
+        document.getElementById('btn-studio-ai-solve')?.addEventListener('click', triggerAiSolveForMissing);
+        document.getElementById('btn-banner-ai-solve')?.addEventListener('click', triggerAiSolveForMissing);
+
+        // Matrix filter buttons
+        document.getElementById('azota-filter-all')?.addEventListener('click', () => {
+            setActiveFilter('all');
+            renderAnswerMatrix('all', document.getElementById('azota-search-input')?.value);
+        });
+        document.getElementById('azota-filter-unanswered')?.addEventListener('click', () => {
+            setActiveFilter('unanswered');
+            renderAnswerMatrix('unanswered', document.getElementById('azota-search-input')?.value);
+        });
+        document.getElementById('azota-filter-answered')?.addEventListener('click', () => {
+            setActiveFilter('answered');
+            renderAnswerMatrix('answered', document.getElementById('azota-search-input')?.value);
+        });
+
+        function setActiveFilter(fName) {
+            document.querySelectorAll('.azota-filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === fName);
+            });
+        }
+
+        // Matrix search input
+        document.getElementById('azota-search-input')?.addEventListener('input', (e) => {
+            renderAnswerMatrix(currentMatrixFilter, e.target.value);
+        });
+
+        // Source View Buttons
+        document.getElementById('btn-copy-source-text')?.addEventListener('click', copySourceText);
+        document.getElementById('btn-reparse-source')?.addEventListener('click', reparseFromSource);
+
+        // Filter search in question list
         document.getElementById('studio-search-q')?.addEventListener('input', (e) => {
             renderQuestionList(e.target.value);
         });
@@ -500,7 +1074,6 @@ const QuestionStudio = (() => {
             qTitleInput.addEventListener('input', () => {
                 saveCurrentQuestionFromForm();
                 updateLivePreview();
-                // Update snippet in list
                 const activeItem = document.querySelector(`.studio-q-item[data-index="${activeQuestionIndex}"] .studio-q-snippet`);
                 if (activeItem) {
                     activeItem.innerText = (stripMathTags(qTitleInput.value).slice(0, 70) || '(Chưa có nội dung)') + '...';
@@ -546,11 +1119,13 @@ const QuestionStudio = (() => {
             if (raw && raw.trim() && window.QuestionParser) {
                 const parsed = QuestionParser.parse(raw);
                 if (parsed && parsed.length > 0) {
-                    saveCurrentQuestionFromForm();
+                    if (currentViewMode === 'detail') saveCurrentQuestionFromForm();
                     currentQuestions.push(...parsed);
+                    renderAnswerMatrix();
                     renderQuestionList();
                     activeQuestionIndex = currentQuestions.length - 1;
                     loadQuestionDetail(activeQuestionIndex);
+                    updateHeaderStats();
                     alert(`✓ Đã nạp thêm thành công ${parsed.length} câu hỏi mới vào đề!`);
                 } else {
                     alert('Không nhận diện được câu hỏi hợp lệ từ đoạn văn bản vừa dán.');
@@ -563,8 +1138,15 @@ const QuestionStudio = (() => {
         open,
         close,
         init,
+        switchView,
+        renderAnswerMatrix,
+        openQuickKeyModal,
+        closeQuickKeyModal,
+        applyQuickKeyString,
+        triggerAiSolveForMissing,
+        questionsToTxt,
         getCurrentQuestions: () => {
-            saveCurrentQuestionFromForm();
+            if (currentViewMode === 'detail') saveCurrentQuestionFromForm();
             return currentQuestions;
         }
     };
