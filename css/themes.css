@@ -35,7 +35,32 @@ body::before {
     height: 100vh;
     z-index: -1;
     pointer-events: none;
-    transition: opacity 0.3s ease, background 0.3s ease;
+    transition: opacity 0.35s ease, background 0.35s ease;
+}
+
+/* Smooth View Transition for Themes (Sameko Elastic Theme Morphing) */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 0.38s;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+::view-transition-old(root) {
+    animation-name: samekoThemeFadeOut;
+}
+
+::view-transition-new(root) {
+    animation-name: samekoThemeFadeIn;
+}
+
+@keyframes samekoThemeFadeOut {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.992); }
+}
+
+@keyframes samekoThemeFadeIn {
+    from { opacity: 0; transform: scale(1.008); }
+    to { opacity: 1; transform: scale(1); }
 }
 
 /* Elevation & Layering for Core Panels */

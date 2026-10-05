@@ -70,24 +70,32 @@
     }
 
     function applyTheme(theme) {
-        const isFocus = document.body.classList.contains('focus-mode');
-        document.body.className = 'theme-' + theme;
-        if (isFocus) document.body.classList.add('focus-mode');
+        const updateThemeDOM = () => {
+            const isFocus = document.body.classList.contains('focus-mode');
+            document.body.className = 'theme-' + theme;
+            if (isFocus) document.body.classList.add('focus-mode');
 
-        const themeIcons = {
-            academic: '🎯',
-            sepia: '📖',
-            emerald: '🌿',
-            cyberpunk: '🌌',
-            minimalist: '⚪',
-            playful: '🍑'
+            const themeIcons = {
+                academic: '🌊',
+                sepia: '📜',
+                emerald: '🌿',
+                cyberpunk: '🌌',
+                minimalist: '⚪',
+                playful: '🌸'
+            };
+            const iconEl = document.getElementById('txt-quick-theme-icon');
+            if (iconEl) iconEl.textContent = themeIcons[theme] || '🎨';
+
+            document.querySelectorAll('.theme-choice-btn').forEach(b => {
+                b.classList.toggle('active', b.getAttribute('data-theme') === theme);
+            });
         };
-        const iconEl = document.getElementById('txt-quick-theme-icon');
-        if (iconEl) iconEl.textContent = themeIcons[theme] || '🎨';
 
-        document.querySelectorAll('.theme-choice-btn').forEach(b => {
-            b.classList.toggle('active', b.getAttribute('data-theme') === theme);
-        });
+        if (document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.startViewTransition(updateThemeDOM);
+        } else {
+            updateThemeDOM();
+        }
     }
 
     function isExamActiveUnsubmitted() {
@@ -183,15 +191,20 @@
         });
 
         // Quick Theme Cycle Toggle Button
-        document.getElementById('btn-quick-theme')?.addEventListener('click', () => {
+        const btnQuickTheme = document.getElementById('btn-quick-theme');
+        btnQuickTheme?.addEventListener('click', () => {
+            btnQuickTheme.classList.remove('btn-theme-spin');
+            void btnQuickTheme.offsetWidth; // re-trigger reflow
+            btnQuickTheme.classList.add('btn-theme-spin');
+
             const themeCycle = ['academic', 'sepia', 'emerald', 'cyberpunk', 'minimalist', 'playful'];
             const themeNames = {
-                academic: 'Slate Focus (Tập trung)',
+                academic: 'Ocean Studio (Xanh dịu)',
                 sepia: 'Warm Sepia (Giấy êm mắt)',
                 emerald: 'Sage Calm (Thảo mộc dịu)',
-                cyberpunk: 'Nordic Dark (Đêm dịu mắt)',
+                cyberpunk: 'Midnight Slate (Đêm dịu mắt)',
                 minimalist: 'Clean Minimalist (Tối giản)',
-                playful: 'Soft Peach (Gam ấm nhẹ)'
+                playful: 'Sunset Blossom (Gam ấm nhẹ)'
             };
             const current = QuizEngine.state.currentTheme || 'academic';
             const nextIdx = (themeCycle.indexOf(current) + 1) % themeCycle.length;

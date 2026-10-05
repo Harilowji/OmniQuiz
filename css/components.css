@@ -110,7 +110,7 @@
     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25) !important;
 }
 
-/* BUTTONS & SELECTS (PILL GEOMETRY) */
+/* BUTTONS & SELECTS (PILL GEOMETRY & ELASTIC SPRING) */
 .custom-select, .btn-action {
     padding: 7px 15px;
     font-family: inherit;
@@ -122,7 +122,7 @@
     border-radius: var(--r-pill, 9999px);
     cursor: pointer;
     outline: none;
-    transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.15s ease, border-color 0.15s ease, box-shadow 0.22s ease;
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -131,7 +131,11 @@
 .custom-select:hover, .btn-action:hover:not(:disabled):not(.btn-locked) {
     border-color: var(--primary-color);
     background: var(--option-hover-bg);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(90, 155, 200, 0.14);
+}
+.btn-action:active:not(:disabled):not(.btn-locked) {
+    transform: scale(0.95);
 }
 .btn-action:disabled,
 .btn-action.btn-disabled,
@@ -154,11 +158,15 @@
     border-color: transparent !important;
     border-radius: var(--r-pill, 9999px);
     box-shadow: 0 4px 14px color-mix(in srgb, var(--primary-color) 25%, transparent);
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease, filter 0.15s ease;
 }
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
     background: var(--primary-hover) !important;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 18px color-mix(in srgb, var(--primary-color) 35%, transparent);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 22px color-mix(in srgb, var(--primary-color) 38%, transparent);
+}
+.btn-primary:active:not(:disabled) {
+    transform: scale(0.96);
 }
 .btn-danger {
     background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
@@ -169,8 +177,11 @@
 }
 .btn-danger:hover {
     background: #dc2626 !important;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(239, 68, 68, 0.32);
+}
+.btn-danger:active {
+    transform: scale(0.95);
 }
 .btn-success {
     background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
@@ -181,8 +192,21 @@
 }
 .btn-success:hover {
     background: #16a34a !important;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(34, 197, 94, 0.32);
+}
+.btn-success:active {
+    transform: scale(0.95);
+}
+
+/* Playful Sameko Quick Theme Spin Animation */
+@keyframes samekoThemeSpin {
+    0% { transform: scale(0.85) rotate(-35deg); }
+    55% { transform: scale(1.22) rotate(18deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+.btn-theme-spin {
+    animation: samekoThemeSpin 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
 
 /* STICKY STATS & FLOATING ISLAND BAR (SAMEKO STYLE) */
@@ -247,7 +271,17 @@
     box-shadow: 0 2px 8px rgba(225, 29, 72, 0.08);
 }
 
-/* QUESTION CARD - SAMEKO COZY GLASS CARD */
+/* QUESTION CARD - SAMEKO COZY GLASS CARD WITH REVEAL MOTION */
+@keyframes samekoCardReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(14px) scale(0.99);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
 .question-block {
     background: var(--card-bg);
     border: 2px solid rgba(255, 255, 255, 0.88);
@@ -260,7 +294,8 @@
     contain: content;
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
-    transition: border-color 0.15s ease;
+    transition: border-color 0.15s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+    animation: samekoCardReveal 0.32s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 .question-block:hover {
     border-color: color-mix(in srgb, var(--primary-color) 45%, var(--card-border));
@@ -316,11 +351,16 @@
     margin-bottom: 16px;
 }
 
-/* SQUIRCLE OPTIONS (SAMEKO STYLE) */
+/* SQUIRCLE OPTIONS (SAMEKO STYLE & SPRING FEEDBACK) */
 .options-container {
     display: flex;
     flex-direction: column;
     gap: 12px;
+}
+@keyframes samekoOptionPop {
+    0% { transform: scale(0.98); }
+    55% { transform: scale(1.015); }
+    100% { transform: scale(1); }
 }
 .option {
     padding: 13px 20px;
@@ -331,7 +371,7 @@
     font-weight: 600;
     font-size: 0.98em;
     line-height: 1.5;
-    transition: none; /* Instant 0ms perceived feedback! */
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.15s ease, border-color 0.15s ease, box-shadow 0.22s ease;
     display: flex;
     align-items: center;
     gap: 14px;
@@ -341,10 +381,11 @@
 .option:hover {
     background: var(--option-hover-bg);
     border-color: var(--primary-color);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(90, 155, 200, 0.12);
 }
 .option:active {
-    background: var(--option-hover-bg);
+    transform: scale(0.985);
 }
 .option-indicator {
     width: 34px;
@@ -361,21 +402,20 @@
     font-weight: 700;
     letter-spacing: 0.02em;
     flex-shrink: 0;
-    transition: none; /* Instant feedback */
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.15s ease;
 }
 .option.selected {
-    transition: none !important;
+    animation: samekoOptionPop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
     background: rgba(59, 142, 200, 0.12) !important;
     border-color: var(--primary-color) !important;
     font-weight: 700;
 }
 .option.selected .option-indicator {
-    transition: none !important;
     background: var(--primary-color) !important;
     border-color: var(--primary-color) !important;
     color: #ffffff !important;
+    transform: scale(1.08);
     box-shadow: 0 2px 8px rgba(59, 142, 200, 0.35);
-}
 }
 .option.correct {
     background: var(--correct-bg) !important;
@@ -605,14 +645,16 @@
     position: relative;
     user-select: none;
     outline: none;
-    transition: none; /* Instant CBT feedback: 0ms */
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.15s ease, background 0.15s ease, box-shadow 0.2s ease;
 }
 .palette-btn:hover {
     border-color: var(--primary-color);
+    transform: translateY(-2px) scale(1.08);
+    box-shadow: 0 4px 12px rgba(90, 155, 200, 0.22);
     z-index: 2;
 }
 .palette-btn:active {
-    opacity: 0.85;
+    transform: scale(0.92);
 }
 
 /* Azota Active ScrollSpy: Question currently centered on screen */
@@ -838,6 +880,16 @@ body.theme-cyberpunk .badge-q-unattempted {
     align-items: center;
     padding: 20px;
 }
+@keyframes samekoModalPop {
+    0% {
+        opacity: 0;
+        transform: scale(0.92) translateY(14px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
 .modal-content {
     background: var(--card-bg);
     border: 2px solid rgba(255, 255, 255, 0.88);
@@ -849,6 +901,7 @@ body.theme-cyberpunk .badge-q-unattempted {
     overflow-y: auto;
     padding: 36px 30px;
     text-align: center;
+    animation: samekoModalPop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .score-circle {
     width: 120px;
@@ -2097,6 +2150,7 @@ body.focus-mode {
     border: 2px solid rgba(255, 255, 255, 0.9);
     border-radius: var(--r-xl, 28px);
     box-shadow: 0 20px 60px rgba(90, 155, 200, 0.25);
+    animation: samekoModalPop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .studio-header-bar {
     display: flex;
@@ -2822,6 +2876,7 @@ body.mobile-drawer-open .floating-palette-fab {
     border-radius: var(--r-xl, 28px);
     border: 2px solid rgba(255, 255, 255, 0.9);
     box-shadow: 0 20px 60px rgba(90, 155, 200, 0.25);
+    animation: samekoModalPop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .tools-modal-header {
