@@ -18,6 +18,7 @@ import { practiceView } from '../features/study-modes/practice/practice-view';
 import { flashcardView } from '../features/study-modes/flashcard/flashcard-view';
 import { multiplayerRoomService } from '../features/multiplayer/room-service';
 import { analyticsService } from '../features/analytics/analytics-service';
+import { themeManager } from '../features/theme/theme-manager';
 
 export class OmniQuizApp {
   private currentExam: Exam | null = null;
@@ -25,6 +26,9 @@ export class OmniQuizApp {
 
   public async bootstrap(): Promise<void> {
     console.log('🚀 [OmniQuiz PRO 2.5] Initializing Enterprise EdTech Architecture...');
+
+    // 0. Initialize Theme & Visual Appearance System
+    themeManager.init();
 
     // 1. Preload Sample Banks into Dexie if empty
     await this.seedInitialDatabases();
@@ -718,6 +722,62 @@ export class OmniQuizApp {
     };
     document.getElementById('btn-create-room')?.addEventListener('click', createRoomHandler);
     document.getElementById('btn-tools-host-room')?.addEventListener('click', createRoomHandler);
+
+    // Question Studio Modal
+    document.getElementById('btn-tools-open-studio')?.addEventListener('click', () => {
+      const toolsModal = document.getElementById('tools-modal');
+      if (toolsModal) toolsModal.style.display = 'none';
+      const studioModal = document.getElementById('question-studio-modal');
+      if (studioModal) studioModal.style.display = 'flex';
+    });
+    document.getElementById('btn-close-studio')?.addEventListener('click', () => {
+      const studioModal = document.getElementById('question-studio-modal');
+      if (studioModal) studioModal.style.display = 'none';
+    });
+
+    // History Modal
+    document.getElementById('btn-tools-history')?.addEventListener('click', () => {
+      const toolsModal = document.getElementById('tools-modal');
+      if (toolsModal) toolsModal.style.display = 'none';
+      const historyModal = document.getElementById('history-modal');
+      if (historyModal) historyModal.style.display = 'flex';
+    });
+    document.getElementById('btn-close-history')?.addEventListener('click', () => {
+      const historyModal = document.getElementById('history-modal');
+      if (historyModal) historyModal.style.display = 'none';
+    });
+    document.getElementById('btn-history-modal-close')?.addEventListener('click', () => {
+      const historyModal = document.getElementById('history-modal');
+      if (historyModal) historyModal.style.display = 'none';
+    });
+
+    // Leaderboard Modal
+    document.getElementById('btn-tools-leaderboard')?.addEventListener('click', () => {
+      const toolsModal = document.getElementById('tools-modal');
+      if (toolsModal) toolsModal.style.display = 'none';
+      const lbModal = document.getElementById('room-leaderboard-modal');
+      if (lbModal) lbModal.style.display = 'flex';
+    });
+    document.getElementById('btn-close-leaderboard-modal')?.addEventListener('click', () => {
+      const lbModal = document.getElementById('room-leaderboard-modal');
+      if (lbModal) lbModal.style.display = 'none';
+    });
+
+    // AI & OCR Triggers
+    const aiTutorHandler = () => {
+      const key = localStorage.getItem('omniquiz_gemini_api_key') || '';
+      const promptVal = prompt(
+        'Nhập Google Gemini API Key để kích hoạt Trợ lý Gia sư AI và OCR quét đề:\n(Để trống nếu muốn cấu hình sau)',
+        key
+      );
+      if (promptVal !== null) {
+        localStorage.setItem('omniquiz_gemini_api_key', promptVal.trim());
+        themeManager.showToast('🤖 Đã lưu cấu hình AI Assistant');
+      }
+    };
+    document.getElementById('btn-open-ai-tutor')?.addEventListener('click', aiTutorHandler);
+    document.getElementById('btn-tools-ocr')?.addEventListener('click', aiTutorHandler);
+    document.getElementById('btn-tools-ai-key')?.addEventListener('click', aiTutorHandler);
 
     // Stop canvas animation loops when tab is hidden to save battery & GPU
     document.addEventListener('visibilitychange', () => {
