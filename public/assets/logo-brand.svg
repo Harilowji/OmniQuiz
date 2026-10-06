@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 80" width="100%" height="100%" fill="none">
+  <defs>
+    <!-- Gradient Anime Cyberpunk: Cyan -> Purple -> Neon Magenta -->
+    <linearGradient id="cyber-brand-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F0FF" />
+      <stop offset="45%" stop-color="#A855F7" />
+      <stop offset="100%" stop-color="#FF2A85" />
+    </linearGradient>
+
+    <!-- Gradient Ngôi sao lấp lánh (Kira-Sparkle) -->
+    <linearGradient id="star-sparkle-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="50%" stop-color="#FDE047" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </linearGradient>
+
+    <!-- Gradient Huy hiệu PRO -->
+    <linearGradient id="pro-badge-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF2A85" />
+      <stop offset="100%" stop-color="#8B5CF6" />
+    </linearGradient>
+
+    <!-- Bộ lọc phát sáng Cyber Glow -->
+    <filter id="cyber-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- ==================== PHẦN 1: BIỂU TƯỢNG (ICON CREST) ==================== -->
+  <g transform="translate(4, 4)">
+    <!-- Hào quang nền -->
+    <circle cx="36" cy="36" r="30" fill="url(#cyber-brand-grad)" opacity="0.12" filter="url(#cyber-glow)" />
+
+    <!-- Vòng Mecha Halo phân đoạn (Vành ngoài trên) -->
+    <path d="M36 8C48.5 8 59.2 16.5 62.5 28.5L54 31C51.5 22.5 44.5 16.5 36 16.5c-4.2 0-8.2 1.5-11.3 4L19 14C23.8 10.2 29.6 8 36 8z" 
+          fill="url(#cyber-brand-grad)" filter="url(#cyber-glow)" />
+
+    <!-- Vòng Mecha Halo phân đoạn (Vành ngoài dưới) -->
+    <path d="M36 64C23.5 64 12.8 55.5 9.5 43.5L18 41c2.5 8.5 9.5 14.5 18 14.5c4.2 0 8.2-1.5 11.3-4L53 58C48.2 61.8 42.4 64 36 64z" 
+          fill="url(#cyber-brand-grad)" filter="url(#cyber-glow)" />
+
+    <!-- Điểm neo giao diện Mecha (HUD Dots) -->
+    <circle cx="12" cy="24" r="1.8" fill="#00F0FF" />
+    <circle cx="60" cy="48" r="1.8" fill="#FF2A85" />
+
+    <!-- Vòng ngắm điện tử (Target Reticle) -->
+    <circle cx="36" cy="36" r="16" stroke="#00F0FF" stroke-width="1" stroke-dasharray="3 3" opacity="0.6" />
+
+    <!-- Ngôi sao 4 cánh Anime (Kira-Kira Star / Critical Sparkle) -->
+    <path d="M36 14 C36 27 28 36 14 36 C28 36 36 45 36 58 C36 45 44 36 58 36 C44 36 36 27 36 14 Z" 
+          fill="url(#star-sparkle-grad)" />
+
+    <!-- Tâm điểm ánh sáng trắng -->
+    <circle cx="36" cy="36" r="2.2" fill="#FFFFFF" />
+  </g>
+
+  <!-- ==================== PHẦN 2: CHỮ THƯƠNG HIỆU (WORDMARK) ==================== -->
+  <g transform="translate(86, 0)">
+    <!-- Tên chính: OMNIQUIZ -->
+    <text x="0" y="46" 
+          font-family="system-ui, -apple-system, 'Rajdhani', 'Orbitron', 'Segoe UI', sans-serif" 
+          font-size="34" 
+          font-weight="900" 
+          letter-spacing="-0.5" 
+          fill="url(#cyber-brand-grad)" 
+          filter="url(#cyber-glow)">
+      OmniQuiz
+    </text>
+
+    <!-- Huy hiệu PRO phong cách Gacha/Arcade -->
+    <g transform="translate(162, 23)">
+      <rect x="0" y="0" width="46" height="22" rx="5" 
+            fill="url(#pro-badge-grad)" />
+      <rect x="0.75" y="0.75" width="44.5" height="20.5" rx="4.25" 
+            stroke="#FFFFFF" stroke-width="0.8" stroke-opacity="0.5" />
+      <text x="23" y="15.5" 
+            font-family="system-ui, sans-serif" 
+            font-size="11" 
+            font-weight="900" 
+            letter-spacing="1.5" 
+            fill="#FFFFFF" 
+            text-anchor="middle">
+        PRO
+      </text>
+    </g>
+
+    <!-- Phụ đề phong cách Anime Sci-Fi: Katakana + CBT Studio -->
+    <text x="1" y="65" 
+          font-family="system-ui, 'Hiragino Kaku Gothic Pro', 'Meiryo', sans-serif" 
+          font-size="10.5" 
+          font-weight="600" 
+          letter-spacing="2" 
+          fill="#38BDF8">
+      オムニクイズ
+    </text>
+    <circle cx="78" cy="61.5" r="1.5" fill="#64748B" />
+    <text x="86" y="65" 
+          font-family="system-ui, sans-serif" 
+          font-size="10.5" 
+          font-weight="700" 
+          letter-spacing="1.2" 
+          fill="#94A3B8">
+      CBT STUDIO 2.0
+    </text>
+  </g>
+</svg>

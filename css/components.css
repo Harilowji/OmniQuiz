@@ -26,6 +26,75 @@
     align-items: center;
     gap: 12px;
 }
+.brand-link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    outline: none;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.brand-link:hover {
+    transform: scale(1.02);
+}
+.brand-link:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 4px;
+    border-radius: 8px;
+}
+.brand-desktop-lockup {
+    height: 48px;
+    width: auto;
+    display: block;
+    filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25));
+    transition: filter 0.3s ease, transform 0.3s ease;
+}
+.brand-link:hover .brand-desktop-lockup {
+    filter: drop-shadow(0 0 16px rgba(255, 42, 133, 0.45)) drop-shadow(0 0 24px rgba(0, 240, 255, 0.35));
+}
+.brand-mobile-lockup {
+    display: none;
+    align-items: center;
+    gap: 8px;
+}
+.brand-mobile-icon {
+    width: 36px;
+    height: 36px;
+    filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.35));
+    transition: transform 0.2s ease;
+}
+.brand-link:hover .brand-mobile-icon {
+    transform: rotate(5deg) scale(1.05);
+}
+.brand-mobile-title {
+    font-family: var(--font-brand, 'Fredoka', cursive, sans-serif);
+    font-weight: 900;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #00F0FF 0%, #A855F7 50%, #FF2A85 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.3));
+}
+.brand-mobile-badge {
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+    padding: 2px 6px;
+    border-radius: 5px;
+    background: rgba(255, 42, 133, 0.15);
+    color: #FF2A85;
+    border: 1px solid rgba(255, 42, 133, 0.35);
+    box-shadow: 0 0 8px rgba(255, 42, 133, 0.2);
+}
+@media (max-width: 768px) {
+    .brand-desktop-lockup {
+        display: none !important;
+    }
+    .brand-mobile-lockup {
+        display: flex !important;
+    }
+}
 .brand-logo-img {
     width: 42px;
     height: 42px;

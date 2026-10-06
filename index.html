@@ -56,7 +56,7 @@
     <!-- Favicon & PWA Manifest -->
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
     <link rel="alternate icon" type="image/png" href="assets/logo.png">
-    <link rel="apple-touch-icon" href="assets/logo.svg">
+    <link rel="apple-touch-icon" href="assets/logo-icon.svg">
     <link rel="manifest" href="manifest.json">
 
     <!-- Google Fonts: Fredoka & Nunito (Sameko Soft Desktop Typography) -->
@@ -95,11 +95,19 @@
         <!-- TOP NAVIGATION BAR -->
         <header class="top-navbar">
             <div class="brand-title">
-                <img src="assets/logo.svg" alt="OmniQuiz Logo" class="brand-logo-img">
-                <div class="brand-text-wrap">
-                    <div class="brand-name">OmniQuiz <span class="brand-badge-pro">PRO</span></div>
-                    <div class="brand-tagline" id="txt-app-title">Nền tảng thi trắc nghiệm đa môn học</div>
-                </div>
+                <a href="/" class="brand-link" title="OmniQuiz PRO - CBT Studio 2.0">
+                    <!-- Trên Desktop (>= 768px): Hiển thị Full Brand Lockup (Icon Anime + OmniQuiz PRO + Katakana) -->
+                    <img src="assets/logo-brand.svg" alt="OmniQuiz PRO" class="brand-desktop-lockup" />
+
+                    <!-- Trên Mobile (< 768px): Hiển thị Compact Crest + Title + Badge PRO -->
+                    <div class="brand-mobile-lockup">
+                        <img src="assets/logo-icon.svg" alt="OmniQuiz" class="brand-mobile-icon" />
+                        <span class="brand-mobile-title">OmniQuiz</span>
+                        <span class="brand-mobile-badge">PRO</span>
+                    </div>
+                </a>
+                <span id="txt-app-title" style="display: none;">OmniQuiz PRO</span>
+                <span id="txt-exam-title" style="display: none;"></span>
             </div>
             
             <!-- Streamlined Primary Controls -->
