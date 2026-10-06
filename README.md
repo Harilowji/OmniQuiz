@@ -18,7 +18,7 @@
   [![Vercel Live Demo](https://img.shields.io/badge/Demo-Vercel%20Live-000000?style=for-the-badge&logo=vercel&logoColor=white&labelColor=0a0f1d)](https://omni-quiz-harilowji.vercel.app/)
   [![TypeScript Strict](https://img.shields.io/badge/TypeScript-100%25%20Strict-3178c6?style=for-the-badge&logo=typescript&logoColor=white&labelColor=0a0f1d)](tsconfig.json)
   [![Vite 8 Build](https://img.shields.io/badge/Build-Vite%208%20~400ms-646cff?style=for-the-badge&logo=vite&logoColor=white&labelColor=0a0f1d)](vite.config.ts)
-  [![Tests Passing](https://img.shields.io/badge/Tests-42%2F42%20Passed-10b981?style=for-the-badge&logo=vitest&logoColor=white&labelColor=0a0f1d)](tests/)
+  [![Tests Passing](https://img.shields.io/badge/Tests-43%2F43%20Passed-10b981?style=for-the-badge&logo=vitest&logoColor=white&labelColor=0a0f1d)](tests/)
   [![Supabase Realtime](https://img.shields.io/badge/Realtime-Supabase%20Presence-3ecf8e?style=for-the-badge&logo=supabase&logoColor=white&labelColor=0a0f1d)](src/features/realtime/)
   [![Dexie Local-First](https://img.shields.io/badge/Storage-Dexie.js%20IndexedDB-f59e0b?style=for-the-badge&logo=indexeddb&logoColor=white&labelColor=0a0f1d)](src/shared/storage/)
   [![Security Grade A](https://img.shields.io/badge/Security-CBT%20Grade%20A-ec4899?style=for-the-badge&logo=shield&logoColor=white&labelColor=0a0f1d)](src/features/proctoring/)
@@ -106,6 +106,10 @@ Dưới đây là hình ảnh thực tế từ nền tảng **OmniQuiz PRO (CBT 
 | :---: | :---: |
 | <img src="docs/screenshots/theme-playful.png" width="100%" alt="Playful Pastel Theme" /> | <img src="docs/screenshots/theme-minimalist.png" width="100%" alt="Minimalist Clean Theme" /> |
 | *Gam màu kẹo ngọt sinh động, tạo cảm hứng ôn tập nhẹ nhàng* | *Gọn gàng, tinh giản tuyệt đối, giảm mọi phân tâm* |
+
+* **🎬 Hệ thống Hình Nền Động Game (Sameko Studio Live Wallpaper Engine):**
+  * Tích hợp trọn bộ video background `.webm` 60FPS siêu nhẹ (<1MB toàn bộ) phong cách game từ dự án **Sameko Dev-C++**: `darkblue.webm` (Kawaii Dark), `pink.webm` (Sakura), `nord.webm` (Nord Arctic), `dracula.webm` (Cyber Vampire), `monokai.webm` (Hacker Pro).
+  * Tự động điều chỉnh độ mờ (Opacity slider 15% - 85%), bật/tắt trong Trung tâm Tiện ích (`tools-modal`), tự động tạm dừng video khi đổi tab để tiết kiệm tối đa GPU & pin thiết bị.
 
 <div align="center">
   <img src="assets/dividers/divider.svg" alt="Divider" width="100%" />
@@ -306,14 +310,14 @@ npm test
 [Test 5: Online PIN Rooms & Realtime Leaderboard] ✓
 🎉 Test Suite Completed: 17 PASSED, 0 FAILED.
 
-✓ tests/unit/theme.test.ts (6 tests)
+✓ tests/unit/theme.test.ts (7 tests)
 ✓ tests/unit/sm2.test.ts (4 tests)
 ✓ tests/unit/parser.test.ts (6 tests)
 ✓ tests/unit/fsm.test.ts (8 tests)
 ✓ tests/integration/exam-flow.test.ts (1 test)
-Test Files  5 passed (5) | Tests 25 passed (25)
+Test Files  5 passed (5) | Tests 26 passed (26)
 
-=> TỔNG CỘNG: 42/42 TESTS PASSED HOÀN TOÀN!
+=> TỔNG CỘNG: 43/43 TESTS PASSED HOÀN TOÀN!
 ```
 
 ---

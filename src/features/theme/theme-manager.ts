@@ -1,13 +1,13 @@
 /**
  * src/features/theme/theme-manager.ts
- * Enterprise Theme Management & Visual Appearance Engine
- * Supports 6 Material 3 Expressive & Eye-Comfort Palettes:
- * - Academic (Kawaii Light / Ocean Saba)
- * - Playful (Sakura Pastel Pink)
- * - Cyberpunk (Kawaii Dark / Deep Ocean)
- * - Emerald (Nord Arctic Frost)
- * - Minimalist (Dracula Cyber Vampire)
- * - Sepia (Monokai Hacker Pro)
+ * Enterprise Theme Management & Gaming Live Wallpaper Engine (Sameko Studio Port)
+ * Supports 6 Material 3 Expressive & Eye-Comfort Palettes with 60FPS Video Backgrounds:
+ * - Academic (Kawaii Light / Ocean Saba) -> background.jpg
+ * - Playful (Sakura Pastel Pink) -> pink.webm
+ * - Cyberpunk (Kawaii Dark / Deep Ocean) -> darkblue.webm
+ * - Emerald (Nord Arctic Frost) -> nord.webm
+ * - Minimalist (Dracula Cyber Vampire) -> dracula.webm
+ * - Sepia (Monokai Hacker Pro) -> monokai.webm
  */
 
 export type ThemeId = 'academic' | 'playful' | 'cyberpunk' | 'emerald' | 'minimalist' | 'sepia';
@@ -19,6 +19,8 @@ export interface ThemeConfig {
   icon: string;
   dotColor: string;
   metaThemeColor: string;
+  mediaType: 'video' | 'image';
+  mediaUrl: string;
 }
 
 export const THEMES_LIST: ThemeConfig[] = [
@@ -29,6 +31,8 @@ export const THEMES_LIST: ThemeConfig[] = [
     icon: '🌊',
     dotColor: '#4a9bc9',
     metaThemeColor: '#e8f4fc',
+    mediaType: 'image',
+    mediaUrl: 'assets/backgrounds/background.jpg',
   },
   {
     id: 'playful',
@@ -37,6 +41,8 @@ export const THEMES_LIST: ThemeConfig[] = [
     icon: '🌸',
     dotColor: '#ff9aaf',
     metaThemeColor: '#fff5f8',
+    mediaType: 'video',
+    mediaUrl: 'assets/backgrounds/pink.webm',
   },
   {
     id: 'cyberpunk',
@@ -45,6 +51,8 @@ export const THEMES_LIST: ThemeConfig[] = [
     icon: '🌌',
     dotColor: '#88c9ea',
     metaThemeColor: '#0d1a25',
+    mediaType: 'video',
+    mediaUrl: 'assets/backgrounds/darkblue.webm',
   },
   {
     id: 'emerald',
@@ -53,6 +61,8 @@ export const THEMES_LIST: ThemeConfig[] = [
     icon: '❄️',
     dotColor: '#88c0d0',
     metaThemeColor: '#242933',
+    mediaType: 'video',
+    mediaUrl: 'assets/backgrounds/nord.webm',
   },
   {
     id: 'minimalist',
@@ -61,6 +71,8 @@ export const THEMES_LIST: ThemeConfig[] = [
     icon: '🧛',
     dotColor: '#ff79c6',
     metaThemeColor: '#21222c',
+    mediaType: 'video',
+    mediaUrl: 'assets/backgrounds/dracula.webm',
   },
   {
     id: 'sepia',
@@ -69,6 +81,8 @@ export const THEMES_LIST: ThemeConfig[] = [
     icon: '🌿',
     dotColor: '#a6e22e',
     metaThemeColor: '#1e1f1c',
+    mediaType: 'video',
+    mediaUrl: 'assets/backgrounds/monokai.webm',
   },
 ];
 
@@ -79,6 +93,8 @@ export const DEFAULT_THEME_CONFIG: ThemeConfig = {
   icon: '🌊',
   dotColor: '#4a9bc9',
   metaThemeColor: '#e8f4fc',
+  mediaType: 'image',
+  mediaUrl: 'assets/backgrounds/background.jpg',
 };
 
 export function getThemeConfig(id: ThemeId): ThemeConfig {
@@ -88,8 +104,13 @@ export function getThemeConfig(id: ThemeId): ThemeConfig {
 class ThemeManager {
   private currentTheme: ThemeId = 'academic';
   private toastTimer: ReturnType<typeof setTimeout> | null = null;
+  private isLiveBgEnabled = true;
+  private bgOpacity = 0.45;
 
   public init(): void {
+    // 0. Initialize Live Wallpaper & Opacity preferences
+    this.initBackgroundSettings();
+
     // 1. Load saved theme from localStorage
     const saved = this.getSavedTheme();
     this.applyTheme(saved, false);
@@ -126,8 +147,14 @@ class ThemeManager {
     // 5. Bind Tools & Settings Center Modal Controls
     this.bindToolsModalControls();
 
-    // 6. Bind Fullscreen Navbar Button
+    // 6. Bind Live Background Controls
+    this.bindLiveBackgroundControls();
+
+    // 7. Bind Fullscreen Navbar Button
     this.bindFullscreenToggle();
+
+    // 8. Bind Visibility Change to save battery on inactive tab
+    this.bindVisibilityChange();
   }
 
   public getCurrentTheme(): ThemeId {
@@ -150,9 +177,18 @@ class ThemeManager {
     return THEMES_LIST.some((t) => t.id === id);
   }
 
+  public isLiveBackgroundActive(): boolean {
+    return this.isLiveBgEnabled;
+  }
+
+  public getBackgroundOpacity(): number {
+    return this.bgOpacity;
+  }
+
   /**
    * Applies the selected theme to the DOM, updating body classes,
-   * meta theme-color, quick theme pill icon, and active button states.
+   * meta theme-color, quick theme pill icon, animated video background,
+   * and active button states.
    */
   public applyTheme(themeId: ThemeId, showNotification = true): void {
     const config = getThemeConfig(themeId);
@@ -198,7 +234,10 @@ class ThemeManager {
         selTheme.value = config.id;
       }
 
-      // 7. Persist preference to localStorage
+      // 7. Update animated live video or image background
+      this.updateBackgroundMedia(config);
+
+      // 8. Persist preference to localStorage
       try {
         localStorage.setItem('omniquiz_theme', config.id);
       } catch {
@@ -221,6 +260,64 @@ class ThemeManager {
 
     if (showNotification) {
       this.showToast(`${config.icon} ${config.name} • ${config.subtitle}`);
+    }
+  }
+
+  /**
+   * Updates the background video or still image based on active theme
+   */
+  public updateBackgroundMedia(config: ThemeConfig): void {
+    if (typeof document === 'undefined') return;
+
+    const bgVideo = document.getElementById('app-bg-video') as HTMLVideoElement | null;
+    const bgStill = document.getElementById('app-bg-still') as HTMLElement | null;
+
+    if (!bgVideo && !bgStill) return;
+
+    if (!this.isLiveBgEnabled) {
+      if (bgVideo) {
+        bgVideo.style.display = 'none';
+        try {
+          bgVideo.pause();
+          bgVideo.removeAttribute('src');
+          bgVideo.load();
+        } catch {}
+      }
+      if (bgStill) {
+        bgStill.style.display = 'none';
+      }
+      return;
+    }
+
+    if (config.mediaType === 'video' && bgVideo) {
+      if (bgStill) bgStill.style.display = 'none';
+
+      // Avoid re-loading if video is already playing the same source
+      const currentSrc = bgVideo.getAttribute('src');
+      if (currentSrc !== config.mediaUrl) {
+        bgVideo.src = config.mediaUrl;
+        bgVideo.load();
+      }
+      bgVideo.style.display = 'block';
+
+      try {
+        const playPromise = bgVideo.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch((err) => {
+            console.debug('[ThemeManager] Video autoplay deferred/blocked by browser policy:', err);
+          });
+        }
+      } catch {}
+    } else if (config.mediaType === 'image' && bgStill) {
+      if (bgVideo) {
+        bgVideo.style.display = 'none';
+        try {
+          bgVideo.pause();
+          bgVideo.removeAttribute('src');
+        } catch {}
+      }
+      bgStill.style.backgroundImage = `url('${config.mediaUrl}')`;
+      bgStill.style.display = 'block';
     }
   }
 
@@ -269,6 +366,25 @@ class ThemeManager {
     this.toastTimer = setTimeout(() => {
       toast?.classList.remove('show');
     }, 2200);
+  }
+
+  /**
+   * Loads initial live wallpaper and opacity settings from storage
+   */
+  private initBackgroundSettings(): void {
+    try {
+      const storedLive = localStorage.getItem('omniquiz_live_bg');
+      this.isLiveBgEnabled = storedLive !== 'false';
+
+      const storedOpacity = localStorage.getItem('omniquiz_bg_opacity');
+      if (storedOpacity) {
+        const num = parseInt(storedOpacity, 10);
+        if (!isNaN(num) && num >= 15 && num <= 85) {
+          this.bgOpacity = num / 100;
+        }
+      }
+      document.documentElement.style.setProperty('--app-bg-opacity', String(this.bgOpacity));
+    } catch {}
   }
 
   /**
@@ -351,6 +467,58 @@ class ThemeManager {
   }
 
   /**
+   * Binds Live Wallpaper toggle and opacity slider in Tools modal
+   */
+  private bindLiveBackgroundControls(): void {
+    const btnToggle = document.getElementById('btn-toggle-live-bg');
+    const txtState = document.getElementById('txt-live-bg-state');
+    const rangeOpacity = document.getElementById('range-bg-opacity') as HTMLInputElement | null;
+    const txtOpacity = document.getElementById('txt-bg-opacity-val');
+
+    const updateControlsUI = () => {
+      if (txtState) {
+        txtState.textContent = this.isLiveBgEnabled ? '✓ Bật' : '✕ Tắt';
+      }
+      if (btnToggle) {
+        btnToggle.classList.toggle('active', this.isLiveBgEnabled);
+      }
+      if (rangeOpacity) {
+        rangeOpacity.value = String(Math.round(this.bgOpacity * 100));
+      }
+      if (txtOpacity) {
+        txtOpacity.textContent = `${Math.round(this.bgOpacity * 100)}%`;
+      }
+    };
+
+    updateControlsUI();
+
+    btnToggle?.addEventListener('click', () => {
+      this.isLiveBgEnabled = !this.isLiveBgEnabled;
+      try {
+        localStorage.setItem('omniquiz_live_bg', String(this.isLiveBgEnabled));
+      } catch {}
+      updateControlsUI();
+      const currentConfig = getThemeConfig(this.currentTheme);
+      this.updateBackgroundMedia(currentConfig);
+      this.showToast(this.isLiveBgEnabled ? '🎬 Đã bật hình nền động Game' : '⏹ Đã tắt hình nền động');
+    });
+
+    rangeOpacity?.addEventListener('input', () => {
+      const val = parseInt(rangeOpacity.value, 10);
+      if (!isNaN(val)) {
+        this.bgOpacity = val / 100;
+        document.documentElement.style.setProperty('--app-bg-opacity', String(this.bgOpacity));
+        if (txtOpacity) {
+          txtOpacity.textContent = `${val}%`;
+        }
+        try {
+          localStorage.setItem('omniquiz_bg_opacity', String(val));
+        } catch {}
+      }
+    });
+  }
+
+  /**
    * Binds Fullscreen toggle button in navbar
    */
   private bindFullscreenToggle(): void {
@@ -372,6 +540,26 @@ class ThemeManager {
       } else {
         btnFs.textContent = '⛶';
         btnFs.title = 'Toàn màn hình';
+      }
+    });
+  }
+
+  /**
+   * Conserves device battery & GPU by pausing background video when tab is hidden
+   */
+  private bindVisibilityChange(): void {
+    document.addEventListener('visibilitychange', () => {
+      const bgVideo = document.getElementById('app-bg-video') as HTMLVideoElement | null;
+      if (!bgVideo || !this.isLiveBgEnabled) return;
+
+      if (document.hidden) {
+        try {
+          bgVideo.pause();
+        } catch {}
+      } else {
+        try {
+          bgVideo.play().catch(() => {});
+        } catch {}
       }
     });
   }

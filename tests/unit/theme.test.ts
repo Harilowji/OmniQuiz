@@ -5,6 +5,11 @@ const mockStorage: Record<string, string> = {};
 const mockClassList = new Set<string>();
 
 const mockDocument = {
+  documentElement: {
+    style: {
+      setProperty: () => {},
+    },
+  },
   body: {
     className: '',
     classList: {
@@ -29,6 +34,7 @@ const mockDocument = {
   getElementById: () => null,
   createElement: () => ({ name: '', content: '' }),
   head: { appendChild: () => {} },
+  addEventListener: () => {},
 };
 
 const mockLocalStorage = {
@@ -65,7 +71,7 @@ Object.defineProperty(globalThis, 'window', {
 
 import { themeManager, THEMES_LIST, getThemeConfig, type ThemeId } from '../../src/features/theme/theme-manager';
 
-describe('ThemeManager & Visual Appearance Engine', () => {
+describe('ThemeManager & Gaming Live Wallpaper Engine', () => {
   beforeEach(() => {
     mockClassList.clear();
     mockLocalStorage.clear();
@@ -123,13 +129,28 @@ describe('ThemeManager & Visual Appearance Engine', () => {
     }
   });
 
-  it('getThemeConfig returns configuration metadata for each theme', () => {
+  it('getThemeConfig returns configuration metadata and Sameko animated backgrounds', () => {
     for (const t of THEMES_LIST) {
       const cfg = getThemeConfig(t.id);
       expect(cfg.id).toBe(t.id);
       expect(cfg.name).toBeTruthy();
       expect(cfg.icon).toBeTruthy();
       expect(cfg.metaThemeColor).toBeTruthy();
+      expect(['video', 'image']).toContain(cfg.mediaType);
+      expect(cfg.mediaUrl).toBeTruthy();
     }
+
+    // Explicitly verify Sameko gaming background assets
+    expect(getThemeConfig('playful').mediaUrl).toContain('pink.webm');
+    expect(getThemeConfig('cyberpunk').mediaUrl).toContain('darkblue.webm');
+    expect(getThemeConfig('emerald').mediaUrl).toContain('nord.webm');
+    expect(getThemeConfig('minimalist').mediaUrl).toContain('dracula.webm');
+    expect(getThemeConfig('sepia').mediaUrl).toContain('monokai.webm');
+    expect(getThemeConfig('academic').mediaUrl).toContain('background.jpg');
+  });
+
+  it('manages live wallpaper state and default opacity', () => {
+    expect(themeManager.isLiveBackgroundActive()).toBe(true);
+    expect(themeManager.getBackgroundOpacity()).toBe(0.45);
   });
 });

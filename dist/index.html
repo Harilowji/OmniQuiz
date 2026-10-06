@@ -83,15 +83,19 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
 
     <!-- Modular Stylesheets -->
-  <script type="module" crossorigin src="/assets/index-CO2kW25b.js"></script>
+  <script type="module" crossorigin src="/assets/index-DS9f8qER.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-C0FnF6B9.js">
   <link rel="modulepreload" crossorigin href="/assets/dexie-Bt_Vhrvy.js">
   <link rel="modulepreload" crossorigin href="/assets/supabase-Bl13M3oS.js">
   <link rel="modulepreload" crossorigin href="/assets/katex-CjWbGmc8.js">
   <link rel="modulepreload" crossorigin href="/assets/chart-DKPB83iI.js">
-  <link rel="stylesheet" crossorigin href="/assets/index-JaRRrQ1C.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-DGgXFNTn.css">
 </head>
 <body class="theme-academic">
+    <!-- Animated Gaming Video & Backdrop System (Sameko Studio Engine) -->
+    <video id="app-bg-video" autoplay loop muted playsinline preload="auto" class="app-bg-video" aria-hidden="true"></video>
+    <div id="app-bg-still" class="app-bg-still" aria-hidden="true"></div>
+
     <canvas id="confetti-canvas"></canvas>
 
     <div class="app-container">
@@ -1105,6 +1109,22 @@
                             <span class="theme-name">Monokai</span>
                             <span class="theme-badge" id="badge-theme-sepia">Hacker Pro</span>
                         </button>
+                    </div>
+ 
+                    <!-- Live Gaming Wallpaper Controls (Sameko Studio Engine) -->
+                    <div class="tools-livebg-controls" style="margin-top: 12px; padding: 10px 12px; background: color-mix(in srgb, var(--primary-color) 8%, transparent); border: 1.5px solid var(--option-border); border-radius: 12px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-weight: 700; font-size: 0.88em; display: flex; align-items: center; gap: 6px; color: var(--text-color);">
+                                🎬 Hình nền động Game:
+                            </span>
+                            <button type="button" class="btn-action active" id="btn-toggle-live-bg" style="padding: 4px 12px; font-size: 0.82em; border-radius: 8px;">
+                                <span id="txt-live-bg-state">✓ Bật</span>
+                            </button>
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+                            <span style="font-size: 0.82em; opacity: 0.85; white-space: nowrap;">Độ mờ: <strong id="txt-bg-opacity-val">45%</strong></span>
+                            <input type="range" id="range-bg-opacity" min="15" max="85" value="45" style="width: 100%; accent-color: var(--primary-color); cursor: pointer;" title="Kéo để chỉnh độ sáng/mờ của video hình nền" />
+                        </div>
                     </div>
 
                     <!-- Hidden select kept for 100% backward compatibility with scripts -->

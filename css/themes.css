@@ -23,6 +23,44 @@
     --border-color: var(--card-border);
 }
 
+/* Animated Video Background System (Sameko Gaming Live Wallpaper) */
+.app-bg-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    object-position: center center;
+    z-index: -3;
+    pointer-events: none;
+    opacity: var(--app-bg-opacity, 0.45);
+    filter: blur(var(--app-bg-blur, 0px)) brightness(var(--app-bg-brightness, 1));
+    transition: opacity 0.5s ease;
+    display: none;
+    will-change: opacity, transform;
+    transform: translateZ(0);
+}
+
+.app-bg-still {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    z-index: -3;
+    pointer-events: none;
+    opacity: var(--app-bg-opacity, 0.45);
+    filter: blur(var(--app-bg-blur, 0px)) brightness(var(--app-bg-brightness, 1));
+    transition: opacity 0.5s ease;
+    display: none;
+    will-change: opacity, transform;
+    transform: translateZ(0);
+}
+
 /* Base Shared Pseudo-Element for Calming Ambient Backgrounds */
 body {
     position: relative;
@@ -123,7 +161,7 @@ body::before {
 }
 
 body.theme-academic::before, body.theme-kawaii-light::before {
-    background-color: #e8f4fc;
+    background-color: rgba(232, 244, 252, 0.65);
     background-image: 
         radial-gradient(circle at 12% 15%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),
         radial-gradient(circle at 88% 18%, rgba(188, 226, 245, 0.6) 0%, transparent 50%),
@@ -138,18 +176,18 @@ body.theme-playful, body.theme-sakura {
     --bg-gradient: #fff5f8;
     --text-color: #5d4a4d;
     --heading-color: #8b5f65;
-    --card-bg: rgba(255, 250, 252, 0.96);
+    --card-bg: rgba(255, 250, 252, 0.92);
     --card-border: #ffcad4;
     --card-shadow: 0 10px 28px rgba(255, 182, 193, 0.18), 0 2px 6px rgba(255, 105, 180, 0.06);
-    --option-bg: #fff0f5;
+    --option-bg: rgba(255, 240, 245, 0.88);
     --option-hover-bg: #ffe4e1;
     --option-border: #ffcad4;
     --primary-color: #ff9aaf;
     --primary-hover: #ff758f;
     --primary-gradient: linear-gradient(135deg, #ff9aaf 0%, #ff758f 100%);
-    --exp-bg: #fff0f5;
+    --exp-bg: rgba(255, 240, 245, 0.95);
     --exp-border: #ff9aaf;
-    --stats-bg: rgba(255, 250, 252, 0.96);
+    --stats-bg: rgba(255, 250, 252, 0.92);
     --correct-bg: #f2fbf2;
     --correct-border: #b8e2b8;
     --correct-text: #2d8a2d;
@@ -161,7 +199,7 @@ body.theme-playful, body.theme-sakura {
 }
 
 body.theme-playful::before, body.theme-sakura::before {
-    background-color: #fff5f8;
+    background-color: rgba(255, 245, 248, 0.62);
     background-image: 
         radial-gradient(circle at 10% 12%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),
         radial-gradient(circle at 90% 15%, rgba(255, 202, 212, 0.55) 0%, transparent 50%),
@@ -176,18 +214,18 @@ body.theme-cyberpunk, body.theme-kawaii-dark {
     --bg-gradient: #0d1a25;
     --text-color: #e0f0ff;
     --heading-color: #88c9ea;
-    --card-bg: rgba(20, 34, 47, 0.96);
+    --card-bg: rgba(20, 34, 47, 0.92);
     --card-border: #233b4e;
     --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.2);
-    --option-bg: #162635;
+    --option-bg: rgba(22, 38, 53, 0.88);
     --option-hover-bg: #1f354a;
     --option-border: #2c475d;
     --primary-color: #88c9ea;
     --primary-hover: #5eb7e0;
     --primary-gradient: linear-gradient(135deg, #88c9ea 0%, #5eb7e0 100%);
-    --exp-bg: rgba(21, 37, 53, 0.97);
+    --exp-bg: rgba(21, 37, 53, 0.95);
     --exp-border: #88c9ea;
-    --stats-bg: rgba(20, 34, 47, 0.96);
+    --stats-bg: rgba(20, 34, 47, 0.92);
     --correct-bg: rgba(125, 206, 160, 0.15);
     --correct-border: #7dcea0;
     --correct-text: #7dcea0;
@@ -199,7 +237,7 @@ body.theme-cyberpunk, body.theme-kawaii-dark {
 }
 
 body.theme-cyberpunk::before, body.theme-kawaii-dark::before {
-    background-color: #0d1a25;
+    background-color: rgba(13, 26, 37, 0.72);
     background-image: 
         radial-gradient(circle at 10% 10%, rgba(136, 201, 234, 0.12) 0px, transparent 45%),
         radial-gradient(circle at 90% 90%, rgba(94, 183, 224, 0.12) 0px, transparent 45%);
@@ -212,18 +250,18 @@ body.theme-emerald, body.theme-nord {
     --bg-gradient: #242933;
     --text-color: #eceff4;
     --heading-color: #88c0d0;
-    --card-bg: rgba(46, 52, 64, 0.96);
+    --card-bg: rgba(46, 52, 64, 0.92);
     --card-border: #3b4252;
     --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.2);
-    --option-bg: #2e3440;
+    --option-bg: rgba(46, 52, 64, 0.88);
     --option-hover-bg: #3b4252;
     --option-border: #434c5e;
     --primary-color: #88c0d0;
     --primary-hover: #8fbcbb;
     --primary-gradient: linear-gradient(135deg, #88c0d0 0%, #8fbcbb 100%);
-    --exp-bg: rgba(36, 41, 51, 0.97);
+    --exp-bg: rgba(36, 41, 51, 0.95);
     --exp-border: #88c0d0;
-    --stats-bg: rgba(46, 52, 64, 0.96);
+    --stats-bg: rgba(46, 52, 64, 0.92);
     --correct-bg: rgba(163, 190, 140, 0.15);
     --correct-border: #a3be8c;
     --correct-text: #a3be8c;
@@ -235,7 +273,7 @@ body.theme-emerald, body.theme-nord {
 }
 
 body.theme-emerald::before, body.theme-nord::before {
-    background-color: #242933;
+    background-color: rgba(36, 41, 51, 0.72);
     background-image: 
         radial-gradient(circle at 15% 15%, rgba(136, 192, 208, 0.1) 0px, transparent 45%),
         radial-gradient(circle at 85% 85%, rgba(143, 188, 187, 0.1) 0px, transparent 45%);
@@ -248,18 +286,18 @@ body.theme-minimalist, body.theme-dracula {
     --bg-gradient: #21222c;
     --text-color: #f8f8f2;
     --heading-color: #ff79c6;
-    --card-bg: rgba(40, 42, 54, 0.96);
+    --card-bg: rgba(40, 42, 54, 0.92);
     --card-border: #44475a;
     --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.2);
-    --option-bg: #282a36;
+    --option-bg: rgba(40, 42, 54, 0.88);
     --option-hover-bg: #343746;
     --option-border: #6272a4;
     --primary-color: #ff79c6;
     --primary-hover: #ff92d0;
     --primary-gradient: linear-gradient(135deg, #ff79c6 0%, #bd93f9 100%);
-    --exp-bg: rgba(33, 34, 44, 0.97);
+    --exp-bg: rgba(33, 34, 44, 0.95);
     --exp-border: #bd93f9;
-    --stats-bg: rgba(40, 42, 54, 0.96);
+    --stats-bg: rgba(40, 42, 54, 0.92);
     --correct-bg: rgba(80, 250, 123, 0.15);
     --correct-border: #50fa7b;
     --correct-text: #50fa7b;
@@ -271,7 +309,7 @@ body.theme-minimalist, body.theme-dracula {
 }
 
 body.theme-minimalist::before, body.theme-dracula::before {
-    background-color: #21222c;
+    background-color: rgba(33, 34, 44, 0.72);
     background-image: 
         radial-gradient(circle at 10% 10%, rgba(189, 147, 249, 0.12) 0px, transparent 45%),
         radial-gradient(circle at 90% 90%, rgba(255, 121, 198, 0.12) 0px, transparent 45%);
@@ -284,18 +322,18 @@ body.theme-sepia, body.theme-monokai {
     --bg-gradient: #1e1f1c;
     --text-color: #f8f8f2;
     --heading-color: #a6e22e;
-    --card-bg: rgba(39, 40, 34, 0.96);
+    --card-bg: rgba(39, 40, 34, 0.92);
     --card-border: #3e3d32;
     --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.2);
-    --option-bg: #272822;
+    --option-bg: rgba(39, 40, 34, 0.88);
     --option-hover-bg: #34352d;
     --option-border: #49483e;
     --primary-color: #a6e22e;
     --primary-hover: #b8f32e;
     --primary-gradient: linear-gradient(135deg, #a6e22e 0%, #b8f32e 100%);
-    --exp-bg: rgba(30, 31, 28, 0.97);
+    --exp-bg: rgba(30, 31, 28, 0.95);
     --exp-border: #a6e22e;
-    --stats-bg: rgba(39, 40, 34, 0.96);
+    --stats-bg: rgba(39, 40, 34, 0.92);
     --correct-bg: rgba(166, 226, 46, 0.15);
     --correct-border: #a6e22e;
     --correct-text: #a6e22e;
@@ -307,7 +345,7 @@ body.theme-sepia, body.theme-monokai {
 }
 
 body.theme-sepia::before, body.theme-monokai::before {
-    background-color: #1e1f1c;
+    background-color: rgba(30, 31, 28, 0.72);
     background-image: 
         radial-gradient(circle at 10% 10%, rgba(166, 226, 46, 0.12) 0px, transparent 45%),
         radial-gradient(circle at 90% 90%, rgba(249, 38, 114, 0.1) 0px, transparent 45%);
