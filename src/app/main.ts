@@ -297,6 +297,46 @@ export class OmniQuizApp {
     try {
       const active = await localDB.loadActiveSession();
       if (active && !active.attempt.isCompleted && active.exam && active.exam.questions.length > 0) {
+        const now = Date.now();
+        const durationMinutes =
+          active.exam.durationMinutes ||
+          (active.attempt.totalDurationSeconds ? Math.round(active.attempt.totalDurationSeconds / 60) : 0);
+        const sessionStartTime =
+          typeof active.attempt.startedAt === 'number'
+            ? active.attempt.startedAt
+            : Number(active.attempt.startedAt) || now;
+
+        // In Exam mode with a time limit, verify wall-clock expiration
+        if (active.attempt.mode === 'exam' && durationMinutes > 0) {
+          const absoluteDeadline = sessionStartTime + durationMinutes * 60 * 1000;
+
+          if (now >= absoluteDeadline) {
+            console.warn(
+              '[CrashRecovery] Bài thi đã hết hạn trong thời gian gián đoạn. Tự động chấm điểm và nộp bài.'
+            );
+            this.currentExam = active.exam;
+            this.currentMode = active.attempt.mode;
+
+            await examStateMachine.recoverExpiredSession(active.exam, active.attempt, {
+              onStateChange: (state) => this.handleStateChange(state),
+              onTimerTick: (timeRemaining, isWarning) => this.updateTimerDisplay(timeRemaining, isWarning),
+              onAnswerChange: (qIdx) => {
+                this.updateQuestionPalette(qIdx);
+                this.updateHeaderProgress();
+              },
+              onAutoSaved: () => this.showAutoSaveIndicator(),
+              onExamSubmitted: (attempt) => this.handleExamSubmitted(attempt),
+            });
+
+            themeManager.showToast('⚠️ Bài thi đã hết thời gian làm bài trong lúc gián đoạn và đã được nộp tự động.');
+            return;
+          }
+
+          // If still within deadline, recalculate exact wall-clock remaining time
+          const accurateRemaining = Math.max(0, Math.floor((absoluteDeadline - now) / 1000));
+          active.attempt.timeRemainingSeconds = accurateRemaining;
+        }
+
         const banner = document.getElementById('recovery-banner');
         const titleEl = document.getElementById('recovery-exam-title');
         if (titleEl) {

@@ -37,10 +37,12 @@ export class ExamStateMachine {
   private currentAttempt: ExamAttempt | null = null;
   private callbacks: ExamStateCallbacks | null = null;
 
-  private timerInterval: number = 0;
-  private autoSaveInterval: number = 0;
+  private timerInterval: ReturnType<typeof setInterval> | number = 0;
+  private autoSaveInterval: ReturnType<typeof setInterval> | number = 0;
   private questionStartTime: number = Date.now();
   private currentQuestionIndex: number = -1;
+  private targetEndWallTime: number = 0;
+  private lastReportedSeconds: number = -1;
 
   constructor() {}
 
@@ -94,6 +96,8 @@ export class ExamStateMachine {
     this.currentExam = null;
     this.currentAttempt = null;
     this.currentQuestionIndex = -1;
+    this.targetEndWallTime = 0;
+    this.lastReportedSeconds = -1;
     this.callbacks?.onStateChange(this.state);
   }
 
@@ -237,7 +241,11 @@ export class ExamStateMachine {
     if (this.isRunning()) {
       this.state = isViolation ? 'PAUSED_VIOLATION' : 'PAUSED';
       this.recordTimeSpent(this.currentQuestionIndex);
-      window.clearInterval(this.timerInterval);
+      clearInterval(this.timerInterval);
+      if (this.currentAttempt && this.targetEndWallTime > 0) {
+        const remainingMs = Math.max(0, this.targetEndWallTime - Date.now());
+        this.currentAttempt.timeRemainingSeconds = Math.ceil(remainingMs / 1000);
+      }
       this.callbacks?.onStateChange(this.state);
     }
   }
@@ -288,25 +296,69 @@ export class ExamStateMachine {
     return this.currentAttempt;
   }
 
+  /**
+   * Automatically grades and submits an expired session recovered from Dexie checkpoint.
+   */
+  public async recoverExpiredSession(
+    exam: Exam,
+    attempt: ExamAttempt,
+    callbacks?: ExamStateCallbacks
+  ): Promise<ExamAttempt> {
+    this.stopIntervals();
+    this.currentExam = exam;
+    this.currentAttempt = attempt;
+    if (callbacks) {
+      this.callbacks = callbacks;
+    }
+
+    this.currentAttempt.timeRemainingSeconds = 0;
+    this.state = 'SUBMITTED';
+    this.calculateFinalGrading();
+
+    // Persist final attempt to Dexie & Cloud
+    await localDB.saveAttempt(this.currentAttempt);
+    await supabaseSync.syncAttemptToCloud(this.currentAttempt);
+    await localDB.clearActiveSession();
+
+    this.callbacks?.onStateChange(this.state);
+    this.callbacks?.onExamSubmitted(this.currentAttempt);
+
+    return this.currentAttempt;
+  }
+
   private startTimer(): void {
-    window.clearInterval(this.timerInterval);
-    this.timerInterval = window.setInterval(() => {
+    clearInterval(this.timerInterval);
+    if (!this.currentAttempt) return;
+
+    this.targetEndWallTime = Date.now() + this.currentAttempt.timeRemainingSeconds * 1000;
+    this.lastReportedSeconds = this.currentAttempt.timeRemainingSeconds;
+
+    // Fast polling (250ms) using Delta wall-clock calculation to prevent timer drift
+    this.timerInterval = setInterval(() => {
       if (!this.currentAttempt) return;
 
-      this.currentAttempt.timeRemainingSeconds = Math.max(0, this.currentAttempt.timeRemainingSeconds - 1);
-      const isWarning = this.currentAttempt.timeRemainingSeconds <= 300; // < 5 mins warning
+      const now = Date.now();
+      const remainingMs = Math.max(0, this.targetEndWallTime - now);
+      const remainingSeconds = Math.ceil(remainingMs / 1000);
 
-      this.callbacks?.onTimerTick(this.currentAttempt.timeRemainingSeconds, isWarning);
+      this.currentAttempt.timeRemainingSeconds = remainingSeconds;
 
-      if (this.currentAttempt.timeRemainingSeconds <= 0) {
+      if (remainingSeconds !== this.lastReportedSeconds) {
+        this.lastReportedSeconds = remainingSeconds;
+        const isWarning = remainingSeconds <= 300; // < 5 mins warning
+        this.callbacks?.onTimerTick(remainingSeconds, isWarning);
+      }
+
+      if (now >= this.targetEndWallTime || remainingSeconds <= 0) {
+        this.stopIntervals();
         this.submit();
       }
-    }, 1000);
+    }, 250);
   }
 
   private startAutoSave(): void {
-    window.clearInterval(this.autoSaveInterval);
-    this.autoSaveInterval = window.setInterval(() => {
+    clearInterval(this.autoSaveInterval);
+    this.autoSaveInterval = setInterval(() => {
       this.saveToDexie();
     }, 2000); // 2-second crash-recovery checkpoint
   }
@@ -356,8 +408,8 @@ export class ExamStateMachine {
   }
 
   private stopIntervals(): void {
-    window.clearInterval(this.timerInterval);
-    window.clearInterval(this.autoSaveInterval);
+    clearInterval(this.timerInterval);
+    clearInterval(this.autoSaveInterval);
   }
 }
 

@@ -478,17 +478,38 @@ const Database = {
         };
     },
 
-    submitRoomResult({ pin, studentName, studentSbd = '', score, totalQuestions, correctCount, incorrectCount, timeSpentSeconds = 0, violations = 0 }) {
+    submitRoomResult({ pin, studentName, studentSbd = '', score, totalQuestions, correctCount, incorrectCount, timeSpentSeconds = 0, violations = 0, submissionToken = '' }) {
         const db = loadDB();
-        const room = db.rooms.find(r => r.pin === String(pin).trim());
+        const cleanPin = String(pin).trim();
+        const room = db.rooms.find(r => r.pin === cleanPin);
         if (!room) {
             throw new Error('Mã phòng thi không hợp lệ!');
         }
 
+        const normalizedName = (studentName || '').trim();
+        if (!normalizedName) {
+            throw new Error('Vui lòng nhập tên thí sinh!');
+        }
+
+        const token = submissionToken ? String(submissionToken).trim() : `${cleanPin}_${normalizedName.toLowerCase()}`;
+
+        if (!db.room_results) {
+            db.room_results = [];
+        }
+
+        // Idempotency check: match existing by submissionToken OR (roomPin + studentName)
+        const existingIdx = db.room_results.findIndex(r =>
+            r.roomPin === cleanPin && (
+                (r.submissionToken && r.submissionToken === token) ||
+                (r.studentName && r.studentName.toLowerCase() === normalizedName.toLowerCase())
+            )
+        );
+
         const result = {
-            id: 'rres_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
-            roomPin: pin,
-            studentName: studentName.trim(),
+            id: existingIdx >= 0 ? db.room_results[existingIdx].id : 'rres_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+            submissionToken: token,
+            roomPin: cleanPin,
+            studentName: normalizedName,
             studentSbd: (studentSbd || '').trim(),
             score: Number(score) || 0,
             totalQuestions: Number(totalQuestions) || 0,
@@ -499,7 +520,13 @@ const Database = {
             submittedAt: new Date().toISOString()
         };
 
-        db.room_results.unshift(result);
+        if (existingIdx >= 0) {
+            // Update existing entry in-place to guarantee idempotency
+            db.room_results[existingIdx] = result;
+        } else {
+            db.room_results.unshift(result);
+        }
+
         saveDB();
         return result;
     },

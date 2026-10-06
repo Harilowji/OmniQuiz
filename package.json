@@ -32,6 +32,7 @@
     "chart.js": "^4.5.1",
     "cors": "^2.8.5",
     "dexie": "^4.4.6",
+    "dompurify": "^3.4.16",
     "express": "^4.21.2",
     "jspdf": "^4.2.1",
     "jszip": "^3.10.2",
@@ -45,8 +46,11 @@
   },
   "devDependencies": {
     "@types/canvas-confetti": "^1.9.0",
+    "@types/dompurify": "^3.0.5",
+    "@types/jsdom": "^30.0.0",
     "@types/katex": "^0.16.8",
     "@types/node": "^26.6.4",
+    "jsdom": "^29.1.1",
     "typescript": "^7.0.2",
     "vite": "^8.3.2",
     "vitest": "^4.1.11"

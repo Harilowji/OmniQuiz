@@ -332,7 +332,7 @@ router.get('/rooms/:pin', (req, res) => {
 router.post('/rooms/:pin/submit', (req, res) => {
     try {
         const { pin } = req.params;
-        const { studentName, studentSbd, score, totalQuestions, correctCount, incorrectCount, timeSpentSeconds, violations } = req.body;
+        const { studentName, studentSbd, score, totalQuestions, correctCount, incorrectCount, timeSpentSeconds, violations, submissionToken } = req.body;
 
         if (!studentName || !studentName.trim()) {
             return res.status(400).json({ success: false, error: 'Vui lòng nhập tên thí sinh!' });
@@ -347,7 +347,8 @@ router.post('/rooms/:pin/submit', (req, res) => {
             correctCount,
             incorrectCount,
             timeSpentSeconds,
-            violations
+            violations,
+            submissionToken
         });
 
         res.status(201).json({

@@ -8,6 +8,7 @@ import { SM2Algorithm } from './sm2-algorithm';
 import { localDB } from '../../../shared/db/dexie-db';
 import { KaTeXRenderer } from '../../../shared/renderers/katex';
 import { CodeRenderer } from '../../../shared/renderers/code';
+import { sanitizeHtml } from '../../../shared/security/sanitizer';
 
 export class FlashcardView {
   private cards: FlashcardItem[] = [];
@@ -61,7 +62,7 @@ export class FlashcardView {
       ? KaTeXRenderer.renderTextWithMath(CodeRenderer.parseMarkdownCodeBlocks(currentCard.explanation))
       : '';
 
-    this.container.innerHTML = `
+    this.container.innerHTML = sanitizeHtml(`
       <div class="flashcard-studio-wrapper">
         <div class="fc-header-bar">
           <span class="fc-counter">Thẻ ${this.currentIndex + 1} / ${this.cards.length}</span>
@@ -115,7 +116,7 @@ export class FlashcardView {
           </div>
         </div>
       </div>
-    `;
+    `);
 
     this.bindEvents();
   }

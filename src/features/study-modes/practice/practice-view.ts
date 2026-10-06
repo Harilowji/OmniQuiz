@@ -8,6 +8,7 @@ import { examStateMachine } from '../../exam-engine/exam-state-machine';
 import { questionNavigator } from '../../exam-engine/question-navigator';
 import { KaTeXRenderer } from '../../../shared/renderers/katex';
 import { CodeRenderer } from '../../../shared/renderers/code';
+import { sanitizeHtml } from '../../../shared/security/sanitizer';
 
 export class PracticeView {
   private exam: Exam | null = null;
@@ -131,7 +132,7 @@ export class PracticeView {
       })
       .join('');
 
-    this.container.innerHTML = questionsHtml;
+    this.container.innerHTML = sanitizeHtml(questionsHtml);
     this.bindEvents();
   }
 

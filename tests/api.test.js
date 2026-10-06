@@ -137,9 +137,22 @@ async function runTests() {
         });
         assert(submitRoom.status === 201 && submitRoom.data.success, 'POST /api/rooms/:pin/submit records room score');
 
+        // Test DB-01: Idempotent duplicate submission should update in-place without duplicate ranking entries
+        const submitRoomRetry = await request('POST', `/api/rooms/${pin}/submit`, {
+            studentName: 'Vũ Thí Sinh',
+            studentSbd: '12A-99',
+            score: 100,
+            totalQuestions: 5,
+            correctCount: 5,
+            timeSpentSeconds: 290,
+            violations: 0
+        });
+        assert(submitRoomRetry.status === 201 && submitRoomRetry.data.success, 'POST /api/rooms/:pin/submit handles idempotent retry');
+
         const leaderboard = await request('GET', `/api/rooms/${pin}/leaderboard`);
-        assert(leaderboard.status === 200 && leaderboard.data.data.length >= 1, 'GET /api/rooms/:pin/leaderboard returns live rankings');
+        assert(leaderboard.status === 200 && leaderboard.data.data.length === 1, 'GET /api/rooms/:pin/leaderboard contains exactly 1 entry (no duplicate rows)');
         assert(leaderboard.data.data[0].studentName === 'Vũ Thí Sinh', 'Top rank correctly assigned to highest score');
+        assert(leaderboard.data.data[0].score === 100, 'Top rank score successfully updated by idempotent submission');
 
         console.log(`\n🎉 Test Suite Completed: ${passed} PASSED, ${failed} FAILED.`);
     } catch (e) {

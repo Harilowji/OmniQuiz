@@ -18,6 +18,8 @@ export class ProctoringService {
   private violations: ExamViolation[] = [];
   private callbacks: ProctoringCallbacks | null = null;
   private resizeDebounce: number = 0;
+  private blurTimeout: number = 0;
+  private readonly BLUR_GRACE_PERIOD_MS = 400;
   private originalWidth: number = 0;
   private originalHeight: number = 0;
 
@@ -28,6 +30,7 @@ export class ProctoringService {
     this.handleSelectStart = this.handleSelectStart.bind(this);
     this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
     this.handleWindowBlur = this.handleWindowBlur.bind(this);
+    this.handleWindowFocus = this.handleWindowFocus.bind(this);
     this.handleFullscreenChange = this.handleFullscreenChange.bind(this);
     this.handleResize = this.handleResize.bind(this);
   }
@@ -55,6 +58,7 @@ export class ProctoringService {
       document.addEventListener('selectstart', this.handleSelectStart, true);
       document.addEventListener('visibilitychange', this.handleVisibilityChange, true);
       window.addEventListener('blur', this.handleWindowBlur, true);
+      window.addEventListener('focus', this.handleWindowFocus, true);
       document.addEventListener('fullscreenchange', this.handleFullscreenChange, true);
       window.addEventListener('resize', this.handleResize, true);
     }
@@ -67,6 +71,7 @@ export class ProctoringService {
    */
   public stopProctoring(): void {
     this.isActive = false;
+    this.cancelBlurCheck();
 
     if (typeof window !== 'undefined') {
       window.removeEventListener('keydown', this.handleKeyDown, true);
@@ -76,6 +81,7 @@ export class ProctoringService {
       document.removeEventListener('selectstart', this.handleSelectStart, true);
       document.removeEventListener('visibilitychange', this.handleVisibilityChange, true);
       window.removeEventListener('blur', this.handleWindowBlur, true);
+      window.removeEventListener('focus', this.handleWindowFocus, true);
       document.removeEventListener('fullscreenchange', this.handleFullscreenChange, true);
       window.removeEventListener('resize', this.handleResize, true);
 
@@ -230,14 +236,43 @@ export class ProctoringService {
 
   private handleVisibilityChange(): void {
     if (!this.isActive) return;
-    if (document.hidden) {
-      this.recordViolation('visibility_hidden', 'Rời khỏi trang thi hoặc chuyển sang cửa sổ khác');
+    if (typeof document !== 'undefined' && document.hidden) {
+      this.scheduleBlurCheck('visibility_hidden', 'Rời khỏi trang thi hoặc chuyển sang tab khác');
+    } else {
+      this.cancelBlurCheck();
     }
   }
 
   private handleWindowBlur(): void {
     if (!this.isActive) return;
-    this.recordViolation('tab_blur', 'Cửa sổ thi bị mất tiêu điểm (Focus)');
+    this.scheduleBlurCheck('tab_blur', 'Cửa sổ thi bị mất tiêu điểm (Focus)');
+  }
+
+  private handleWindowFocus(): void {
+    this.cancelBlurCheck();
+  }
+
+  private scheduleBlurCheck(type: ViolationType, message: string): void {
+    this.cancelBlurCheck();
+    if (typeof window === 'undefined') return;
+
+    this.blurTimeout = window.setTimeout(() => {
+      if (!this.isActive) return;
+      const isBlurred =
+        typeof document !== 'undefined' &&
+        (typeof document.hasFocus === 'function' ? !document.hasFocus() : false || document.hidden);
+
+      if (isBlurred) {
+        this.recordViolation(type, message);
+      }
+    }, this.BLUR_GRACE_PERIOD_MS);
+  }
+
+  private cancelBlurCheck(): void {
+    if (this.blurTimeout) {
+      window.clearTimeout(this.blurTimeout);
+      this.blurTimeout = 0;
+    }
   }
 
   private handleFullscreenChange(): void {
