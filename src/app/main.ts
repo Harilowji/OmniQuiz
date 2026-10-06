@@ -27,17 +27,14 @@ export class OmniQuizApp {
     // 1. Preload Sample Banks into Dexie if empty
     await this.seedInitialDatabases();
 
-    // 2. Check Crash Recovery Session
+    // 2. Set Initial State strictly to IDLE (Waiting for user upload or sample pick)
+    this.setIdleState();
+
+    // 3. Check Crash Recovery Session (Non-blocking banner)
     await this.checkCrashRecovery();
 
-    // 3. Bind UI Global Controls & Events
+    // 4. Bind UI Global Controls & Events
     this.bindGlobalEventListeners();
-
-    // 4. Default Load First Exam
-    const allExams = await localDB.getAllExams();
-    if (allExams.length > 0) {
-      this.loadExam(allExams[0]!);
-    }
   }
 
   /**
@@ -55,41 +52,175 @@ export class OmniQuizApp {
   }
 
   /**
-   * Crash Recovery Checkpoint
+   * Set UI to pure IDLE state (waiting for user to upload or choose exam)
+   */
+  public setIdleState(): void {
+    examStateMachine.reset();
+    proctoringService.stopProctoring();
+    this.currentExam = null;
+
+    // Show CBT Studio 2.0 Upload Hub
+    const uploadSection = document.getElementById('upload-section');
+    if (uploadSection) uploadSection.style.display = 'block';
+
+    // Hide Stats Bar & Timer
+    const statsSection = document.getElementById('stats-section');
+    if (statsSection) statsSection.style.display = 'none';
+
+    // Hide Palette Sidebar
+    const paletteSection = document.getElementById('palette-section');
+    if (paletteSection) paletteSection.style.display = 'none';
+
+    // Hide all question & flashcard containers
+    const examContainer = document.getElementById('exam-container');
+    if (examContainer) {
+      examContainer.style.display = 'none';
+      examContainer.innerHTML = '';
+    }
+
+    const practiceContainer = document.getElementById('practice-container');
+    if (practiceContainer) {
+      practiceContainer.style.display = 'none';
+      practiceContainer.innerHTML = '';
+    }
+
+    const flashcardSection = document.getElementById('flashcard-section');
+    if (flashcardSection) {
+      flashcardSection.style.display = 'none';
+      flashcardSection.innerHTML = '';
+    }
+
+    const flashcardContainer = document.getElementById('flashcard-container');
+    if (flashcardContainer) {
+      flashcardContainer.style.display = 'none';
+      flashcardContainer.innerHTML = '';
+    }
+
+    const quizContainer = document.getElementById('quiz-container');
+    if (quizContainer) {
+      quizContainer.style.display = 'none';
+      quizContainer.innerHTML = '';
+    }
+
+    // Hide Header Active Controls
+    const activeControls = document.getElementById('exam-active-controls');
+    if (activeControls) activeControls.style.display = 'none';
+
+    const resetBtn = document.getElementById('btn-reset');
+    if (resetBtn) resetBtn.style.display = 'none';
+
+    const wrapDuration = document.getElementById('wrap-duration-selector');
+    if (wrapDuration) wrapDuration.style.display = 'none';
+
+    // Reset palette grid and progress numbers
+    const paletteGrid = document.getElementById('palette-grid');
+    if (paletteGrid) paletteGrid.innerHTML = '';
+
+    const totalAnsweredEl = document.getElementById('total-answered');
+    if (totalAnsweredEl) totalAnsweredEl.textContent = '0';
+
+    const totalQuestionsEl = document.getElementById('total-questions') || document.getElementById('stat-total-q');
+    if (totalQuestionsEl) totalQuestionsEl.textContent = '0';
+
+    const progressBar = document.getElementById('quiz-progress-bar');
+    if (progressBar) progressBar.style.width = '0%';
+
+    const badge = document.getElementById('palette-completion-badge');
+    if (badge) badge.textContent = '0%';
+
+    document.body.classList.remove('quiz-active');
+  }
+
+  /**
+   * Crash Recovery Checkpoint (Non-blocking local-first recovery banner)
    */
   private async checkCrashRecovery(): Promise<void> {
-    const active = await localDB.loadActiveSession();
-    if (active && !active.attempt.isCompleted) {
-      const confirmResume = window.confirm(
-        `Phát hiện phiên thi chưa nộp: "${active.exam.title}". Bạn có muốn tiếp tục làm bài không?`
-      );
-      if (confirmResume) {
-        this.currentExam = active.exam;
-        this.currentMode = active.attempt.mode;
-        this.startStudySession(active.attempt);
-      } else {
-        await localDB.clearActiveSession();
+    try {
+      const active = await localDB.loadActiveSession();
+      if (active && !active.attempt.isCompleted && active.exam && active.exam.questions.length > 0) {
+        const banner = document.getElementById('recovery-banner');
+        const titleEl = document.getElementById('recovery-exam-title');
+        if (titleEl) {
+          titleEl.textContent = `"${active.exam.title}" (${active.exam.questions.length} câu)`;
+        }
+        if (banner) {
+          banner.style.display = 'flex';
+
+          const btnResume = document.getElementById('btn-recovery-resume');
+          btnResume?.addEventListener(
+            'click',
+            () => {
+              banner.style.display = 'none';
+              this.currentMode = active.attempt.mode;
+              this.loadExam(active.exam, active.attempt);
+            },
+            { once: true }
+          );
+
+          const btnDiscard = document.getElementById('btn-recovery-discard');
+          btnDiscard?.addEventListener(
+            'click',
+            async () => {
+              banner.style.display = 'none';
+              await localDB.clearActiveSession();
+            },
+            { once: true }
+          );
+        }
       }
+    } catch (err: unknown) {
+      console.warn('[Recovery Check Warning]', err);
     }
   }
 
   /**
    * Load and render selected exam
    */
-  public loadExam(exam: Exam): void {
+  public loadExam(exam: Exam, recoveredAttempt?: ExamAttempt): void {
+    if (!exam || !exam.questions || exam.questions.length === 0) {
+      alert('Đề thi không có câu hỏi hợp lệ!');
+      return;
+    }
+
     this.currentExam = exam;
     this.updateExamHeaderInfo(exam);
 
+    // Hide Upload Section
+    const uploadSection = document.getElementById('upload-section');
+    if (uploadSection) uploadSection.style.display = 'none';
+
+    // Hide Recovery Banner
+    const recoveryBanner = document.getElementById('recovery-banner');
+    if (recoveryBanner) recoveryBanner.style.display = 'none';
+
+    // Show Stats Section
     const statsSection = document.getElementById('stats-section');
     if (statsSection) statsSection.style.display = 'block';
 
+    // Show Palette Section
     const paletteSection = document.getElementById('palette-section');
     if (paletteSection) paletteSection.style.display = 'block';
 
-    const emptyWelcome = document.getElementById('empty-quiz-welcome');
-    if (emptyWelcome) emptyWelcome.style.display = 'none';
+    // Show Header Active Controls
+    const activeControls = document.getElementById('exam-active-controls');
+    if (activeControls) activeControls.style.display = 'inline-flex';
 
-    this.startStudySession();
+    const resetBtn = document.getElementById('btn-reset');
+    if (resetBtn) resetBtn.style.display = 'inline-flex';
+
+    const modeSelect = document.getElementById('mode-selector') as HTMLSelectElement | null;
+    if (modeSelect) {
+      modeSelect.value = this.currentMode;
+    }
+
+    const wrapDuration = document.getElementById('wrap-duration-selector');
+    if (wrapDuration) {
+      wrapDuration.style.display = this.currentMode === 'exam' ? 'inline-flex' : 'none';
+    }
+
+    document.body.classList.add('quiz-active');
+
+    this.startStudySession(recoveredAttempt);
   }
 
   /**
@@ -98,23 +229,19 @@ export class OmniQuizApp {
   private startStudySession(recoveredAttempt?: ExamAttempt): void {
     if (!this.currentExam) return;
 
-    const examContainer = document.getElementById('exam-container') || document.getElementById('quiz-container');
-    const practiceContainer = document.getElementById('practice-container') || document.getElementById('quiz-container');
-    const flashcardContainer = document.getElementById('flashcard-container') || document.getElementById('flashcard-section');
-    const flashcardDeck = document.getElementById('flashcard-deck-container') || flashcardContainer;
+    const examContainer = document.getElementById('exam-container');
+    const practiceContainer = document.getElementById('practice-container');
+    const flashcardSection = document.getElementById('flashcard-section');
+    const flashcardDeck = document.getElementById('flashcard-deck-container') || flashcardSection;
 
-    if (examContainer && examContainer !== practiceContainer) {
+    if (examContainer) {
       examContainer.style.display = this.currentMode === 'exam' ? 'block' : 'none';
     }
-    if (practiceContainer && practiceContainer !== examContainer) {
+    if (practiceContainer) {
       practiceContainer.style.display = this.currentMode === 'practice' ? 'block' : 'none';
     }
-    if (flashcardContainer) {
-      flashcardContainer.style.display = this.currentMode === 'flashcard' ? 'block' : 'none';
-    }
-    const quizContainer = document.getElementById('quiz-container');
-    if (quizContainer) {
-      quizContainer.style.display = this.currentMode === 'flashcard' ? 'none' : 'block';
+    if (flashcardSection) {
+      flashcardSection.style.display = this.currentMode === 'flashcard' ? 'block' : 'none';
     }
 
     // Start State Machine
@@ -136,15 +263,15 @@ export class OmniQuizApp {
 
     // Initialize Mode View
     if (this.currentMode === 'exam') {
-      const targetId = document.getElementById('exam-container') ? 'exam-container' : 'quiz-container';
+      const targetId = examContainer ? examContainer.id : 'exam-container';
       examView.init(this.currentExam, targetId);
       this.initProctoring();
     } else if (this.currentMode === 'practice') {
-      const targetId = document.getElementById('practice-container') ? 'practice-container' : 'quiz-container';
+      const targetId = practiceContainer ? practiceContainer.id : 'practice-container';
       practiceView.init(this.currentExam, targetId);
       proctoringService.stopProctoring();
     } else if (this.currentMode === 'flashcard') {
-      const targetId = flashcardDeck ? (flashcardDeck.id || 'flashcard-section') : 'flashcard-section';
+      const targetId = flashcardDeck ? flashcardDeck.id : 'flashcard-deck-container';
       flashcardView.init(this.currentExam, targetId);
       proctoringService.stopProctoring();
     }
@@ -331,7 +458,9 @@ export class OmniQuizApp {
           document.querySelectorAll('[data-study-mode]').forEach((b) => b.classList.remove('active'));
           target.classList.add('active');
           this.currentMode = mode;
-          this.startStudySession();
+          if (this.currentExam) {
+            this.startStudySession();
+          }
         }
       });
     });
@@ -345,9 +474,27 @@ export class OmniQuizApp {
           this.currentMode = mode;
           const wrapDuration = document.getElementById('wrap-duration-selector');
           if (wrapDuration) {
-            wrapDuration.style.display = mode === 'exam' ? 'block' : 'none';
+            wrapDuration.style.display = mode === 'exam' ? 'inline-flex' : 'none';
           }
-          this.startStudySession();
+          if (this.currentExam) {
+            this.startStudySession();
+          }
+        }
+      });
+    }
+
+    // Duration Selector
+    const durationSelect = document.getElementById('duration-selector') as HTMLSelectElement | null;
+    if (durationSelect) {
+      durationSelect.addEventListener('change', () => {
+        const mins = parseInt(durationSelect.value, 10);
+        if (this.currentExam && mins > 0) {
+          this.currentExam.durationMinutes = mins;
+          const attempt = examStateMachine.getAttempt();
+          if (attempt) {
+            attempt.timeRemainingSeconds = mins * 60;
+            attempt.totalDurationSeconds = mins * 60;
+          }
         }
       });
     }
@@ -363,14 +510,12 @@ export class OmniQuizApp {
     document.getElementById('finish-btn')?.addEventListener('click', submitHandler);
     document.getElementById('txt-btn-submit-aside')?.addEventListener('click', submitHandler);
 
-    // Reset Button
+    // Reset Button -> Return to pure IDLE state
     document.getElementById('btn-reset')?.addEventListener('click', () => {
-      const confirmReset = window.confirm('Bạn có muốn làm mới và quay về giao diện chọn đề thi không?');
+      const confirmReset = window.confirm('Bạn có muốn kết thúc bài thi và quay về giao diện chọn đề thi không?');
       if (confirmReset) {
-        examStateMachine.pause();
-        proctoringService.stopProctoring();
-        const uploadSec = document.getElementById('upload-section');
-        if (uploadSec) uploadSec.scrollIntoView({ behavior: 'smooth' });
+        this.setIdleState();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     });
 
@@ -378,7 +523,9 @@ export class OmniQuizApp {
     const sampleSelect = document.getElementById('sample-subject-select') as HTMLSelectElement | null;
     const loadSampleExam = async (subjectId: string): Promise<void> => {
       const exams = await localDB.getAllExams();
-      const match = exams.find((e) => e.id.toLowerCase().includes(subjectId.toLowerCase()) || e.subject.toLowerCase().includes(subjectId.toLowerCase()));
+      const match = exams.find(
+        (e) => e.id.toLowerCase().includes(subjectId.toLowerCase()) || e.subject.toLowerCase().includes(subjectId.toLowerCase())
+      );
       if (match) {
         this.loadExam(match);
       } else {
@@ -470,6 +617,21 @@ export class OmniQuizApp {
     document.getElementById('txt-modal-review')?.addEventListener('click', closeModal);
     document.getElementById('btn-modal-close')?.addEventListener('click', closeModal);
 
+    // Results Modal "Làm bài mới" -> Return to IDLE state
+    document.getElementById('txt-modal-new-quiz')?.addEventListener('click', () => {
+      closeModal();
+      this.setIdleState();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Results Modal "Luyện lại câu sai" / "Retake"
+    document.getElementById('txt-modal-retake')?.addEventListener('click', () => {
+      closeModal();
+      if (this.currentExam) {
+        this.loadExam(this.currentExam);
+      }
+    });
+
     // Export PDF Buttons
     const exportPdfHandler = (): void => {
       if (this.currentExam) {
@@ -494,7 +656,10 @@ export class OmniQuizApp {
 
     // Multiplayer PIN Room Creation
     const createRoomHandler = async (): Promise<void> => {
-      if (!this.currentExam) return;
+      if (!this.currentExam) {
+        alert('Vui lòng chọn hoặc tải lên một đề thi trước khi tạo phòng thi!');
+        return;
+      }
       const hostName = prompt('Nhập tên của bạn (Giáo viên / Host):', 'Thầy Giáo') || 'Giáo viên';
       const pin = await multiplayerRoomService.createRoom(hostName, this.currentExam, {
         onParticipantListChange: (list) => console.log('[Room Members]', list),
@@ -505,6 +670,14 @@ export class OmniQuizApp {
     };
     document.getElementById('btn-create-room')?.addEventListener('click', createRoomHandler);
     document.getElementById('btn-tools-host-room')?.addEventListener('click', createRoomHandler);
+
+    // Stop canvas animation loops when tab is hidden to save battery & GPU
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        const canvas = document.getElementById('confetti-canvas') as HTMLCanvasElement | null;
+        if (canvas) canvas.style.display = 'none';
+      }
+    });
   }
 
   private handleStateChange(state: string): void {
@@ -534,7 +707,7 @@ export class OmniQuizApp {
       banner.style.padding = '10px';
       banner.style.textAlign = 'center';
       banner.style.fontWeight = 'bold';
-      banner.style.zIndex = '999999';
+      banner.style.zIndex = '50';
       document.body.appendChild(banner);
     }
     banner.textContent = `⚠️ CẢNH BÁO VI PHẠM: ${msg}`;

@@ -83,13 +83,13 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
 
     <!-- Modular Stylesheets -->
-  <script type="module" crossorigin src="/assets/index-2jFZt9ji.js"></script>
+  <script type="module" crossorigin src="/assets/index-Dj9FtVgP.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-C0FnF6B9.js">
   <link rel="modulepreload" crossorigin href="/assets/dexie-Bt_Vhrvy.js">
   <link rel="modulepreload" crossorigin href="/assets/supabase-Bl13M3oS.js">
   <link rel="modulepreload" crossorigin href="/assets/katex-CjWbGmc8.js">
   <link rel="modulepreload" crossorigin href="/assets/chart-DKPB83iI.js">
-  <link rel="stylesheet" crossorigin href="/assets/index-DfhtErEy.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-B1JeH3C2.css">
 </head>
 <body class="theme-academic">
     <canvas id="confetti-canvas"></canvas>
@@ -107,28 +107,35 @@
             
             <!-- Streamlined Primary Controls -->
             <div class="controls-group">
-                <!-- 1. Mode Selector (Practice, Exam, Flashcard) -->
-                <div class="pill-select-wrap">
-                    <select class="custom-select mode-select-pill" id="mode-selector" aria-label="Select Mode">
-                        <option value="practice">🎯 Luyện tập</option>
-                        <option value="exam">⏱️ Thi thử</option>
-                        <option value="flashcard">🎴 Flashcard</option>
-                    </select>
+                <!-- Group 1: Exam Active Controls (Hidden in IDLE state) -->
+                <div id="exam-active-controls" class="exam-active-controls" style="display: none;">
+                    <!-- 1. Mode Selector (Practice, Exam, Flashcard) -->
+                    <div class="pill-select-wrap">
+                        <select class="custom-select mode-select-pill" id="mode-selector" aria-label="Select Mode">
+                            <option value="exam">⏱️ Thi thử</option>
+                            <option value="practice">🎯 Luyện tập</option>
+                            <option value="flashcard">🎴 Flashcard</option>
+                        </select>
+                    </div>
+
+                    <!-- 2. Exam Duration Picker (Visible only during Exam Mode) -->
+                    <div class="pill-select-wrap" id="wrap-duration-selector" title="Thời gian làm bài thi" style="display: none;">
+                        <select class="custom-select" id="duration-selector" aria-label="Thời gian làm bài">
+                            <option value="15">⏱️ 15 phút</option>
+                            <option value="30">⏱️ 30 phút</option>
+                            <option value="45">⏱️ 45 phút</option>
+                            <option value="60" selected>⏱️ 60 phút</option>
+                            <option value="90">⏱️ 90 phút</option>
+                            <option value="120">⏱️ 120 phút</option>
+                            <option value="0">♾️ Không giới hạn</option>
+                        </select>
+                    </div>
+
+                    <!-- Reset / New Quiz Button -->
+                    <button class="btn-action btn-danger" id="btn-reset" title="Làm mới và quay về trang nhập đề thi">🔄 Đổi đề</button>
                 </div>
 
-                <!-- 2. Exam Duration Picker (Visible only during Exam Mode) -->
-                <div class="pill-select-wrap" id="wrap-duration-selector" title="Thời gian làm bài thi" style="display: none;">
-                    <select class="custom-select" id="duration-selector" aria-label="Thời gian làm bài">
-                        <option value="15">⏱️ 15 phút</option>
-                        <option value="30">⏱️ 30 phút</option>
-                        <option value="45">⏱️ 45 phút</option>
-                        <option value="60" selected>⏱️ 60 phút</option>
-                        <option value="90">⏱️ 90 phút</option>
-                        <option value="120">⏱️ 120 phút</option>
-                        <option value="0">♾️ Không giới hạn</option>
-                    </select>
-                </div>
-
+                <!-- Group 2: Always Available Utilities -->
                 <!-- 3. Smart AI Tutor CTA Button -->
                 <button class="btn-action btn-ai-glow" id="btn-open-ai-tutor" title="Trợ lý Gia sư AI & Trích xuất đề thi từ ảnh (Gemini OCR)">
                     🤖 <span class="btn-ai-text" id="txt-btn-ai-tutor">Gia sư AI</span>
@@ -157,9 +164,6 @@
 
                 <!-- 5. Fullscreen Toggle -->
                 <button class="btn-action" id="btn-fullscreen-toggle" title="Toàn màn hình">⛶</button>
-
-                <!-- 6. Reset / New Quiz Button -->
-                <button class="btn-action btn-danger" id="btn-reset" title="Làm mới và quay về trang nhập đề thi">🔄</button>
             </div>
         </header>
 
@@ -167,6 +171,25 @@
         <div class="app-layout">
             <!-- LEFT COLUMN: QUIZ CONTENT -->
             <main class="quiz-main">
+                <!-- RESUME SESSION BANNER (Local-First Crash Recovery) -->
+                <div id="recovery-banner" class="recovery-banner-card" style="display: none;">
+                    <div class="recovery-banner-info">
+                        <span class="recovery-banner-icon">⏱️</span>
+                        <div>
+                            <div class="recovery-banner-title">Phát hiện phiên thi chưa nộp: <strong id="recovery-exam-title">...</strong></div>
+                            <div class="recovery-banner-sub">Tiến độ bài thi của bạn đã được tự động lưu. Bạn có muốn tiếp tục làm bài không?</div>
+                        </div>
+                    </div>
+                    <div class="recovery-banner-actions">
+                        <button type="button" class="btn-action btn-primary" id="btn-recovery-resume">
+                            ▶ Tiếp tục làm bài
+                        </button>
+                        <button type="button" class="btn-action" id="btn-recovery-discard">
+                            ✕ Bỏ qua & Tạo mới
+                        </button>
+                    </div>
+                </div>
+
                 <div id="upload-section" class="upload-studio-card">
                     <div class="studio-header">
                         <div class="studio-badge">✨ CBT Studio 2.0</div>
@@ -300,7 +323,7 @@
                     </div>
                 </div>
 
-                <div id="quiz-container">
+                <div id="quiz-container" style="display: none;">
                     <div id="empty-quiz-welcome" class="empty-quiz-card">
                         <div class="empty-quiz-icon-ring">🎓</div>
                         <h3 class="empty-quiz-title">Chào mừng bạn đến với OmniQuiz!</h3>
@@ -1223,12 +1246,5 @@
     </div>
 
     <!-- Enterprise Modular TypeScript Architecture -->
-    <script>
-        if (window.location.hash === '#autostart') {
-            window.addEventListener('DOMContentLoaded', () => {
-                setTimeout(() => document.getElementById('btn-load-sample')?.click(), 300);
-            });
-        }
-    </script>
 </body>
 </html>

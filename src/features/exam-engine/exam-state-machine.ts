@@ -26,7 +26,7 @@ export class ExamStateMachine {
   private timerInterval: number = 0;
   private autoSaveInterval: number = 0;
   private questionStartTime: number = Date.now();
-  private currentQuestionIndex: number = 0;
+  private currentQuestionIndex: number = -1;
 
   constructor() {}
 
@@ -40,6 +40,18 @@ export class ExamStateMachine {
 
   public getExam(): Exam | null {
     return this.currentExam;
+  }
+
+  /**
+   * Reset state machine to idle / unloaded state
+   */
+  public reset(): void {
+    this.stopIntervals();
+    this.state = 'idle';
+    this.currentExam = null;
+    this.currentAttempt = null;
+    this.currentQuestionIndex = -1;
+    this.callbacks?.onStateChange(this.state);
   }
 
   /**

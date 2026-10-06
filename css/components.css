@@ -862,7 +862,7 @@ body.theme-cyberpunk .badge-q-unattempted {
     }
 }
 
-/* SUMMARY MODAL (HIGH-END CBT SCORECARD) */
+/* SUMMARY MODAL & GLOBAL DIALOGS */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -870,7 +870,7 @@ body.theme-cyberpunk .badge-q-unattempted {
     background: rgba(15, 23, 42, 0.45);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    z-index: 95000;
+    z-index: 100;
     justify-content: center;
     align-items: center;
     padding: 20px;
@@ -1302,8 +1302,8 @@ body.theme-cyberpunk .badge-q-unattempted {
     inset: 0;
     background: rgba(0, 0, 0, 0.88);
     backdrop-filter: blur(8px);
-    z-index: 99999;
-    display: flex;
+    z-index: 999;
+    display: none;
     align-items: center;
     justify-content: center;
     padding: 20px;
@@ -1368,7 +1368,7 @@ body.theme-cyberpunk .badge-q-unattempted {
     font-size: 0.92em;
     font-weight: 600;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    z-index: 100000;
+    z-index: 50;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1754,8 +1754,8 @@ body.theme-emerald .quiz-inline-code {
     background: rgba(11, 15, 25, 0.96);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    z-index: 1000000;
-    display: flex;
+    z-index: 500;
+    display: none;
     justify-content: center;
     align-items: center;
     padding: 20px;
@@ -3967,6 +3967,98 @@ body.mobile-drawer-open .floating-palette-fab {
     border-color: var(--primary-color);
 }
 
+/* ==========================================================================
+   RECOVERY BANNER & EXAM ACTIVE TOOLBAR (IDLE STATE & FSA RESILIENCE)
+   ========================================================================== */
+.recovery-banner-card {
+    background: color-mix(in srgb, var(--primary-color) 8%, var(--card-bg));
+    border: 1.5px solid color-mix(in srgb, var(--primary-color) 35%, var(--card-border));
+    border-radius: var(--r-lg, 20px);
+    padding: 16px 22px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    animation: fadeIn 0.3s ease;
+}
+.recovery-banner-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.recovery-banner-icon {
+    font-size: 2.2em;
+    flex-shrink: 0;
+}
+.recovery-banner-title {
+    font-size: 1.05em;
+    font-weight: 700;
+    color: var(--heading-color);
+    margin-bottom: 3px;
+}
+.recovery-banner-sub {
+    font-size: 0.88em;
+    color: var(--text-color);
+    opacity: 0.85;
+}
+.recovery-banner-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
 
+.exam-active-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
 
-
+/* Mobile & Tablet Top Navbar Refinements */
+@media (max-width: 768px) {
+    .top-navbar {
+        padding: 10px 14px;
+        margin-bottom: 16px;
+        gap: 10px;
+        top: 8px;
+        border-radius: 20px;
+    }
+    .brand-title {
+        gap: 8px;
+    }
+    .brand-logo-img {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+    }
+    .brand-name {
+        font-size: 1.2em;
+    }
+    .brand-tagline {
+        display: none !important;
+    }
+    .controls-group {
+        gap: 6px;
+        width: 100%;
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+    .controls-group::-webkit-scrollbar {
+        display: none;
+    }
+    .recovery-banner-card {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 14px 16px;
+    }
+    .recovery-banner-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
