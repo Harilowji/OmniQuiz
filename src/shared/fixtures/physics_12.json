@@ -1,0 +1,97 @@
+{
+  "id": "sample_physics_12",
+  "title": "Đề ôn tập Vật lý 12 - Dao động Cơ học",
+  "description": "Chuyên đề Dao động điều hòa, con lắc lò xo, vận tốc gia tốc và hiện tượng cộng hưởng",
+  "subject": "Vật lý",
+  "durationMinutes": 15,
+  "totalQuestions": 5,
+  "createdAt": "2026-10-06T09:53:35.403Z",
+  "updatedAt": "2026-10-06T09:53:35.403Z",
+  "questions": [
+    {
+      "id": "sample_physics_12_q1",
+      "index": 1,
+      "text": "Một vật dao động điều hòa theo phương trình $x = A \\cos(\\omega t + \\varphi)$. Đại lượng $\\omega$ được gọi là:",
+      "type": "single",
+      "options": [
+        "Tần số dao động",
+        "Chu kì dao động",
+        "Tần số góc của dao động",
+        "Biên độ dao động"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "explanation": "Trong phương trình dao động điều hòa, $\\omega$ là tần số góc với đơn vị là rad/s.",
+      "subject": "Vật lý"
+    },
+    {
+      "id": "sample_physics_12_q2",
+      "index": 2,
+      "text": "Chu kì dao động điều hòa của con lắc lò xo có độ cứng $k$ và vật nặng khối lượng $m$ là:",
+      "type": "single",
+      "options": [
+        "$T = 2\\pi \\sqrt{\\frac{m}{k}}$",
+        "$T = 2\\pi \\sqrt{\\frac{k}{m}}$",
+        "$T = \\frac{1}{2\\pi} \\sqrt{\\frac{m}{k}}$",
+        "$T = \\frac{1}{2\\pi} \\sqrt{\\frac{k}{m}}$"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Công thức chu kì dao động của con lắc lò xo là $T = 2\\pi \\sqrt{m/k}$.",
+      "subject": "Vật lý"
+    },
+    {
+      "id": "sample_physics_12_q3",
+      "index": 3,
+      "text": "Vận tốc của chất điểm dao động điều hòa biến thiên:",
+      "type": "single",
+      "options": [
+        "Cùng pha với li độ",
+        "Ngược pha với li độ",
+        "Sớm pha $\\frac{\\pi}{2}$ so với li độ",
+        "Trễ pha $\\frac{\\pi}{2}$ so với li độ"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "explanation": "Ta có $v = x' = -\\omega A \\sin(\\omega t + \\varphi) = \\omega A \\cos(\\omega t + \\varphi + \\frac{\\pi}{2})$. Vận tốc sớm pha $\\pi/2$ so với li độ.",
+      "subject": "Vật lý"
+    },
+    {
+      "id": "sample_physics_12_q4",
+      "index": 4,
+      "text": "Gia tốc của một vật dao động điều hòa đạt giá trị cực đại khi vật ở vị trí:",
+      "type": "single",
+      "options": [
+        "Cân bằng theo chiều dương",
+        "Biên âm",
+        "Biên dương",
+        "Cân bằng theo chiều âm"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "explanation": "Biểu thức gia tốc $a = -\\omega^2 x$. Khi vật ở biên âm ($x = -A$), gia tốc đạt cực đại $a_{\\max} = \\omega^2 A$.",
+      "subject": "Vật lý"
+    },
+    {
+      "id": "sample_physics_12_q5",
+      "index": 5,
+      "text": "Hiện tượng cộng hưởng cơ xảy ra khi:",
+      "type": "single",
+      "options": [
+        "Tần số lực cưỡng bức bằng tần số dao động riêng của hệ",
+        "Tần số lực cưỡng bức rất lớn so với tần số riêng",
+        "Biên độ lực cưỡng bức đạt cực đại",
+        "Chu kì dao động riêng giảm về 0"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Hiện tượng cộng hưởng xảy ra khi tần số của ngoại lực cưỡng bức $f$ bằng tần số riêng $f_0$ của hệ dao động, làm biên độ dao động đạt giá trị cực đại.",
+      "subject": "Vật lý"
+    }
+  ]
+}

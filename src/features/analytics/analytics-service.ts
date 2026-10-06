@@ -241,17 +241,28 @@ export class AnalyticsService {
 
     let y = 20;
 
+function toPdfSafeText(str: string): string {
+  if (!str) return '';
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .replace(/[\r\n]+/g, ' ')
+    .trim();
+}
+
     // Title Header
     doc.setFontSize(18);
-    doc.text('OMNIQUIZ PRO - PHIẾU BÀI THI & BÁO CÁO KẾT QUẢ', 105, y, { align: 'center' });
+    doc.text('OMNIQUIZ PRO - PHIEU BAI THI & BAO CAO KET QUA', 105, y, { align: 'center' });
     y += 10;
 
     doc.setFontSize(13);
-    doc.text(`Tên đề thi: ${exam.title}`, 20, y);
+    doc.text(toPdfSafeText(`Ten de thi: ${exam.title}`), 20, y);
     y += 7;
 
     doc.setFontSize(10);
-    doc.text(`Môn học: ${exam.subject} | Thời gian: ${exam.durationMinutes} phút | Tổng số câu: ${exam.totalQuestions}`, 20, y);
+    doc.text(toPdfSafeText(`Mon hoc: ${exam.subject} | Thoi gian: ${exam.durationMinutes} phut | Tong so cau: ${exam.totalQuestions}`), 20, y);
     y += 10;
 
     if (report) {
@@ -260,10 +271,10 @@ export class AnalyticsService {
       doc.roundedRect(20, y, 170, 24, 3, 3, 'FD');
 
       doc.setFontSize(11);
-      doc.text(`Điểm số: ${report.scorePercentage}/100`, 25, y + 8);
-      doc.text(`Số câu đúng: ${report.correctCount} / ${report.totalQuestions}`, 25, y + 16);
-      doc.text(`Thời gian làm bài: ${Math.round(report.totalTimeSpentSeconds / 60)} phút`, 110, y + 8);
-      doc.text(`Số lần vi phạm: ${report.violations.length}`, 110, y + 16);
+      doc.text(toPdfSafeText(`Diem so: ${report.scorePercentage}/100`), 25, y + 8);
+      doc.text(toPdfSafeText(`So cau dung: ${report.correctCount} / ${report.totalQuestions}`), 25, y + 16);
+      doc.text(toPdfSafeText(`Thoi gian lam bai: ${Math.round(report.totalTimeSpentSeconds / 60)} phut`), 110, y + 8);
+      doc.text(toPdfSafeText(`So lan vi pham: ${report.violations.length}`), 110, y + 16);
       y += 32;
     }
 
@@ -271,7 +282,7 @@ export class AnalyticsService {
     y += 8;
 
     doc.setFontSize(12);
-    doc.text('DANH SÁCH CÂU HỎI VÀ ĐÁP ÁN:', 20, y);
+    doc.text('DANH SACH CAU HOI VA DAP AN:', 20, y);
     y += 8;
 
     exam.questions.forEach((q, idx) => {
@@ -281,7 +292,8 @@ export class AnalyticsService {
       }
 
       doc.setFontSize(10);
-      const qTitle = `Câu ${idx + 1}: ${q.text.split('\n')[0] || ''}`;
+      const firstLine = q.text.split('\n')[0] || '';
+      const qTitle = toPdfSafeText(`Cau ${idx + 1}: ${firstLine}`);
       const splitTitle = doc.splitTextToSize(qTitle, 170);
       doc.text(splitTitle, 20, y);
       y += splitTitle.length * 5;
@@ -293,14 +305,16 @@ export class AnalyticsService {
         }
         const letter = String.fromCharCode(65 + optIdx);
         const isAns = q.correctAnswer.includes(optIdx);
-        doc.text(`  ${letter}. ${opt} ${isAns ? ' [ĐÁP ÁN ĐÚNG]' : ''}`, 22, y);
+        const optLine = toPdfSafeText(`  ${letter}. ${opt} ${isAns ? ' [DAP AN DUNG]' : ''}`);
+        doc.text(optLine, 22, y);
         y += 5;
       });
 
       y += 4;
     });
 
-    doc.save(`${exam.title.replace(/\s+/g, '_')}_Bao_Cao.pdf`);
+    const safeFilename = toPdfSafeText(exam.title).replace(/\s+/g, '_') || 'OmniQuiz_Exam';
+    doc.save(`${safeFilename}_Bao_Cao.pdf`);
   }
 
   /**

@@ -9,7 +9,8 @@
     "dev:vite": "vite",
     "build": "tsc --noEmit && vite build",
     "typecheck": "tsc --noEmit",
-    "test": "node tests/api.test.js"
+    "test": "node tests/api.test.js && vitest run",
+    "test:unit": "vitest run"
   },
   "keywords": [
     "cbt",
@@ -26,12 +27,14 @@
   "license": "MIT",
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",
+    "@types/jszip": "^3.4.0",
     "canvas-confetti": "^1.9.4",
     "chart.js": "^4.5.1",
     "cors": "^2.8.5",
     "dexie": "^4.4.6",
     "express": "^4.21.2",
     "jspdf": "^4.2.1",
+    "jszip": "^3.10.2",
     "katex": "^0.19.0",
     "lucide": "^1.52.0",
     "mammoth": "^1.13.0",
@@ -45,6 +48,7 @@
     "@types/katex": "^0.16.8",
     "@types/node": "^26.6.4",
     "typescript": "^7.0.2",
-    "vite": "^8.3.2"
+    "vite": "^8.3.2",
+    "vitest": "^4.1.11"
   }
 }

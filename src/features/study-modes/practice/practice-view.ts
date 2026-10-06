@@ -5,6 +5,7 @@
 
 import type { Exam, Question } from '../../../shared/types';
 import { examStateMachine } from '../../exam-engine/exam-state-machine';
+import { questionNavigator } from '../../exam-engine/question-navigator';
 import { KaTeXRenderer } from '../../../shared/renderers/katex';
 import { CodeRenderer } from '../../../shared/renderers/code';
 
@@ -109,6 +110,8 @@ export class PracticeView {
 
   private bindEvents(): void {
     if (!this.container) return;
+
+    questionNavigator.bindTouchSwipe(this.container);
 
     // Option clicks & Strikethrough clicks
     this.container.querySelectorAll('.option').forEach((el) => {

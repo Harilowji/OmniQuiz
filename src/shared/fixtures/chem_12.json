@@ -1,0 +1,97 @@
+{
+  "id": "sample_chem_12",
+  "title": "Đề ôn tập Hóa học 12 - Este và Lipit",
+  "description": "Chuyên đề Este, xà phòng hóa, chất béo triolein và phản ứng hóa học hữu cơ",
+  "subject": "Hóa học",
+  "durationMinutes": 15,
+  "totalQuestions": 5,
+  "createdAt": "2026-10-06T09:53:35.403Z",
+  "updatedAt": "2026-10-06T09:53:35.403Z",
+  "questions": [
+    {
+      "id": "sample_chem_12_q1",
+      "index": 1,
+      "text": "Chất nào sau đây là este?",
+      "type": "single",
+      "options": [
+        "CH3COOH",
+        "CH3COOCH3",
+        "C2H5OH",
+        "CH3CHO"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "explanation": "CH3COOCH3 (metyl axetat) có nhóm chức este -COO- liên kết với hai gốc hiđrocacbon.",
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_12_q2",
+      "index": 2,
+      "text": "Thủy phân metyl fomat trong môi trường kiềm (NaOH) đun nóng thu được sản phẩm gồm:",
+      "type": "single",
+      "options": [
+        "HCOONa và CH3OH",
+        "CH3COONa và CH3OH",
+        "HCOOH và CH3OH",
+        "CH3COONa và C2H5OH"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Phản ứng xà phòng hóa: HCOOCH3 + NaOH -> HCOONa + CH3OH.",
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_12_q3",
+      "index": 3,
+      "text": "Đun sôi hỗn hợp gồm ancol etylic và axit axetic có axit sunfuric đặc làm xúc tác thu được este có mùi thơm hoa quả. Este đó là:",
+      "type": "single",
+      "options": [
+        "Etyl axetat",
+        "Metyl propionat",
+        "Etyl fomat",
+        "Benzyl axetat"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Axit axetic (CH3COOH) phản ứng với ancol etylic (C2H5OH) tạo thành etyl axetat (CH3COOC2H5).",
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_12_q4",
+      "index": 4,
+      "text": "Công thức phân tử của triolein là:",
+      "type": "single",
+      "options": [
+        "(C17H35COO)3C3H5",
+        "(C17H33COO)3C3H5",
+        "(C15H31COO)3C3H5",
+        "(C17H31COO)3C3H5"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "explanation": "Triolein là chất béo không no có công thức (C17H33COO)3C3H5 (chứa axit oleic C17H33COOH).",
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_12_q5",
+      "index": 5,
+      "text": "Khi đun nóng chất béo với dung dịch kiềm (NaOH hoặc KOH), sản phẩm luôn luôn có:",
+      "type": "single",
+      "options": [
+        "Glixerol",
+        "Axit axetic",
+        "Ancol etylic",
+        "Etylen glicol"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Thủy phân este của glixerol (chất béo) trong môi trường kiềm luôn tạo ra muối của axit béo (xà phòng) và ancol đa chức là glixerol C3H5(OH)3.",
+      "subject": "Hóa học"
+    }
+  ]
+}

@@ -9,8 +9,10 @@ import { localDB } from '../shared/db/dexie-db';
 import { getPreloadedSampleExams } from '../shared/sample-banks';
 import type { Exam, StudyMode, ExamAttempt, ExamAnalyticsReport } from '../shared/types';
 import { examStateMachine } from '../features/exam-engine/exam-state-machine';
+import { questionNavigator } from '../features/exam-engine/question-navigator';
 import { proctoringService } from '../features/proctoring/proctoring-service';
 import { documentParserService } from '../features/parser/document-parser';
+import { lobbyView } from '../features/lobby/lobby-view';
 import { examView } from '../features/study-modes/exam/exam-view';
 import { practiceView } from '../features/study-modes/practice/practice-view';
 import { flashcardView } from '../features/study-modes/flashcard/flashcard-view';
@@ -27,13 +29,16 @@ export class OmniQuizApp {
     // 1. Preload Sample Banks into Dexie if empty
     await this.seedInitialDatabases();
 
-    // 2. Set Initial State strictly to IDLE (Waiting for user upload or sample pick)
+    // 2. Initialize Lobby View Hub
+    this.initLobby();
+
+    // 3. Set Initial State strictly to IDLE (Waiting for user upload or sample pick)
     this.setIdleState();
 
-    // 3. Check Crash Recovery Session (Non-blocking banner)
+    // 4. Check Crash Recovery Session (Non-blocking banner)
     await this.checkCrashRecovery();
 
-    // 4. Bind UI Global Controls & Events
+    // 5. Bind UI Global Controls & Events
     this.bindGlobalEventListeners();
   }
 
@@ -52,6 +57,91 @@ export class OmniQuizApp {
   }
 
   /**
+   * Initialize Lobby Upload Hub & Handlers
+   */
+  private initLobby(): void {
+    lobbyView.init({
+      onFileSelected: async (file: File) => {
+        await this.handleFileUpload(file);
+      },
+      onSampleSelected: async (subjectId: string) => {
+        await this.loadSampleExam(subjectId);
+      },
+      onJoinRoom: async (pin: string, name: string, sbd?: string) => {
+        await this.handleJoinOnlineRoom(pin, name, sbd);
+      },
+    });
+  }
+
+  public async loadSampleExam(subjectId: string): Promise<void> {
+    const exams = await localDB.getAllExams();
+    const match = exams.find(
+      (e) =>
+        e.id.toLowerCase().includes(subjectId.toLowerCase()) ||
+        e.subject.toLowerCase().includes(subjectId.toLowerCase())
+    );
+    if (match) {
+      this.loadExam(match);
+    } else {
+      const samples = getPreloadedSampleExams();
+      const fallback =
+        samples.find((s) => s.id.toLowerCase().includes(subjectId.toLowerCase())) || samples[0];
+      if (fallback) {
+        await localDB.saveExam(fallback);
+        this.loadExam(fallback);
+      }
+    }
+  }
+
+  public async handleFileUpload(file: File): Promise<void> {
+    try {
+      const loadingModal = document.getElementById('loading-modal');
+      const loadingStep = document.getElementById('loading-modal-step');
+      const loadingBar = document.getElementById('loading-progress-bar');
+      const loadingNum = document.getElementById('loading-progress-num');
+
+      if (loadingModal) loadingModal.style.display = 'flex';
+
+      const parsedExam = await documentParserService.parseFile(file, undefined, (pct, status) => {
+        if (loadingStep) loadingStep.textContent = status;
+        if (loadingBar) loadingBar.style.width = `${pct}%`;
+        if (loadingNum) loadingNum.textContent = `${pct}%`;
+      });
+
+      if (loadingModal) loadingModal.style.display = 'none';
+
+      await localDB.saveExam(parsedExam);
+      this.loadExam(parsedExam);
+    } catch (err: unknown) {
+      const loadingModal = document.getElementById('loading-modal');
+      if (loadingModal) loadingModal.style.display = 'none';
+      alert(err instanceof Error ? err.message : String(err));
+    }
+  }
+
+  public async handleJoinOnlineRoom(
+    pin: string,
+    candidateName: string,
+    sbd?: string
+  ): Promise<void> {
+    try {
+      const fullName = sbd ? `${candidateName} (SBD: ${sbd})` : candidateName;
+      const ok = await multiplayerRoomService.joinRoom(pin, fullName, {
+        onParticipantListChange: (list) => console.log('[Room Members]', list),
+        onExamStarted: (exam) => {
+          this.loadExam(exam);
+        },
+        onLeaderboardUpdate: (ranked) => console.log('[Leaderboard Update]', ranked),
+      });
+      if (ok) {
+        alert(`Đã tham gia phòng thi PIN: ${pin}! Đang chờ giám thị bắt đầu bài thi...`);
+      }
+    } catch (err) {
+      alert(`Không thể tham gia phòng thi: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+
+  /**
    * Set UI to pure IDLE state (waiting for user to upload or choose exam)
    */
   public setIdleState(): void {
@@ -59,9 +149,21 @@ export class OmniQuizApp {
     proctoringService.stopProctoring();
     this.currentExam = null;
 
-    // Show CBT Studio 2.0 Upload Hub
-    const uploadSection = document.getElementById('upload-section');
-    if (uploadSection) uploadSection.style.display = 'block';
+    // Show CBT Studio 2.0 Upload Hub via lobbyView
+    lobbyView.show();
+
+    // Hide Mobile Palette FAB & Reset Drawer State
+    const fab = document.getElementById('btn-mobile-palette-toggle');
+    if (fab) fab.style.display = 'none';
+
+    const paletteDrawer = document.getElementById('palette-section');
+    if (paletteDrawer) paletteDrawer.classList.remove('mobile-drawer');
+
+    const paletteBackdrop = document.getElementById('palette-drawer-backdrop');
+    if (paletteBackdrop) paletteBackdrop.style.display = 'none';
+
+    const btnClose = document.getElementById('btn-close-palette-drawer');
+    if (btnClose) btnClose.style.display = 'none';
 
     // Hide Stats Bar & Timer
     const statsSection = document.getElementById('stats-section');
@@ -185,9 +287,14 @@ export class OmniQuizApp {
     this.currentExam = exam;
     this.updateExamHeaderInfo(exam);
 
-    // Hide Upload Section
-    const uploadSection = document.getElementById('upload-section');
-    if (uploadSection) uploadSection.style.display = 'none';
+    // Hide Upload Section via lobbyView
+    lobbyView.hide();
+
+    // Show Mobile Palette FAB if on small screens
+    const fab = document.getElementById('btn-mobile-palette-toggle');
+    if (fab && window.innerWidth <= 960) {
+      fab.style.display = 'inline-flex';
+    }
 
     // Hide Recovery Banner
     const recoveryBanner = document.getElementById('recovery-banner');
@@ -295,7 +402,7 @@ export class OmniQuizApp {
         alert('CẢNH BÁO VI PHẠM: Bạn đã vi phạm quy chế thi 3 lần. Bài thi sẽ bị thu và khóa kết quả!');
         examStateMachine.disqualify();
       },
-      onTimerPause: () => examStateMachine.pause(),
+      onTimerPause: () => examStateMachine.pause(true),
       onTimerResume: () => examStateMachine.resume(),
     });
   }
@@ -331,8 +438,17 @@ export class OmniQuizApp {
     paletteGrid.querySelectorAll('.palette-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         const idx = parseInt(btn.getAttribute('data-idx') || '0', 10);
-        const card = document.getElementById(`q-card-${idx}`);
-        card?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        questionNavigator.setIndex(idx);
+
+        // Auto close mobile drawer upon selection
+        if (window.innerWidth <= 960) {
+          const paletteDrawer = document.getElementById('palette-section');
+          if (paletteDrawer) paletteDrawer.classList.remove('mobile-drawer');
+          const backdrop = document.getElementById('palette-drawer-backdrop');
+          if (backdrop) backdrop.style.display = 'none';
+          const btnClose = document.getElementById('btn-close-palette-drawer');
+          if (btnClose) btnClose.style.display = 'none';
+        }
       });
     });
   }
@@ -519,95 +635,27 @@ export class OmniQuizApp {
       }
     });
 
-    // Load Sample Button & Subject Quick Pills
-    const sampleSelect = document.getElementById('sample-subject-select') as HTMLSelectElement | null;
-    const loadSampleExam = async (subjectId: string): Promise<void> => {
-      const exams = await localDB.getAllExams();
-      const match = exams.find(
-        (e) => e.id.toLowerCase().includes(subjectId.toLowerCase()) || e.subject.toLowerCase().includes(subjectId.toLowerCase())
-      );
-      if (match) {
-        this.loadExam(match);
-      } else {
-        const samples = getPreloadedSampleExams();
-        const fallback = samples.find((s) => s.id.toLowerCase().includes(subjectId.toLowerCase())) || samples[0];
-        if (fallback) {
-          await localDB.saveExam(fallback);
-          this.loadExam(fallback);
-        }
-      }
+    // Mobile Question Palette Drawer controls (<960px)
+    const fab = document.getElementById('btn-mobile-palette-toggle');
+    const paletteSection = document.getElementById('palette-section');
+    const paletteBackdrop = document.getElementById('palette-drawer-backdrop');
+    const btnClosePalette = document.getElementById('btn-close-palette-drawer');
+
+    const openPaletteDrawer = () => {
+      if (paletteSection) paletteSection.classList.add('mobile-drawer');
+      if (paletteBackdrop) paletteBackdrop.style.display = 'block';
+      if (btnClosePalette) btnClosePalette.style.display = 'inline-block';
     };
 
-    document.getElementById('btn-load-sample')?.addEventListener('click', async () => {
-      const subject = sampleSelect ? sampleSelect.value : 'informatics_10';
-      await loadSampleExam(subject);
-    });
-
-    document.querySelectorAll('.subj-pill').forEach((pill) => {
-      pill.addEventListener('click', async (e) => {
-        const target = e.currentTarget as HTMLElement;
-        const subj = target.getAttribute('data-subj');
-        if (subj) {
-          if (sampleSelect) sampleSelect.value = subj;
-          await loadSampleExam(subj);
-        }
-      });
-    });
-
-    // File Ingestion Dropzone & File Input
-    const handleFileUpload = async (file: File): Promise<void> => {
-      try {
-        const loadingModal = document.getElementById('loading-modal');
-        const loadingStep = document.getElementById('loading-modal-step');
-        const loadingBar = document.getElementById('loading-progress-bar');
-        const loadingNum = document.getElementById('loading-progress-num');
-
-        if (loadingModal) loadingModal.style.display = 'flex';
-
-        const parsedExam = await documentParserService.parseFile(file, undefined, (pct, status) => {
-          if (loadingStep) loadingStep.textContent = status;
-          if (loadingBar) loadingBar.style.width = `${pct}%`;
-          if (loadingNum) loadingNum.textContent = `${pct}%`;
-        });
-
-        if (loadingModal) loadingModal.style.display = 'none';
-
-        await localDB.saveExam(parsedExam);
-        this.loadExam(parsedExam);
-      } catch (err: unknown) {
-        const loadingModal = document.getElementById('loading-modal');
-        if (loadingModal) loadingModal.style.display = 'none';
-        alert(err instanceof Error ? err.message : String(err));
-      }
+    const closePaletteDrawer = () => {
+      if (paletteSection) paletteSection.classList.remove('mobile-drawer');
+      if (paletteBackdrop) paletteBackdrop.style.display = 'none';
+      if (btnClosePalette) btnClosePalette.style.display = 'none';
     };
 
-    const fileInputs = [
-      document.getElementById('file-input-native') as HTMLInputElement | null,
-      document.getElementById('file-input') as HTMLInputElement | null,
-    ];
-    fileInputs.forEach((input) => {
-      input?.addEventListener('change', async () => {
-        if (input.files && input.files[0]) {
-          await handleFileUpload(input.files[0]);
-        }
-      });
-    });
-
-    const dropzone = document.getElementById('dropzone-area');
-    if (dropzone) {
-      dropzone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropzone.classList.add('drag-over');
-      });
-      dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
-      dropzone.addEventListener('drop', async (e) => {
-        e.preventDefault();
-        dropzone.classList.remove('drag-over');
-        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
-          await handleFileUpload(e.dataTransfer.files[0]);
-        }
-      });
-    }
+    fab?.addEventListener('click', openPaletteDrawer);
+    paletteBackdrop?.addEventListener('click', closePaletteDrawer);
+    btnClosePalette?.addEventListener('click', closePaletteDrawer);
 
     // Modal Close Buttons
     const closeModal = (): void => {

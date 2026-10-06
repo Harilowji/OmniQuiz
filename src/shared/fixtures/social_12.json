@@ -1,0 +1,97 @@
+{
+  "id": "sample_social_12",
+  "title": "Đề ôn tập Lịch sử và Địa lý Tổng hợp",
+  "description": "Chiến dịch Điện Biên Phủ, Hiệp định Geneve 1954, Địa lý Việt Nam, Đại thắng mùa Xuân 1975",
+  "subject": "Khoa học Xã hội",
+  "durationMinutes": 15,
+  "totalQuestions": 5,
+  "createdAt": "2026-10-06T09:53:35.404Z",
+  "updatedAt": "2026-10-06T09:53:35.404Z",
+  "questions": [
+    {
+      "id": "sample_social_12_q1",
+      "index": 1,
+      "text": "Chiến dịch Điện Biên Phủ toàn thắng vào ngày, tháng, năm nào?",
+      "type": "single",
+      "options": [
+        "13/03/1954",
+        "07/05/1954",
+        "21/07/1954",
+        "19/12/1946"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "explanation": "Chiều ngày 7 tháng 5 năm 1954, tướng De Castries cùng toàn bộ cơ quan tham mưu tập đoàn cứ điểm Điện Biên Phủ bị bắt sống. Chiến dịch Điện Biên Phủ kết thúc thắng lợi hoàn toàn.",
+      "subject": "Khoa học Xã hội"
+    },
+    {
+      "id": "sample_social_12_q2",
+      "index": 2,
+      "text": "Hiệp định Geneve năm 1954 về Đông Dương đã lấy vĩ tuyến nào làm giới tuyến quân sự tạm thời ở Việt Nam?",
+      "type": "single",
+      "options": [
+        "Vĩ tuyến 17",
+        "Vĩ tuyến 16",
+        "Vĩ tuyến 18",
+        "Vĩ tuyến 20"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Hiệp định Geneve quy định lấy vĩ tuyến 17 (sông Bến Hải, Quảng Trị) làm giới tuyến quân sự tạm thời giữa hai miền Nam - Bắc.",
+      "subject": "Khoa học Xã hội"
+    },
+    {
+      "id": "sample_social_12_q3",
+      "index": 3,
+      "text": "Đỉnh núi cao nhất Việt Nam và được mệnh danh là \"nóc nhà Đông Dương\" là:",
+      "type": "single",
+      "options": [
+        "Fansipan (Phan-xi-păng)",
+        "Tây Côn Lĩnh",
+        "Pu Si Lung",
+        "Bạch Mộc Lương Tử"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Đỉnh Fansipan thuộc dãy núi Hoàng Liên Sơn với độ cao 3.143m, là đỉnh núi cao nhất Việt Nam và toàn khu vực Đông Dương.",
+      "subject": "Khoa học Xã hội"
+    },
+    {
+      "id": "sample_social_12_q4",
+      "index": 4,
+      "text": "Đồng bằng châu thổ có diện tích lớn nhất ở nước ta là:",
+      "type": "single",
+      "options": [
+        "Đồng bằng sông Hồng",
+        "Đồng bằng sông Cửu Long",
+        "Đồng bằng duyên hải miền Trung",
+        "Đồng bằng Thanh - Nghệ - Tĩnh"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "explanation": "Đồng bằng sông Cửu Long có diện tích khoảng 40.000 km2, là vùng đồng bằng châu thổ lớn nhất Việt Nam.",
+      "subject": "Khoa học Xã hội"
+    },
+    {
+      "id": "sample_social_12_q5",
+      "index": 5,
+      "text": "Ý nghĩa lịch sử quan trọng nhất của cuộc Tổng tiến công và nổi dậy mùa Xuân năm 1975 là:",
+      "type": "single",
+      "options": [
+        "Mở ra kỉ nguyên độc lập, thống nhất và đi lên chủ nghĩa xã hội của dân tộc",
+        "Đánh bại hoàn toàn chiến lược Việt Nam hóa chiến tranh",
+        "Buộc Mỹ phải ký Hiệp định Paris",
+        "Giải phóng hoàn toàn miền Trung và Tây Nguyên"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Đại thắng mùa Xuân 1975 đã giải phóng hoàn toàn miền Nam, chấm dứt 21 năm kháng chiến chống Mỹ và 30 năm chiến tranh giải phóng, thống nhất non sông đất nước.",
+      "subject": "Khoa học Xã hội"
+    }
+  ]
+}

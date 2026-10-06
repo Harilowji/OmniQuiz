@@ -1,0 +1,182 @@
+{
+  "id": "sample_sat_math",
+  "title": "Digital SAT Math Practice Exam (10 questions)",
+  "description": "Official Digital SAT Math questions covering Algebra, Advanced Math, Problem Solving, and Geometry",
+  "subject": "Toán học (SAT)",
+  "durationMinutes": 15,
+  "totalQuestions": 10,
+  "createdAt": "2026-10-06T09:53:35.404Z",
+  "updatedAt": "2026-10-06T09:53:35.404Z",
+  "questions": [
+    {
+      "id": "sample_sat_math_q1",
+      "index": 1,
+      "text": "If $3x + 7 = 22$, what is the value of $6x - 5$?",
+      "type": "single",
+      "options": [
+        "25",
+        "30",
+        "15",
+        "20"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "First, solve for $x$: $3x = 22 - 7 = 15 \\Rightarrow x = 5$. Then substitute $x$ into $6x - 5$: $6(5) - 5 = 30 - 5 = 25$.",
+      "subject": "Toán học (SAT)"
+    },
+    {
+      "id": "sample_sat_math_q2",
+      "index": 2,
+      "text": "A line in the $xy$-plane passes through the points $(2, 5)$ and $(4, 11)$. What is the slope of this line?",
+      "type": "single",
+      "options": [
+        "3",
+        "2",
+        "6",
+        "$\\frac{1}{3}$"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "The slope $m$ is given by $m = \\frac{y_2 - y_1}{x_2 - x_1} = \\frac{11 - 5}{4 - 2} = \\frac{6}{2} = 3$.",
+      "subject": "Toán học (SAT)"
+    },
+    {
+      "id": "sample_sat_math_q3",
+      "index": 3,
+      "text": "Which of the following is equivalent to $(2x^2 - 3x + 4) - (x^2 + 2x - 5)$?",
+      "type": "single",
+      "options": [
+        "$x^2 - 5x + 9$",
+        "$x^2 - x - 1$",
+        "$3x^2 - x - 1$",
+        "$x^2 - 5x - 1$"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Distribute the negative sign: $2x^2 - 3x + 4 - x^2 - 2x + 5 = (2x^2 - x^2) + (-3x - 2x) + (4 + 5) = x^2 - 5x + 9$.",
+      "subject": "Toán học (SAT)"
+    },
+    {
+      "id": "sample_sat_math_q4",
+      "index": 4,
+      "text": "The function $f$ is defined by $f(x) = 2x^2 - 8x + 11$. What is the minimum value of $f(x)$?",
+      "type": "single",
+      "options": [
+        "3",
+        "2",
+        "11",
+        "-3"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "The vertex of the parabola $y = ax^2 + bx + c$ occurs at $x = -\\frac{b}{2a} = -\\frac{-8}{2(2)} = 2$. Evaluating at $x = 2$: $f(2) = 2(2)^2 - 8(2) + 11 = 8 - 16 + 11 = 3$. Since $a = 2 > 0$, this is the minimum value.",
+      "subject": "Toán học (SAT)"
+    },
+    {
+      "id": "sample_sat_math_q5",
+      "index": 5,
+      "text": "If $4^{x+1} = 64$, what is the value of $x$?",
+      "type": "single",
+      "options": [
+        "2",
+        "3",
+        "4",
+        "1"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Rewrite 64 with base 4: $64 = 4^3$. Therefore, $4^{x+1} = 4^3 \\Rightarrow x + 1 = 3 \\Rightarrow x = 2$.",
+      "subject": "Toán học (SAT)"
+    },
+    {
+      "id": "sample_sat_math_q6",
+      "index": 6,
+      "text": "A circle in the $xy$-plane has equation $(x - 3)^2 + (y + 4)^2 = 49$. What are the coordinates of the center and the radius of the circle?",
+      "type": "single",
+      "options": [
+        "Center $(3, -4)$, Radius 7",
+        "Center $(-3, 4)$, Radius 7",
+        "Center $(3, -4)$, Radius 49",
+        "Center $(-3, 4)$, Radius 49"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Standard equation of a circle is $(x - h)^2 + (y - k)^2 = r^2$. Here $h = 3$, $k = -4$, and $r = \\sqrt{49} = 7$.",
+      "subject": "Toán học (SAT)"
+    },
+    {
+      "id": "sample_sat_math_q7",
+      "index": 7,
+      "text": "A store offers a $20\\%$ discount on a jacket originally priced at $\\$80$. If an additional $5\\%$ sales tax is applied to the discounted price, what is the final price?",
+      "type": "single",
+      "options": [
+        "$\\$67.20$",
+        "$\\$64.00$",
+        "$\\$68.00$",
+        "$\\$66.40$"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Discounted price = $\\$80 \\times (1 - 0.20) = \\$64.00$. With 5% sales tax: $\\$64.00 \\times 1.05 = \\$67.20$.",
+      "subject": "Toán học (SAT)"
+    },
+    {
+      "id": "sample_sat_math_q8",
+      "index": 8,
+      "text": "If $\\frac{a}{b} = 2$, what is the value of $\\frac{4b}{a}$?",
+      "type": "single",
+      "options": [
+        "2",
+        "4",
+        "$\\frac{1}{2}$",
+        "8"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Since $\\frac{a}{b} = 2$, it follows that $\\frac{b}{a} = \\frac{1}{2}$. Therefore, $\\frac{4b}{a} = 4 \\times \\frac{b}{a} = 4 \\times \\frac{1}{2} = 2$.",
+      "subject": "Toán học (SAT)"
+    },
+    {
+      "id": "sample_sat_math_q9",
+      "index": 9,
+      "text": "In right triangle $ABC$, the measure of angle $C$ is $90^\\circ$, and $\\sin A = \\frac{3}{5}$. What is the value of $\\cos A$?",
+      "type": "single",
+      "options": [
+        "$\\frac{4}{5}$",
+        "$\\frac{3}{4}$",
+        "$\\frac{5}{3}$",
+        "$\\frac{5}{4}$"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Using the Pythagorean trigonometric identity $\\sin^2 A + \\cos^2 A = 1$, we have $\\cos A = \\sqrt{1 - \\sin^2 A} = \\sqrt{1 - \\left(\\frac{3}{5}\\right)^2} = \\sqrt{1 - \\frac{9}{25}} = \\sqrt{\\frac{16}{25}} = \\frac{4}{5}$.",
+      "subject": "Toán học (SAT)"
+    },
+    {
+      "id": "sample_sat_math_q10",
+      "index": 10,
+      "text": "The system of equations $2x + 3y = 7$ and $kx + 6y = 15$ has no solution. What is the value of $k$?",
+      "type": "single",
+      "options": [
+        "4",
+        "6",
+        "2",
+        "-4"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "For a system of two linear equations to have no solution (parallel lines), the ratio of coefficients of $x$ and $y$ must be equal, but not equal to the constant term: $\\frac{k}{2} = \\frac{6}{3} \\neq \\frac{15}{7}$. Since $\\frac{6}{3} = 2$, we have $\\frac{k}{2} = 2 \\Rightarrow k = 4$.",
+      "subject": "Toán học (SAT)"
+    }
+  ]
+}

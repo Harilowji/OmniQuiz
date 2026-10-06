@@ -7,7 +7,21 @@ import type { Exam, ExamAttempt, StudyMode, Question } from '../../shared/types'
 import { localDB } from '../../shared/db/dexie-db';
 import { supabaseSync } from '../../shared/db/supabase';
 
-export type ExamState = 'idle' | 'running' | 'paused' | 'submitted' | 'disqualified';
+export type ExamState =
+  | 'IDLE'
+  | 'CONFIGURING'
+  | 'RUNNING'
+  | 'PAUSED'
+  | 'PAUSED_VIOLATION'
+  | 'SUBMITTED'
+  | 'DISQUALIFIED'
+  | 'idle'
+  | 'configuring'
+  | 'running'
+  | 'paused'
+  | 'paused_violation'
+  | 'submitted'
+  | 'disqualified';
 
 export interface ExamStateCallbacks {
   onStateChange: (state: ExamState) => void;
@@ -18,7 +32,7 @@ export interface ExamStateCallbacks {
 }
 
 export class ExamStateMachine {
-  private state: ExamState = 'idle';
+  private state: ExamState = 'IDLE';
   private currentExam: Exam | null = null;
   private currentAttempt: ExamAttempt | null = null;
   private callbacks: ExamStateCallbacks | null = null;
@@ -34,6 +48,35 @@ export class ExamStateMachine {
     return this.state;
   }
 
+  public isIdle(): boolean {
+    return this.state === 'IDLE' || this.state === 'idle';
+  }
+
+  public isConfiguring(): boolean {
+    return this.state === 'CONFIGURING' || this.state === 'configuring';
+  }
+
+  public isRunning(): boolean {
+    return this.state === 'RUNNING' || this.state === 'running';
+  }
+
+  public isPaused(): boolean {
+    return (
+      this.state === 'PAUSED' ||
+      this.state === 'paused' ||
+      this.state === 'PAUSED_VIOLATION' ||
+      this.state === 'paused_violation'
+    );
+  }
+
+  public isSubmitted(): boolean {
+    return this.state === 'SUBMITTED' || this.state === 'submitted';
+  }
+
+  public isDisqualified(): boolean {
+    return this.state === 'DISQUALIFIED' || this.state === 'disqualified';
+  }
+
   public getAttempt(): ExamAttempt | null {
     return this.currentAttempt ? { ...this.currentAttempt } : null;
   }
@@ -47,10 +90,19 @@ export class ExamStateMachine {
    */
   public reset(): void {
     this.stopIntervals();
-    this.state = 'idle';
+    this.state = 'IDLE';
     this.currentExam = null;
     this.currentAttempt = null;
     this.currentQuestionIndex = -1;
+    this.callbacks?.onStateChange(this.state);
+  }
+
+  /**
+   * Transition to configuring state
+   */
+  public configure(exam: Exam): void {
+    this.currentExam = exam;
+    this.state = 'CONFIGURING';
     this.callbacks?.onStateChange(this.state);
   }
 
@@ -92,7 +144,7 @@ export class ExamStateMachine {
       };
     }
 
-    this.state = 'running';
+    this.state = 'RUNNING';
     this.callbacks.onStateChange(this.state);
 
     this.startTimer();
@@ -103,7 +155,7 @@ export class ExamStateMachine {
    * Select or toggle answer option for a question
    */
   public selectAnswer(questionIndex: number, optionIndex: number): void {
-    if (this.state !== 'running' || !this.currentAttempt || !this.currentExam) return;
+    if (!this.isRunning() || !this.currentAttempt || !this.currentExam) return;
 
     const question = this.currentExam.questions[questionIndex];
     if (!question) return;
@@ -179,11 +231,11 @@ export class ExamStateMachine {
   }
 
   /**
-   * Pause exam (e.g. during proctoring warning)
+   * Pause exam (optionally for proctoring violation)
    */
-  public pause(): void {
-    if (this.state === 'running') {
-      this.state = 'paused';
+  public pause(isViolation = false): void {
+    if (this.isRunning()) {
+      this.state = isViolation ? 'PAUSED_VIOLATION' : 'PAUSED';
       this.recordTimeSpent(this.currentQuestionIndex);
       window.clearInterval(this.timerInterval);
       this.callbacks?.onStateChange(this.state);
@@ -194,8 +246,8 @@ export class ExamStateMachine {
    * Resume exam
    */
   public resume(): void {
-    if (this.state === 'paused') {
-      this.state = 'running';
+    if (this.isPaused()) {
+      this.state = 'RUNNING';
       this.questionStartTime = Date.now();
       this.startTimer();
       this.callbacks?.onStateChange(this.state);
@@ -206,7 +258,7 @@ export class ExamStateMachine {
    * Disqualify candidate due to excessive violations
    */
   public disqualify(): void {
-    this.state = 'disqualified';
+    this.state = 'DISQUALIFIED';
     this.stopIntervals();
     this.calculateFinalGrading();
     this.callbacks?.onStateChange(this.state);
@@ -223,7 +275,7 @@ export class ExamStateMachine {
     this.stopIntervals();
     this.recordTimeSpent(this.currentQuestionIndex);
 
-    this.state = 'submitted';
+    this.state = 'SUBMITTED';
     this.calculateFinalGrading();
 
     // Persist final attempt to Dexie & Cloud
@@ -260,7 +312,7 @@ export class ExamStateMachine {
   }
 
   private async saveToDexie(): Promise<void> {
-    if (!this.currentAttempt || !this.currentExam || this.state === 'submitted') return;
+    if (!this.currentAttempt || !this.currentExam || this.isSubmitted()) return;
     try {
       await localDB.saveActiveSession(this.currentAttempt, this.currentExam);
       this.callbacks?.onAutoSaved(Date.now());

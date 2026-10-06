@@ -1,0 +1,886 @@
+{
+  "id": "sample_math_50",
+  "title": "Đề thi Toán học THPT Chuẩn hóa (50 câu)",
+  "description": "Ngân hàng 50 câu trắc nghiệm Toán học giải tích, đại số, đạo hàm và bài toán số học",
+  "subject": "Toán học",
+  "durationMinutes": 90,
+  "totalQuestions": 50,
+  "createdAt": "2026-10-06T09:53:35.400Z",
+  "updatedAt": "2026-10-06T09:53:35.400Z",
+  "questions": [
+    {
+      "id": "sample_math_50_q1",
+      "index": 1,
+      "text": "What is the derivative of the function $ f(x) = x^4 $ with respect to $ x $?",
+      "type": "single",
+      "options": [
+        "$ 4x^{4} $",
+        "$ 5x^{4} $",
+        "$ x^{3} $",
+        "$ 4x^{3} $"
+      ],
+      "correctAnswer": [
+        3
+      ],
+      "explanation": "Áp dụng công thức đạo hàm cơ bản $ (x^n)' = n x^{n-1} $, ta có đạo hàm của $ x^4 $ là $ 4x^{3} $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q2",
+      "index": 2,
+      "text": "Which of the following numbers are multiples of $ 4 $?",
+      "type": "multiple",
+      "options": [
+        "$ 17 $",
+        "$ 31 $",
+        "$ 32 $",
+        "$ 16 $"
+      ],
+      "correctAnswer": [
+        2,
+        3
+      ],
+      "explanation": "Các số chia hết cho $ 4 $ được gọi là bội số của $ 4 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q3",
+      "index": 3,
+      "text": "Calculate the value of the expression: $ 5 \\times 3 $",
+      "type": "single",
+      "options": [
+        "16",
+        "21",
+        "15",
+        "10"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "explanation": "Ta có phép nhân $ 5 \\times 3 = 15 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q4",
+      "index": 4,
+      "text": "Calculate the value of the expression: $ 7 \\times 2 $",
+      "type": "single",
+      "options": [
+        "21",
+        "16",
+        "14",
+        "11"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "explanation": "Ta có phép nhân $ 7 \\times 2 = 14 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q5",
+      "index": 5,
+      "text": "Calculate the value of the expression: $ 10 \\times 7 $",
+      "type": "single",
+      "options": [
+        "72",
+        "66",
+        "77",
+        "70"
+      ],
+      "correctAnswer": [
+        3
+      ],
+      "explanation": "Ta có phép nhân $ 10 \\times 7 = 70 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q6",
+      "index": 6,
+      "text": "What are the roots of the equation $ x^2 - 25 = 0 $?",
+      "type": "multiple",
+      "options": [
+        "$ -6 $",
+        "$ 5 $",
+        "$ 6 $",
+        "$ -5 $"
+      ],
+      "correctAnswer": [
+        1,
+        3
+      ],
+      "explanation": "Ta có phương trình $ x^2 - 25 = 0 \\iff x^2 = 25 \\iff x = \\pm 5 $. Vậy phương trình có các nghiệm là $ 5 $ và $ -5 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q7",
+      "index": 7,
+      "text": "Which of the following numbers are multiples of $ 2 $?",
+      "type": "multiple",
+      "options": [
+        "$ 11 $",
+        "$ 6 $",
+        "$ 12 $",
+        "$ 7 $"
+      ],
+      "correctAnswer": [
+        1,
+        2
+      ],
+      "explanation": "Các số chia hết cho $ 2 $ được gọi là bội số của $ 2 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q8",
+      "index": 8,
+      "text": "What are the roots of the equation $ x^2 - 4 = 0 $?",
+      "type": "multiple",
+      "options": [
+        "$ -2 $",
+        "$ 3 $",
+        "$ 2 $",
+        "$ -3 $"
+      ],
+      "correctAnswer": [
+        0,
+        2
+      ],
+      "explanation": "Ta có phương trình $ x^2 - 4 = 0 \\iff x^2 = 4 \\iff x = \\pm 2 $. Vậy phương trình có các nghiệm là $ 2 $ và $ -2 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q9",
+      "index": 9,
+      "text": "Which of the following numbers are multiples of $ 3 $?",
+      "type": "multiple",
+      "options": [
+        "$ 26 $",
+        "$ 6 $",
+        "$ 27 $",
+        "$ 7 $"
+      ],
+      "correctAnswer": [
+        1,
+        2
+      ],
+      "explanation": "Các số chia hết cho $ 3 $ được gọi là bội số của $ 3 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q10",
+      "index": 10,
+      "text": "Calculate the value of the expression: $ 10 \\times 10 $",
+      "type": "single",
+      "options": [
+        "100",
+        "96",
+        "107",
+        "101"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Ta có phép nhân $ 10 \\times 10 = 100 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q11",
+      "index": 11,
+      "text": "What are the roots of the equation $ x^2 - 1 = 0 $?",
+      "type": "multiple",
+      "options": [
+        "$ 1 $",
+        "$ -1 $",
+        "$ 2 $",
+        "$ -2 $"
+      ],
+      "correctAnswer": [
+        0,
+        1
+      ],
+      "explanation": "Ta có phương trình $ x^2 - 1 = 0 \\iff x^2 = 1 \\iff x = \\pm 1 $. Vậy phương trình có các nghiệm là $ 1 $ và $ -1 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q12",
+      "index": 12,
+      "text": "Which of the following numbers are multiples of $ 2 $?",
+      "type": "multiple",
+      "options": [
+        "$ 11 $",
+        "$ 12 $",
+        "$ 4 $",
+        "$ 5 $"
+      ],
+      "correctAnswer": [
+        1,
+        2
+      ],
+      "explanation": "Các số chia hết cho $ 2 $ được gọi là bội số của $ 2 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q13",
+      "index": 13,
+      "text": "Which of the following numbers are multiples of $ 4 $?",
+      "type": "multiple",
+      "options": [
+        "$ 35 $",
+        "$ 36 $",
+        "$ 17 $",
+        "$ 16 $"
+      ],
+      "correctAnswer": [
+        1,
+        3
+      ],
+      "explanation": "Các số chia hết cho $ 4 $ được gọi là bội số của $ 4 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q14",
+      "index": 14,
+      "text": "What is the derivative of the function $ f(x) = x^2 $ with respect to $ x $?",
+      "type": "single",
+      "options": [
+        "$ x^{1} $",
+        "$ 2x^{2} $",
+        "$ 2x $",
+        "$ 3x^{2} $"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "explanation": "Áp dụng công thức đạo hàm cơ bản $ (x^n)' = n x^{n-1} $, ta có đạo hàm của $ x^2 $ là $ 2x $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q15",
+      "index": 15,
+      "text": "Calculate the value of the expression: $ 11 \\times 3 $",
+      "type": "single",
+      "options": [
+        "39",
+        "31",
+        "36",
+        "33"
+      ],
+      "correctAnswer": [
+        3
+      ],
+      "explanation": "Ta có phép nhân $ 11 \\times 3 = 33 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q16",
+      "index": 16,
+      "text": "What is the derivative of the function $ f(x) = x^4 $ with respect to $ x $?",
+      "type": "single",
+      "options": [
+        "$ 4x^{4} $",
+        "$ 4x^{3} $",
+        "$ 5x^{4} $",
+        "$ x^{3} $"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "explanation": "Áp dụng công thức đạo hàm cơ bản $ (x^n)' = n x^{n-1} $, ta có đạo hàm của $ x^4 $ là $ 4x^{3} $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q17",
+      "index": 17,
+      "text": "Calculate the value of the expression: $ 6 \\times 10 $",
+      "type": "single",
+      "options": [
+        "59",
+        "63",
+        "60",
+        "69"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "explanation": "Ta có phép nhân $ 6 \\times 10 = 60 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q18",
+      "index": 18,
+      "text": "What is the derivative of the function $ f(x) = x^2 $ with respect to $ x $?",
+      "type": "single",
+      "options": [
+        "$ 3x^{2} $",
+        "$ 2x^{2} $",
+        "$ 2x $",
+        "$ x^{1} $"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "explanation": "Áp dụng công thức đạo hàm cơ bản $ (x^n)' = n x^{n-1} $, ta có đạo hàm của $ x^2 $ là $ 2x $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q19",
+      "index": 19,
+      "text": "Calculate the value of the expression: $ 12 \\times 3 $",
+      "type": "single",
+      "options": [
+        "40",
+        "33",
+        "36",
+        "42"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "explanation": "Ta có phép nhân $ 12 \\times 3 = 36 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q20",
+      "index": 20,
+      "text": "What are the roots of the equation $ x^2 - 9 = 0 $?",
+      "type": "multiple",
+      "options": [
+        "$ 4 $",
+        "$ -4 $",
+        "$ -3 $",
+        "$ 3 $"
+      ],
+      "correctAnswer": [
+        2,
+        3
+      ],
+      "explanation": "Ta có phương trình $ x^2 - 9 = 0 \\iff x^2 = 9 \\iff x = \\pm 3 $. Vậy phương trình có các nghiệm là $ 3 $ và $ -3 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q21",
+      "index": 21,
+      "text": "Calculate the value of the expression: $ 9 \\times 8 $",
+      "type": "single",
+      "options": [
+        "79",
+        "68",
+        "72",
+        "74"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "explanation": "Ta có phép nhân $ 9 \\times 8 = 72 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q22",
+      "index": 22,
+      "text": "Which of the following numbers are multiples of $ 5 $?",
+      "type": "multiple",
+      "options": [
+        "$ 30 $",
+        "$ 10 $",
+        "$ 29 $",
+        "$ 11 $"
+      ],
+      "correctAnswer": [
+        0,
+        1
+      ],
+      "explanation": "Các số chia hết cho $ 5 $ được gọi là bội số của $ 5 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q23",
+      "index": 23,
+      "text": "Which of the following numbers are multiples of $ 4 $?",
+      "type": "multiple",
+      "options": [
+        "$ 20 $",
+        "$ 31 $",
+        "$ 21 $",
+        "$ 32 $"
+      ],
+      "correctAnswer": [
+        0,
+        3
+      ],
+      "explanation": "Các số chia hết cho $ 4 $ được gọi là bội số của $ 4 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q24",
+      "index": 24,
+      "text": "Calculate the value of the expression: $ 4 \\times 7 $",
+      "type": "single",
+      "options": [
+        "28",
+        "38",
+        "29",
+        "24"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Ta có phép nhân $ 4 \\times 7 = 28 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q25",
+      "index": 25,
+      "text": "Which of the following numbers are multiples of $ 3 $?",
+      "type": "multiple",
+      "options": [
+        "$ 27 $",
+        "$ 16 $",
+        "$ 15 $",
+        "$ 26 $"
+      ],
+      "correctAnswer": [
+        0,
+        2
+      ],
+      "explanation": "Các số chia hết cho $ 3 $ được gọi là bội số của $ 3 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q26",
+      "index": 26,
+      "text": "Calculate the value of the expression: $ 12 \\times 10 $",
+      "type": "single",
+      "options": [
+        "130",
+        "120",
+        "125",
+        "117"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "explanation": "Ta có phép nhân $ 12 \\times 10 = 120 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q27",
+      "index": 27,
+      "text": "What is the derivative of the function $ f(x) = x^2 $ with respect to $ x $?",
+      "type": "single",
+      "options": [
+        "$ 3x^{2} $",
+        "$ x^{1} $",
+        "$ 2x^{2} $",
+        "$ 2x $"
+      ],
+      "correctAnswer": [
+        3
+      ],
+      "explanation": "Áp dụng công thức đạo hàm cơ bản $ (x^n)' = n x^{n-1} $, ta có đạo hàm của $ x^2 $ là $ 2x $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q28",
+      "index": 28,
+      "text": "Which of the following numbers are multiples of $ 2 $?",
+      "type": "multiple",
+      "options": [
+        "$ 11 $",
+        "$ 10 $",
+        "$ 18 $",
+        "$ 17 $"
+      ],
+      "correctAnswer": [
+        1,
+        2
+      ],
+      "explanation": "Các số chia hết cho $ 2 $ được gọi là bội số của $ 2 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q29",
+      "index": 29,
+      "text": "Which of the following numbers are multiples of $ 4 $?",
+      "type": "multiple",
+      "options": [
+        "$ 16 $",
+        "$ 17 $",
+        "$ 36 $",
+        "$ 35 $"
+      ],
+      "correctAnswer": [
+        0,
+        2
+      ],
+      "explanation": "Các số chia hết cho $ 4 $ được gọi là bội số của $ 4 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q30",
+      "index": 30,
+      "text": "Which of the following numbers are multiples of $ 5 $?",
+      "type": "multiple",
+      "options": [
+        "$ 16 $",
+        "$ 29 $",
+        "$ 30 $",
+        "$ 15 $"
+      ],
+      "correctAnswer": [
+        2,
+        3
+      ],
+      "explanation": "Các số chia hết cho $ 5 $ được gọi là bội số của $ 5 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q31",
+      "index": 31,
+      "text": "Which of the following numbers are multiples of $ 4 $?",
+      "type": "multiple",
+      "options": [
+        "$ 20 $",
+        "$ 24 $",
+        "$ 23 $",
+        "$ 21 $"
+      ],
+      "correctAnswer": [
+        0,
+        1
+      ],
+      "explanation": "Các số chia hết cho $ 4 $ được gọi là bội số của $ 4 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q32",
+      "index": 32,
+      "text": "What is the derivative of the function $ f(x) = x^4 $ with respect to $ x $?",
+      "type": "single",
+      "options": [
+        "$ x^{3} $",
+        "$ 5x^{4} $",
+        "$ 4x^{3} $",
+        "$ 4x^{4} $"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "explanation": "Áp dụng công thức đạo hàm cơ bản $ (x^n)' = n x^{n-1} $, ta có đạo hàm của $ x^4 $ là $ 4x^{3} $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q33",
+      "index": 33,
+      "text": "What are the roots of the equation $ x^2 - 9 = 0 $?",
+      "type": "multiple",
+      "options": [
+        "$ -3 $",
+        "$ 3 $",
+        "$ -4 $",
+        "$ 4 $"
+      ],
+      "correctAnswer": [
+        0,
+        1
+      ],
+      "explanation": "Ta có phương trình $ x^2 - 9 = 0 \\iff x^2 = 9 \\iff x = \\pm 3 $. Vậy phương trình có các nghiệm là $ 3 $ và $ -3 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q34",
+      "index": 34,
+      "text": "Which of the following numbers are multiples of $ 2 $?",
+      "type": "multiple",
+      "options": [
+        "$ 9 $",
+        "$ 16 $",
+        "$ 8 $",
+        "$ 15 $"
+      ],
+      "correctAnswer": [
+        1,
+        2
+      ],
+      "explanation": "Các số chia hết cho $ 2 $ được gọi là bội số của $ 2 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q35",
+      "index": 35,
+      "text": "Which of the following numbers are multiples of $ 5 $?",
+      "type": "multiple",
+      "options": [
+        "$ 10 $",
+        "$ 34 $",
+        "$ 11 $",
+        "$ 35 $"
+      ],
+      "correctAnswer": [
+        0,
+        3
+      ],
+      "explanation": "Các số chia hết cho $ 5 $ được gọi là bội số của $ 5 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q36",
+      "index": 36,
+      "text": "What is the derivative of the function $ f(x) = x^2 $ with respect to $ x $?",
+      "type": "single",
+      "options": [
+        "$ 3x^{2} $",
+        "$ 2x $",
+        "$ x^{1} $",
+        "$ 2x^{2} $"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "explanation": "Áp dụng công thức đạo hàm cơ bản $ (x^n)' = n x^{n-1} $, ta có đạo hàm của $ x^2 $ là $ 2x $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q37",
+      "index": 37,
+      "text": "What is the derivative of the function $ f(x) = x^4 $ with respect to $ x $?",
+      "type": "single",
+      "options": [
+        "$ 4x^{3} $",
+        "$ 4x^{4} $",
+        "$ 5x^{4} $",
+        "$ x^{3} $"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Áp dụng công thức đạo hàm cơ bản $ (x^n)' = n x^{n-1} $, ta có đạo hàm của $ x^4 $ là $ 4x^{3} $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q38",
+      "index": 38,
+      "text": "What are the roots of the equation $ x^2 - 4 = 0 $?",
+      "type": "multiple",
+      "options": [
+        "$ -2 $",
+        "$ 3 $",
+        "$ 2 $",
+        "$ -3 $"
+      ],
+      "correctAnswer": [
+        0,
+        2
+      ],
+      "explanation": "Ta có phương trình $ x^2 - 4 = 0 \\iff x^2 = 4 \\iff x = \\pm 2 $. Vậy phương trình có các nghiệm là $ 2 $ và $ -2 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q39",
+      "index": 39,
+      "text": "What is the derivative of the function $ f(x) = x^2 $ with respect to $ x $?",
+      "type": "single",
+      "options": [
+        "$ 3x^{2} $",
+        "$ 2x^{2} $",
+        "$ 2x $",
+        "$ x^{1} $"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "explanation": "Áp dụng công thức đạo hàm cơ bản $ (x^n)' = n x^{n-1} $, ta có đạo hàm của $ x^2 $ là $ 2x $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q40",
+      "index": 40,
+      "text": "What is the derivative of the function $ f(x) = x^5 $ with respect to $ x $?",
+      "type": "single",
+      "options": [
+        "$ 5x^{5} $",
+        "$ 6x^{5} $",
+        "$ 5x^{4} $",
+        "$ x^{4} $"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "explanation": "Áp dụng công thức đạo hàm cơ bản $ (x^n)' = n x^{n-1} $, ta có đạo hàm của $ x^5 $ là $ 5x^{4} $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q41",
+      "index": 41,
+      "text": "Which of the following numbers are multiples of $ 3 $?",
+      "type": "multiple",
+      "options": [
+        "$ 21 $",
+        "$ 20 $",
+        "$ 16 $",
+        "$ 15 $"
+      ],
+      "correctAnswer": [
+        0,
+        3
+      ],
+      "explanation": "Các số chia hết cho $ 3 $ được gọi là bội số của $ 3 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q42",
+      "index": 42,
+      "text": "Which of the following numbers are multiples of $ 3 $?",
+      "type": "multiple",
+      "options": [
+        "$ 13 $",
+        "$ 18 $",
+        "$ 12 $",
+        "$ 17 $"
+      ],
+      "correctAnswer": [
+        1,
+        2
+      ],
+      "explanation": "Các số chia hết cho $ 3 $ được gọi là bội số của $ 3 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q43",
+      "index": 43,
+      "text": "Calculate the value of the expression: $ 10 \\times 11 $",
+      "type": "single",
+      "options": [
+        "116",
+        "113",
+        "105",
+        "110"
+      ],
+      "correctAnswer": [
+        3
+      ],
+      "explanation": "Ta có phép nhân $ 10 \\times 11 = 110 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q44",
+      "index": 44,
+      "text": "Calculate the value of the expression: $ 8 \\times 4 $",
+      "type": "single",
+      "options": [
+        "38",
+        "29",
+        "32",
+        "33"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "explanation": "Ta có phép nhân $ 8 \\times 4 = 32 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q45",
+      "index": 45,
+      "text": "Calculate the value of the expression: $ 4 \\times 9 $",
+      "type": "single",
+      "options": [
+        "46",
+        "38",
+        "36",
+        "35"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "explanation": "Ta có phép nhân $ 4 \\times 9 = 36 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q46",
+      "index": 46,
+      "text": "What is the derivative of the function $ f(x) = x^5 $ with respect to $ x $?",
+      "type": "single",
+      "options": [
+        "$ x^{4} $",
+        "$ 5x^{5} $",
+        "$ 6x^{5} $",
+        "$ 5x^{4} $"
+      ],
+      "correctAnswer": [
+        3
+      ],
+      "explanation": "Áp dụng công thức đạo hàm cơ bản $ (x^n)' = n x^{n-1} $, ta có đạo hàm của $ x^5 $ là $ 5x^{4} $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q47",
+      "index": 47,
+      "text": "What is the derivative of the function $ f(x) = x^2 $ with respect to $ x $?",
+      "type": "single",
+      "options": [
+        "$ 2x $",
+        "$ 3x^{2} $",
+        "$ x^{1} $",
+        "$ 2x^{2} $"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Áp dụng công thức đạo hàm cơ bản $ (x^n)' = n x^{n-1} $, ta có đạo hàm của $ x^2 $ là $ 2x $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q48",
+      "index": 48,
+      "text": "Calculate the value of the expression: $ 3 \\times 7 $",
+      "type": "single",
+      "options": [
+        "21",
+        "30",
+        "26",
+        "18"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Ta có phép nhân $ 3 \\times 7 = 21 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q49",
+      "index": 49,
+      "text": "What are the roots of the equation $ x^2 - 9 = 0 $?",
+      "type": "multiple",
+      "options": [
+        "$ 4 $",
+        "$ -3 $",
+        "$ -4 $",
+        "$ 3 $"
+      ],
+      "correctAnswer": [
+        1,
+        3
+      ],
+      "explanation": "Ta có phương trình $ x^2 - 9 = 0 \\iff x^2 = 9 \\iff x = \\pm 3 $. Vậy phương trình có các nghiệm là $ 3 $ và $ -3 $.",
+      "subject": "Toán học"
+    },
+    {
+      "id": "sample_math_50_q50",
+      "index": 50,
+      "text": "What are the roots of the equation $ x^2 - 1 = 0 $?",
+      "type": "multiple",
+      "options": [
+        "$ 1 $",
+        "$ 2 $",
+        "$ -1 $",
+        "$ -2 $"
+      ],
+      "correctAnswer": [
+        0,
+        2
+      ],
+      "explanation": "Ta có phương trình $ x^2 - 1 = 0 \\iff x^2 = 1 \\iff x = \\pm 1 $. Vậy phương trình có các nghiệm là $ 1 $ và $ -1 $.",
+      "subject": "Toán học"
+    }
+  ]
+}

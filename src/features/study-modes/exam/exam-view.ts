@@ -105,6 +105,8 @@ export class ExamView {
   private bindEvents(): void {
     if (!this.container) return;
 
+    questionNavigator.bindTouchSwipe(this.container);
+
     // Option clicks
     this.container.querySelectorAll('.option').forEach((el) => {
       el.addEventListener('click', () => {

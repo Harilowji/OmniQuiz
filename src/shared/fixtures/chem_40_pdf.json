@@ -1,0 +1,652 @@
+{
+  "id": "sample_chem_40_pdf",
+  "title": "40 Câu Trắc nghiệm Hóa học Hữu cơ Đại cương",
+  "description": "Bộ câu hỏi Hóa học Đại cương & Hữu cơ: Lai hóa obitan, liên kết pi/sigma, hiệu ứng cảm ứng, nhóm chức",
+  "subject": "Hóa học",
+  "durationMinutes": 45,
+  "totalQuestions": 40,
+  "createdAt": "2026-10-06T09:53:35.405Z",
+  "updatedAt": "2026-10-06T09:53:35.405Z",
+  "questions": [
+    {
+      "id": "sample_chem_40_pdf_q1",
+      "index": 1,
+      "text": "Carbon có bao nhiêu trạng thái lai hóa?",
+      "type": "single",
+      "options": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q2",
+      "index": 2,
+      "text": "Lai hóa sp³ tạo ra bao nhiêu obitan lai hóa?",
+      "type": "single",
+      "options": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q3",
+      "index": 3,
+      "text": "Góc liên kết đặc trưng của C-sp² là:",
+      "type": "single",
+      "options": [
+        "109°28’",
+        "120°",
+        "180°",
+        "90°"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q4",
+      "index": 4,
+      "text": "Liên kết π được tạo thành do:",
+      "type": "single",
+      "options": [
+        "Xen phủ trục",
+        "Xen phủ bên",
+        "Xen phủ s–s",
+        "Xen phủ s–p"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q5",
+      "index": 5,
+      "text": "Liên kết đôi gồm:",
+      "type": "single",
+      "options": [
+        "2 σ",
+        "2 π",
+        "1 σ + 1 π",
+        "1 σ + 2 π"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q6",
+      "index": 6,
+      "text": "Nguyên lý xen phủ cực đại phát biểu:",
+      "type": "single",
+      "options": [
+        "Xen phủ càng nhỏ thì LK càng bền",
+        "Xen phủ cực đại → LK bền nhất",
+        "Chỉ áp dụng cho LK π",
+        "Không phụ thuộc hình dạng orbital"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q7",
+      "index": 7,
+      "text": "Liên kết nào bền nhất?",
+      "type": "single",
+      "options": [
+        "C–C",
+        "C=C",
+        "C≡C",
+        "C–H"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q8",
+      "index": 8,
+      "text": "Phân tử nào sau đây không phân cực?",
+      "type": "single",
+      "options": [
+        "HCl",
+        "CH3Cl",
+        "O2",
+        "NH3"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q9",
+      "index": 9,
+      "text": "Sự phân cực liên kết phụ thuộc chủ yếu vào:",
+      "type": "single",
+      "options": [
+        "Khối lượng nguyên tử",
+        "Bán kính nguyên tử",
+        "Độ âm điện",
+        "Số proton"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q10",
+      "index": 10,
+      "text": "Liên kết hydro có bản chất:",
+      "type": "single",
+      "options": [
+        "Cộng hóa trị",
+        "Ion",
+        "Tĩnh điện",
+        "Kim loại"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q11",
+      "index": 11,
+      "text": "Nguyên tử nào thường tham gia liên kết H?",
+      "type": "single",
+      "options": [
+        "Cl",
+        "S",
+        "O",
+        "Br"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q12",
+      "index": 12,
+      "text": "Liên kết H liên phân tử làm:",
+      "type": "single",
+      "options": [
+        "Giảm độ tan",
+        "Giảm nhiệt độ sôi",
+        "Tăng nhiệt độ sôi",
+        "Không ảnh hưởng"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q13",
+      "index": 13,
+      "text": "Hợp chất nào có khả năng tạo liên kết H?",
+      "type": "single",
+      "options": [
+        "C6H6",
+        "R–OR’",
+        "R–COOH",
+        "R–CO–R’"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q14",
+      "index": 14,
+      "text": "Hợp chất hữu cơ thường:",
+      "type": "single",
+      "options": [
+        "Dẫn điện mạnh",
+        "Tan nhiều trong nước",
+        "Tan trong dung môi hữu cơ",
+        "Luôn có LK ion"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q15",
+      "index": 15,
+      "text": "Độ dài liên kết C–X tăng theo thứ tự:",
+      "type": "single",
+      "options": [
+        "C–F < C–Cl < C–Br < C–I",
+        "C–I < C–Br < C–Cl < C–F",
+        "C–F > C–Cl > C–Br > C–I",
+        "Không đổi"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q16",
+      "index": 16,
+      "text": "Độ dài liên kết giảm khi:",
+      "type": "single",
+      "options": [
+        "Số LK π giảm",
+        "Số LK π tăng",
+        "ĐAĐ giảm",
+        "Nhiệt độ tăng"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q17",
+      "index": 17,
+      "text": "C lai hóa sp có góc:",
+      "type": "single",
+      "options": [
+        "90°",
+        "109°28’",
+        "120°",
+        "180°"
+      ],
+      "correctAnswer": [
+        3
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q18",
+      "index": 18,
+      "text": "Liên kết σ trong C–H hình thành do:",
+      "type": "single",
+      "options": [
+        "s–s",
+        "p–p",
+        "s–sp",
+        "p–d"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q19",
+      "index": 19,
+      "text": "Liên kết π trong C=C do:",
+      "type": "single",
+      "options": [
+        "s–p",
+        "p–p xen phủ bên",
+        "p–p xen phủ trục",
+        "sp–sp"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q20",
+      "index": 20,
+      "text": "Nhóm hút e (–I) có tác dụng:",
+      "type": "single",
+      "options": [
+        "Tăng tính base",
+        "Giảm tính acid",
+        "Tăng tính acid",
+        "Không ảnh hưởng"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q21",
+      "index": 21,
+      "text": "Nhóm đẩy e (+I) làm:",
+      "type": "single",
+      "options": [
+        "Tăng tính acid",
+        "Tăng tính base",
+        "Giảm mật độ e",
+        "Không đổi"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q22",
+      "index": 22,
+      "text": "Hiệu ứng cảm ứng xảy ra trong:",
+      "type": "single",
+      "options": [
+        "LK π",
+        "LK σ",
+        "LK ion",
+        "LK kim loại"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q23",
+      "index": 23,
+      "text": "Hiệu ứng cảm ứng có đặc điểm:",
+      "type": "single",
+      "options": [
+        "Có định hướng",
+        "Chỉ xảy ra gần",
+        "Càng xa càng yếu",
+        "Chỉ trong hệ liên hợp"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q24",
+      "index": 24,
+      "text": "Liên kết H nội phân tử thường:",
+      "type": "single",
+      "options": [
+        "Tăng độ tan trong nước",
+        "Tăng độ tan dung môi không phân cực",
+        "Tăng dẫn điện",
+        "Giảm độ bền"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q25",
+      "index": 25,
+      "text": "Liên kết nào có năng lượng lớn nhất?",
+      "type": "single",
+      "options": [
+        "σ",
+        "π",
+        "H",
+        "Ion"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q26",
+      "index": 26,
+      "text": "Carbon sp³ có bao nhiêu liên kết π?",
+      "type": "single",
+      "options": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q27",
+      "index": 27,
+      "text": "Carbon sp² có:",
+      "type": "single",
+      "options": [
+        "4 σ",
+        "3 σ + 1 π",
+        "2 σ + 2 π",
+        "1 σ + 2 π"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q28",
+      "index": 28,
+      "text": "Carbon sp có:",
+      "type": "single",
+      "options": [
+        "2 σ + 1 π",
+        "2 σ + 2 π",
+        "1 σ + 2 π",
+        "3 σ + 1 π"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q29",
+      "index": 29,
+      "text": "Liên kết H mạnh nhất khi X là:",
+      "type": "single",
+      "options": [
+        "Cl",
+        "S",
+        "O",
+        "I"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q30",
+      "index": 30,
+      "text": "Dung dịch hợp chất ion thường:",
+      "type": "single",
+      "options": [
+        "Không dẫn điện",
+        "Dẫn điện",
+        "Không tan nước",
+        "Tan dung môi hữu cơ"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q31",
+      "index": 31,
+      "text": "Phân tử nào sau đây có LK phân cực?",
+      "type": "single",
+      "options": [
+        "H2",
+        "O2",
+        "N2",
+        "HCl"
+      ],
+      "correctAnswer": [
+        3
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q32",
+      "index": 32,
+      "text": "Liên kết σ hình thành trước π vì:",
+      "type": "single",
+      "options": [
+        "π bền hơn",
+        "σ có xen phủ lớn hơn",
+        "π cần năng lượng thấp hơn",
+        "Không liên quan"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q33",
+      "index": 33,
+      "text": "Điều kiện hình thành liên kết H không bao gồm:",
+      "type": "single",
+      "options": [
+        "X–H phân cực",
+        "Y có e tự do",
+        "X, Y có ĐAĐ thấp",
+        "X, Y nhỏ"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q34",
+      "index": 34,
+      "text": "Hiệu ứng cảm ứng là tương tác:",
+      "type": "single",
+      "options": [
+        "Cộng hóa trị",
+        "Tĩnh điện",
+        "Kim loại",
+        "Hydro"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q35",
+      "index": 35,
+      "text": "Phân tử nào dễ tan trong nước nhất?",
+      "type": "single",
+      "options": [
+        "C6H6",
+        "CH3OH",
+        "CCl4",
+        "C2H6"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q36",
+      "index": 36,
+      "text": "Chất nào sau đây là đồng phân của glucose?",
+      "type": "single",
+      "options": [
+        "Fructose",
+        "Saccharose",
+        "Maltose",
+        "Cellulose"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q37",
+      "index": 37,
+      "text": "Phản ứng đặc trưng của ankan (hiđrocacbon no) là:",
+      "type": "single",
+      "options": [
+        "Phản ứng thế",
+        "Phản ứng cộng",
+        "Phản ứng trùng hợp",
+        "Phản ứng tráng bạc"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q38",
+      "index": 38,
+      "text": "Dung dịch làm đổi màu quỳ tím sang xanh là:",
+      "type": "single",
+      "options": [
+        "Metylamin (CH3NH2)",
+        "Anilin (C6H5NH2)",
+        "Axit axetic (CH3COOH)",
+        "Glyxin"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q39",
+      "index": 39,
+      "text": "Chất nào sau đây tác dụng với Cu(OH)2 ở nhiệt độ thường tạo dung dịch màu xanh lam?",
+      "type": "single",
+      "options": [
+        "Glixerol",
+        "Ancol etylic",
+        "Đimetyl ete",
+        "Benzen"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "subject": "Hóa học"
+    },
+    {
+      "id": "sample_chem_40_pdf_q40",
+      "index": 40,
+      "text": "Tơ nào sau đây thuộc loại tơ poliamit (điều chế bằng phản ứng trùng ngưng)?",
+      "type": "single",
+      "options": [
+        "Nilon-6,6",
+        "Tơ nitron (olon)",
+        "Tơ visco",
+        "Tơ axetat"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "subject": "Hóa học"
+    }
+  ]
+}

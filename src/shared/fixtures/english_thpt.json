@@ -1,0 +1,97 @@
+{
+  "id": "sample_english_thpt",
+  "title": "Đề ôn tập Tiếng Anh THPT - Ngữ pháp & Từ vựng",
+  "description": "Trọng tâm Câu điều kiện loại 3, rút gọn mệnh đề quan hệ, hòa hợp chủ vị, phrasal verbs, thể giả định",
+  "subject": "Tiếng Anh",
+  "durationMinutes": 15,
+  "totalQuestions": 5,
+  "createdAt": "2026-10-06T09:53:35.403Z",
+  "updatedAt": "2026-10-06T09:53:35.403Z",
+  "questions": [
+    {
+      "id": "sample_english_thpt_q1",
+      "index": 1,
+      "text": "If she had studied harder, she _______ the entrance examination.",
+      "type": "single",
+      "options": [
+        "will pass",
+        "would pass",
+        "would have passed",
+        "passed"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "explanation": "Cấu trúc câu điều kiện loại 3 diễn tả giả định không có thật trong quá khứ: If + S + had + P2, S + would + have + P2.",
+      "subject": "Tiếng Anh"
+    },
+    {
+      "id": "sample_english_thpt_q2",
+      "index": 2,
+      "text": "The novel _______ by Nguyen Du is widely considered one of the greatest masterpieces of Vietnamese literature.",
+      "type": "single",
+      "options": [
+        "writing",
+        "written",
+        "which wrote",
+        "was written"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "explanation": "Rút gọn mệnh đề quan hệ dạng bị động dùng quá khứ phân từ P2: \"The novel written by...\" = \"The novel which was written by...\".",
+      "subject": "Tiếng Anh"
+    },
+    {
+      "id": "sample_english_thpt_q3",
+      "index": 3,
+      "text": "Neither the teacher nor her students _______ present at the meeting yesterday.",
+      "type": "single",
+      "options": [
+        "was",
+        "were",
+        "is",
+        "are"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "explanation": "Quy tắc hòa hợp chủ vị với \"Neither... nor...\": Động từ chia theo chủ ngữ gần nó nhất (\"her students\" là số nhiều, thì quá khứ dùng \"were\").",
+      "subject": "Tiếng Anh"
+    },
+    {
+      "id": "sample_english_thpt_q4",
+      "index": 4,
+      "text": "The government has decided to _______ strict regulations to protect endangered wildlife.",
+      "type": "single",
+      "options": [
+        "carry on",
+        "bring up",
+        "bring in",
+        "make out"
+      ],
+      "correctAnswer": [
+        2
+      ],
+      "explanation": "Cụm động từ \"bring in\" có nghĩa là ban hành hoặc giới thiệu một đạo luật/quy định mới.",
+      "subject": "Tiếng Anh"
+    },
+    {
+      "id": "sample_english_thpt_q5",
+      "index": 5,
+      "text": "It is essential that every student _______ the rules and regulations of the exam room.",
+      "type": "single",
+      "options": [
+        "follows",
+        "follow",
+        "followed",
+        "is following"
+      ],
+      "correctAnswer": [
+        1
+      ],
+      "explanation": "Thể giả định (Subjunctive): It is essential that + S + (should) + V-nguyên thể. Do đó đáp án là \"follow\".",
+      "subject": "Tiếng Anh"
+    }
+  ]
+}

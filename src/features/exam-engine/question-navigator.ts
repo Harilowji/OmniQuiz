@@ -53,6 +53,10 @@ export class QuestionNavigator {
     }
   }
 
+  public getCurrentIndex(): number {
+    return this.currentIndex;
+  }
+
   public nextQuestion(): void {
     if (this.currentIndex < this.totalQuestions - 1) {
       this.setIndex(this.currentIndex + 1);
@@ -63,6 +67,48 @@ export class QuestionNavigator {
     if (this.currentIndex > 0) {
       this.setIndex(this.currentIndex - 1);
     }
+  }
+
+  /**
+   * Bind touch swipe left/right gestures on a container element (<768px navigation)
+   */
+  public bindTouchSwipe(container: HTMLElement): () => void {
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    const onTouchStart = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      if (touch) {
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+      }
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      const touch = e.changedTouches[0];
+      if (!touch) return;
+      const diffX = touch.clientX - touchStartX;
+      const diffY = touch.clientY - touchStartY;
+
+      // Minimum swipe threshold 50px, predominantly horizontal
+      if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+        if (diffX < 0) {
+          // Swipe left -> next question
+          this.nextQuestion();
+        } else {
+          // Swipe right -> previous question
+          this.prevQuestion();
+        }
+      }
+    };
+
+    container.addEventListener('touchstart', onTouchStart, { passive: true });
+    container.addEventListener('touchend', onTouchEnd, { passive: true });
+
+    return () => {
+      container.removeEventListener('touchstart', onTouchStart);
+      container.removeEventListener('touchend', onTouchEnd);
+    };
   }
 
   public toggleEliminateMode(): boolean {

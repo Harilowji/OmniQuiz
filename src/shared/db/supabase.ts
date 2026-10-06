@@ -19,15 +19,29 @@ export class SupabaseSyncService {
     this.initClient();
   }
 
+  private getStorageItem(key: string): string | null {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        return window.localStorage.getItem(key);
+      }
+      if (typeof localStorage !== 'undefined') {
+        return localStorage.getItem(key);
+      }
+    } catch {
+      return null;
+    }
+    return null;
+  }
+
   private initClient(): void {
     const url =
       (typeof process !== 'undefined' && process.env?.VITE_SUPABASE_URL) ||
-      localStorage.getItem('omniquiz_supabase_url') ||
+      this.getStorageItem('omniquiz_supabase_url') ||
       DEFAULT_SUPABASE_URL;
 
     const anonKey =
       (typeof process !== 'undefined' && process.env?.VITE_SUPABASE_ANON_KEY) ||
-      localStorage.getItem('omniquiz_supabase_key') ||
+      this.getStorageItem('omniquiz_supabase_key') ||
       DEFAULT_SUPABASE_ANON_KEY;
 
     try {

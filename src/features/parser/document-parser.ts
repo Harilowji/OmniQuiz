@@ -4,7 +4,7 @@
  */
 
 import type { ParserWorkerPayload, ParserWorkerResult, Exam } from '../../shared/types';
-import { tokenizeExamDocument } from '../../../workers/parser.worker';
+import { tokenizeExamDocument } from '../../../workers/document-parser.worker';
 
 export class DocumentParserService {
   private worker: Worker | null = null;
@@ -16,7 +16,7 @@ export class DocumentParserService {
   private initWorker(): void {
     if (typeof window !== 'undefined' && typeof Worker !== 'undefined') {
       try {
-        this.worker = new Worker(new URL('../../../workers/parser.worker.ts', import.meta.url), {
+        this.worker = new Worker(new URL('../../../workers/document-parser.worker.ts', import.meta.url), {
           type: 'module',
         });
       } catch (err) {

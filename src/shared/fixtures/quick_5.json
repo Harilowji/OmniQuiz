@@ -1,0 +1,97 @@
+{
+  "id": "sample_quick_5",
+  "title": "Đề kiểm tra nhanh Kiểm thử Hệ thống (5 câu)",
+  "description": "Bộ 5 câu hỏi nhanh phục vụ kiểm thử chấm điểm tự động, lời giải và tốc độ phản hồi",
+  "subject": "Tổng hợp",
+  "durationMinutes": 5,
+  "totalQuestions": 5,
+  "createdAt": "2026-10-06T09:53:35.404Z",
+  "updatedAt": "2026-10-06T09:53:35.404Z",
+  "questions": [
+    {
+      "id": "sample_quick_5_q1",
+      "index": 1,
+      "text": "Giá trị của biểu thức $P = \\sqrt{16} + \\sqrt{25}$ bằng:",
+      "type": "single",
+      "options": [
+        "9",
+        "7",
+        "41",
+        "$\\sqrt{41}$"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "$P = \\sqrt{16} + \\sqrt{25} = 4 + 5 = 9$.",
+      "subject": "Tổng hợp"
+    },
+    {
+      "id": "sample_quick_5_q2",
+      "index": 2,
+      "text": "Nghiệm của phương trình $2x - 6 = 0$ là:",
+      "type": "single",
+      "options": [
+        "$x = 3$",
+        "$x = -3$",
+        "$x = 2$",
+        "$x = 0$"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "$2x - 6 = 0 \\Leftrightarrow 2x = 6 \\Leftrightarrow x = 3$.",
+      "subject": "Tổng hợp"
+    },
+    {
+      "id": "sample_quick_5_q3",
+      "index": 3,
+      "text": "Đạo hàm của hàm số $y = x^3 - 3x + 1$ là:",
+      "type": "single",
+      "options": [
+        "$y' = 3x^2 - 3$",
+        "$y' = 3x^2 + 3$",
+        "$y' = x^2 - 3$",
+        "$y' = 3x^2$"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Áp dụng quy tắc đạo hàm: $(x^3)' = 3x^2$, $(-3x)' = -3$, $(1)' = 0$. Do đó $y' = 3x^2 - 3$.",
+      "subject": "Tổng hợp"
+    },
+    {
+      "id": "sample_quick_5_q4",
+      "index": 4,
+      "text": "Diện tích hình tròn có bán kính $R = 5$ là:",
+      "type": "single",
+      "options": [
+        "$25\\pi$",
+        "$10\\pi$",
+        "$5\\pi$",
+        "$50\\pi$"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Diện tích hình tròn được tính bởi công thức $S = \\pi R^2 = \\pi \\cdot 5^2 = 25\\pi$.",
+      "subject": "Tổng hợp"
+    },
+    {
+      "id": "sample_quick_5_q5",
+      "index": 5,
+      "text": "Trong mặt phẳng tọa độ $Oxy$, khoảng cách giữa hai điểm $A(0; 0)$ và $B(3; 4)$ bằng:",
+      "type": "single",
+      "options": [
+        "5",
+        "7",
+        "25",
+        "1"
+      ],
+      "correctAnswer": [
+        0
+      ],
+      "explanation": "Khoảng cách $AB = \\sqrt{(3 - 0)^2 + (4 - 0)^2} = \\sqrt{9 + 16} = \\sqrt{25} = 5$.",
+      "subject": "Tổng hợp"
+    }
+  ]
+}

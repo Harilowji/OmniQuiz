@@ -10,6 +10,11 @@ export default defineConfig({
   worker: {
     format: 'es',
   },
+  test: {
+    globals: true,
+    environment: 'node',
+    include: ['tests/**/*.{test,spec}.ts'],
+  },
   build: {
     outDir: 'dist',
     sourcemap: false,
