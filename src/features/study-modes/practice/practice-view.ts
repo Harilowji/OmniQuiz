@@ -20,7 +20,34 @@ export class PracticeView {
     this.exam = exam;
     this.container = document.getElementById(containerId);
     this.isEliminateMode = false;
+
+    questionNavigator.init(exam.questions.length, {
+      onQuestionSelect: (idx) => this.highlightActiveQuestion(idx),
+      onOptionToggle: (qIdx, optIdx) => {
+        examStateMachine.selectAnswer(qIdx, optIdx);
+        this.render();
+      },
+      onFlagToggle: (qIdx) => {
+        examStateMachine.toggleFlag(qIdx);
+        this.render();
+      },
+      onEliminateToggle: (qIdx, optIdx) => {
+        examStateMachine.toggleEliminateOption(qIdx, optIdx);
+        this.render();
+      },
+    });
+
     this.render();
+  }
+
+  private highlightActiveQuestion(index: number): void {
+    document.querySelectorAll('.question-block').forEach((el) => el.classList.remove('active-focus'));
+    const target = document.getElementById(`q-card-${index}`);
+    target?.classList.add('active-focus');
+
+    document.querySelectorAll('.palette-btn').forEach((b) => b.classList.remove('active-current'));
+    const paletteBtn = document.getElementById(`palette-btn-${index}`);
+    paletteBtn?.classList.add('active-current');
   }
 
   public toggleEliminateMode(): boolean {

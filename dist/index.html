@@ -83,13 +83,13 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
 
     <!-- Modular Stylesheets -->
-  <script type="module" crossorigin src="/assets/index-DS9f8qER.js"></script>
+  <script type="module" crossorigin src="/assets/index-BXQ968g7.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-C0FnF6B9.js">
   <link rel="modulepreload" crossorigin href="/assets/dexie-Bt_Vhrvy.js">
   <link rel="modulepreload" crossorigin href="/assets/supabase-Bl13M3oS.js">
   <link rel="modulepreload" crossorigin href="/assets/katex-CjWbGmc8.js">
   <link rel="modulepreload" crossorigin href="/assets/chart-DKPB83iI.js">
-  <link rel="stylesheet" crossorigin href="/assets/index-DGgXFNTn.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-Cl3Ws1VM.css">
 </head>
 <body class="theme-academic">
     <!-- Animated Gaming Video & Backdrop System (Sameko Studio Engine) -->
@@ -121,28 +121,6 @@
             <div class="controls-group">
                 <!-- Group 1: Exam Active Controls (Hidden in IDLE state) -->
                 <div id="exam-active-controls" class="exam-active-controls" style="display: none;">
-                    <!-- 1. Mode Selector (Practice, Exam, Flashcard) -->
-                    <div class="pill-select-wrap">
-                        <select class="custom-select mode-select-pill" id="mode-selector" aria-label="Select Mode">
-                            <option value="exam">⏱️ Thi thử</option>
-                            <option value="practice">🎯 Luyện tập</option>
-                            <option value="flashcard">🎴 Flashcard</option>
-                        </select>
-                    </div>
-
-                    <!-- 2. Exam Duration Picker (Visible only during Exam Mode) -->
-                    <div class="pill-select-wrap" id="wrap-duration-selector" title="Thời gian làm bài thi" style="display: none;">
-                        <select class="custom-select" id="duration-selector" aria-label="Thời gian làm bài">
-                            <option value="15">⏱️ 15 phút</option>
-                            <option value="30">⏱️ 30 phút</option>
-                            <option value="45">⏱️ 45 phút</option>
-                            <option value="60" selected>⏱️ 60 phút</option>
-                            <option value="90">⏱️ 90 phút</option>
-                            <option value="120">⏱️ 120 phút</option>
-                            <option value="0">♾️ Không giới hạn</option>
-                        </select>
-                    </div>
-
                     <!-- Reset / New Quiz Button -->
                     <button class="btn-action btn-danger" id="btn-reset" title="Làm mới và quay về trang nhập đề thi">🔄 Đổi đề</button>
                 </div>
@@ -209,13 +187,13 @@
                             Khởi tạo đề thi hoặc Khám phá kho đề tuyển chọn
                         </h2>
                         <p id="txt-upload-prompt" class="studio-subtitle">
-                            Hỗ trợ tải trực tiếp file <strong>.PDF</strong> (Tự động cắt ảnh/code), <strong>.DOCX (Word)</strong> và <strong>.TXT</strong>
+                            Hệ thống khảo thí điện tử thế hệ mới • Hỗ trợ tải file <strong>.PDF</strong> (Auto-crop), <strong>.DOCX</strong>, <strong>.TXT</strong> và đồng bộ đám mây
                         </p>
                     </div>
 
-                    <div class="studio-grid">
-                        <!-- Zone 1: File Dropzone -->
-                        <div class="dropzone-box" id="dropzone-area">
+                    <div class="lobby-bento-grid">
+                        <!-- Bento 1: File Dropzone Box -->
+                        <div class="bento-card bento-upload" id="dropzone-area">
                             <div class="dropzone-icon-ring">
                                 <span class="dropzone-icon">📂</span>
                             </div>
@@ -226,84 +204,99 @@
                                 <span class="fmt-badge pdf">.PDF (Auto-crop)</span>
                                 <span class="fmt-badge docx">.DOCX (Word)</span>
                                 <span class="fmt-badge txt">.TXT</span>
+                                <span class="fmt-badge json">.JSON</span>
                             </div>
 
-                            <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; justify-content: center;">
+                            <div class="bento-upload-actions">
                                 <label class="btn-action btn-primary btn-upload-cta">
                                     📁 <span id="txt-btn-browse">Chọn file từ thiết bị</span>
-                                    <input type="file" id="file-input" accept=".txt,.docx,.doc,.pdf" style="display: none;">
-                                 </label>
-                                <button type="button" class="btn-action btn-ai-ocr-trigger" id="btn-hero-ocr" style="font-weight: 600;">
+                                    <input type="file" id="file-input" accept=".txt,.docx,.doc,.pdf,.json" style="display: none;">
+                                </label>
+                                <button type="button" class="btn-action btn-ai-ocr-trigger" id="btn-hero-ocr">
                                     <span id="txt-btn-hero-ocr">📸 Quét ảnh đề (OCR AI)</span>
                                 </button>
-                                <button type="button" class="btn-action" id="btn-open-studio-hero" style="font-weight: 600;">
+                                <button type="button" class="btn-action" id="btn-open-studio-hero">
                                     <span id="txt-btn-studio-hero">✏️ Tự soạn đề thi</span>
                                 </button>
                             </div>
                             
                             <div class="dropzone-note" id="txt-dropzone-note">
-                                * File .doc cũ: Vui lòng lưu thành .docx để đọc tốt nhất
+                                * Tự động nhận diện công thức Toán KaTeX, hình vẽ câu hỏi và mã nguồn lập trình
                             </div>
                         </div>
 
-                        <!-- Zone 2: Curated Subject Bank -->
-                        <div class="curated-bank-box">
-                            <div class="curated-header">
-                                <span class="curated-icon">📚</span>
+                        <!-- Bento 2: Curated Subject Bank & Gallery Trigger -->
+                        <div class="bento-card bento-samples">
+                            <div class="bento-card-header">
+                                <div class="bento-card-icon">📚</div>
                                 <div>
-                                    <h3 class="curated-title" id="txt-curated-title">Kho đề thi mẫu chuẩn</h3>
-                                    <p class="curated-subtitle" id="txt-curated-subtitle">Chọn nhanh môn học để bắt đầu ôn luyện ngay</p>
+                                    <h3 class="bento-card-title" id="txt-curated-title">Kho đề thi mẫu chuẩn</h3>
+                                    <p class="bento-card-subtitle" id="txt-curated-subtitle">Tuyển tập đề thi tiêu chuẩn đa môn học & Digital SAT</p>
                                 </div>
                             </div>
 
-                            <div class="subject-picker-wrap">
-                                <select class="custom-select select-subject-lg" id="sample-subject-select" aria-label="Chọn đề ôn tập mẫu">
-                                    <optgroup label="🌐 Đề thi Máy chủ (Cloud Database)" id="optgroup-cloud-exams">
-                                        <!-- Dynamically populated from /api/exams -->
-                                    </optgroup>
-                                    <optgroup label="📚 Đề thi mẫu Offline" id="optgroup-offline-exams">
-                                        <option value="informatics_10">💻 Tin học - Lập trình & CNTT (10 câu)</option>
-                                        <option value="chem_40_pdf">🧪 Hóa học - 40 câu trắc nghiệm (Trích xuất từ file PDF)</option>
-                                        <option value="math_50">📐 Toán học - Đề thi thử THPT (50 câu)</option>
-                                        <option value="physics_12">⚡ Vật lý 12 - Dao động cơ học (5 câu)</option>
-                                        <option value="chem_12">🧪 Hóa học 12 - Este & Lipit (5 câu)</option>
-                                        <option value="english_thpt">🇬🇧 Tiếng Anh THPT - Ngữ pháp (5 câu)</option>
-                                        <option value="social_12">🌏 KHXH - Lịch sử & Địa lý (5 câu)</option>
-                                        <option value="sat_math">🎓 Digital SAT Math CBT (English)</option>
-                                        <option value="quick_5">⚡ Đề kiểm tra nhanh (5 câu)</option>
-                                    </optgroup>
-                                </select>
-                                
-                                <button class="btn-action btn-primary btn-start-curated" id="btn-load-sample">
-                                    🚀 <span id="txt-btn-sample">Bắt đầu làm bài</span>
+                            <div class="sample-pills-grid">
+                                <button type="button" class="subj-pill" data-subj="math_50">📐 Toán học (50c)</button>
+                                <button type="button" class="subj-pill" data-subj="chem_40_pdf">🧪 Hóa học PDF (40c)</button>
+                                <button type="button" class="subj-pill" data-subj="informatics_10">💻 Tin học (10c)</button>
+                                <button type="button" class="subj-pill" data-subj="sat_math">🎓 SAT Math CBT</button>
+                                <button type="button" class="subj-pill" data-subj="physics_12">⚡ Vật lý 12</button>
+                                <button type="button" class="subj-pill" data-subj="english_thpt">🇬🇧 Tiếng Anh</button>
+                            </div>
+
+                            <div class="bento-samples-cta">
+                                <button type="button" class="btn-action btn-primary btn-open-gallery-cta" id="btn-open-sample-gallery">
+                                    ✨ <span id="txt-btn-sample">Khám phá kho đề mẫu (9 bộ đề)</span>
                                 </button>
                             </div>
 
-                            <!-- Subject Quick Highlights -->
-                            <div class="subject-quick-pills">
-                                <button type="button" class="subj-pill" data-subj="informatics_10">💻 Tin học</button>
-                                <button type="button" class="subj-pill" data-subj="chem_40_pdf">🧪 Hóa học</button>
-                                <button type="button" class="subj-pill" data-subj="math_50">📐 Toán học</button>
-                                <button type="button" class="subj-pill" data-subj="physics_12">⚡ Vật lý</button>
-                                <button type="button" class="subj-pill" data-subj="sat_math">🎓 SAT Math</button>
-                            </div>
+                            <!-- Fallback hidden controls for dynamic Cloud Exams -->
+                            <select class="custom-select" id="sample-subject-select" style="display: none;" aria-label="Chọn đề ôn tập mẫu">
+                                <optgroup label="🌐 Đề thi Máy chủ" id="optgroup-cloud-exams"></optgroup>
+                                <optgroup label="📚 Đề thi mẫu Offline" id="optgroup-offline-exams">
+                                    <option value="informatics_10">💻 Tin học (10 câu)</option>
+                                    <option value="chem_40_pdf">🧪 Hóa học (40 câu)</option>
+                                    <option value="math_50">📐 Toán học (50 câu)</option>
+                                    <option value="physics_12">⚡ Vật lý (5 câu)</option>
+                                    <option value="chem_12">🧪 Hóa học 12 (5 câu)</option>
+                                    <option value="english_thpt">🇬🇧 Tiếng Anh (5 câu)</option>
+                                    <option value="social_12">🌏 KHXH (5 câu)</option>
+                                    <option value="sat_math">🎓 Digital SAT Math</option>
+                                    <option value="quick_5">⚡ Kiểm tra nhanh (5 câu)</option>
+                                </optgroup>
+                            </select>
+                            <button class="btn-action" id="btn-load-sample" style="display: none;"></button>
                         </div>
 
-                        <!-- Zone 3: Join Room PIN -->
-                        <div class="join-pin-box">
-                            <div class="join-pin-header">
-                                <span class="join-pin-icon">🔑</span>
+                        <!-- Bento 3: Join Room PIN with 6 Discrete OTP Input Boxes -->
+                        <div class="bento-card bento-room">
+                            <div class="bento-card-header">
+                                <div class="bento-card-icon">🔑</div>
                                 <div>
-                                    <h3 class="join-pin-title" id="txt-join-pin-title">Phòng thi trực tuyến</h3>
-                                    <p class="join-pin-subtitle" id="txt-join-pin-subtitle">Nhập mã PIN 6 số để vào thi ngay</p>
+                                    <h3 class="bento-card-title" id="txt-join-pin-title">Phòng thi trực tuyến</h3>
+                                    <p class="bento-card-subtitle" id="txt-join-pin-subtitle">Nhập mã PIN 6 số do giáo viên cung cấp</p>
                                 </div>
                             </div>
-                            <div class="join-pin-form">
-                                <input type="text" class="custom-select join-pin-input-big" id="input-join-pin" placeholder="MÃ PIN 6 SỐ" maxlength="10" autocomplete="off">
-                                <input type="text" class="custom-select" id="input-join-name" placeholder="Họ và tên thí sinh..." maxlength="50">
-                                <input type="text" class="custom-select" id="input-join-sbd" placeholder="Số báo danh / Lớp (tùy chọn)..." maxlength="30">
-                                <button type="button" class="btn-action btn-primary" id="btn-join-room" style="justify-content: center; padding: 10px; font-weight: 700; margin-top: 4px;">
-                                    <span id="txt-btn-join-room">🎯 Vào phòng thi</span>
+
+                            <div class="join-room-otp-form">
+                                <label class="otp-label" for="pin-digit-1">MÃ PHÒNG THI (6 KÝ TỰ):</label>
+                                <div class="otp-inputs-wrap" id="otp-inputs-wrap">
+                                    <input type="text" class="otp-digit" id="pin-digit-1" data-index="0" maxlength="1" inputmode="text" autocomplete="off" aria-label="Mã PIN ký tự 1">
+                                    <input type="text" class="otp-digit" id="pin-digit-2" data-index="1" maxlength="1" inputmode="text" autocomplete="off" aria-label="Mã PIN ký tự 2">
+                                    <input type="text" class="otp-digit" id="pin-digit-3" data-index="2" maxlength="1" inputmode="text" autocomplete="off" aria-label="Mã PIN ký tự 3">
+                                    <input type="text" class="otp-digit" id="pin-digit-4" data-index="3" maxlength="1" inputmode="text" autocomplete="off" aria-label="Mã PIN ký tự 4">
+                                    <input type="text" class="otp-digit" id="pin-digit-5" data-index="4" maxlength="1" inputmode="text" autocomplete="off" aria-label="Mã PIN ký tự 5">
+                                    <input type="text" class="otp-digit" id="pin-digit-6" data-index="5" maxlength="1" inputmode="text" autocomplete="off" aria-label="Mã PIN ký tự 6">
+                                </div>
+                                <input type="hidden" id="input-join-pin" value="">
+
+                                <div class="join-inputs-row">
+                                    <input type="text" class="custom-select join-text-input" id="input-join-name" placeholder="Họ và tên thí sinh..." maxlength="50" autocomplete="name">
+                                    <input type="text" class="custom-select join-text-input" id="input-join-sbd" placeholder="SBD / Lớp (tùy chọn)..." maxlength="30">
+                                </div>
+
+                                <button type="button" class="btn-action btn-primary btn-join-room-cta" id="btn-join-room">
+                                    🎯 <span id="txt-btn-join-room">Vào phòng thi</span>
                                 </button>
                             </div>
                         </div>
@@ -354,6 +347,7 @@
 
             <!-- RIGHT COLUMN: QUESTION PALETTE -->
             <aside class="palette-sidebar" id="palette-section" style="display: none;">
+                <div class="mobile-drawer-handle" aria-hidden="true"></div>
                 <div class="palette-header">
                     <span class="palette-title" id="txt-palette-title">
                         <span>📋</span> <span>Bản đồ câu hỏi</span>
@@ -450,6 +444,250 @@
                 <button class="btn-action btn-success" id="btn-export-pdf">📄 Xuất báo cáo PDF</button>
                 <button class="btn-action btn-primary" id="btn-export-csv">📊 Xuất CSV Gradebook</button>
                 <button class="btn-action btn-danger" id="txt-modal-new-quiz">🔄 Làm bài mới</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXAM SETUP & CONFIGURATION MODAL (PHASE 1 DIRECTIVE) -->
+    <div class="modal-overlay" id="exam-setup-modal" style="display: none; z-index: 99990;">
+        <div class="modal-content exam-setup-modal-card">
+            <div class="setup-modal-header">
+                <div class="setup-header-info">
+                    <div class="setup-header-icon-box">🚀</div>
+                    <div>
+                        <h3 id="setup-exam-title" class="setup-modal-title">Cấu hình phòng thi</h3>
+                        <p id="setup-exam-meta" class="setup-modal-meta">Đề thi sẵn sàng • Thiết lập chế độ thi phù hợp</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-modal-close-icon" id="btn-close-setup-modal" title="Đóng modal">✕</button>
+            </div>
+
+            <!-- Mode Selection: 3 Cards -->
+            <div class="setup-section">
+                <label class="setup-section-label">1. Chọn chế độ làm bài:</label>
+                <div class="setup-mode-cards-grid">
+                    <!-- Card 1: Luyện tập -->
+                    <div class="setup-mode-card" data-mode="practice">
+                        <div class="mode-card-badge-row">
+                            <span class="mode-card-icon">🎯</span>
+                            <span class="mode-tag-pill">Tự học & Khám phá</span>
+                        </div>
+                        <h4 class="mode-card-title">Luyện tập</h4>
+                        <p class="mode-card-desc">Hiển thị đáp án & giải thích tức thì, cho phép gạch loại suy phương án sai.</p>
+                        <div class="mode-card-perks">
+                            <span>✓ Giải thích tức thì</span>
+                            <span>✓ Gạch loại suy (E)</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Thi thử CBT (Mặc định) -->
+                    <div class="setup-mode-card active" data-mode="exam">
+                        <div class="mode-card-badge-row">
+                            <span class="mode-card-icon">⏱️</span>
+                            <span class="mode-tag-pill mode-tag-cbt">Tiêu chuẩn CBT</span>
+                        </div>
+                        <h4 class="mode-card-title">Thi thử CBT</h4>
+                        <p class="mode-card-desc">Bấm giờ đếm ngược, bản đồ câu hỏi & phân tích radar kết quả chuẩn SAT / THPT.</p>
+                        <div class="mode-card-perks">
+                            <span>✓ Đếm ngược thời gian</span>
+                            <span>✓ Chấm điểm & Radar FSA</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Flashcard 3D -->
+                    <div class="setup-mode-card" data-mode="flashcard">
+                        <div class="mode-card-badge-row">
+                            <span class="mode-card-icon">🎴</span>
+                            <span class="mode-tag-pill">SM-2 Spaced</span>
+                        </div>
+                        <h4 class="mode-card-title">Flashcard 3D</h4>
+                        <p class="mode-card-desc">Lật thẻ ghi nhớ 3D thông minh, thuật toán lặp lại ngắt quãng tối ưu trí nhớ.</p>
+                        <div class="mode-card-perks">
+                            <span>✓ Lật thẻ tương tác 3D</span>
+                            <span>✓ Đánh giá nhớ 0-5 sao</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Duration Selection: Chips -->
+            <div class="setup-section" id="setup-duration-section">
+                <label class="setup-section-label">2. Thời gian làm bài:</label>
+                <div class="setup-duration-chips-wrap" id="setup-duration-chips">
+                    <button type="button" class="duration-chip" data-mins="15">⏱️ 15 phút</button>
+                    <button type="button" class="duration-chip" data-mins="30">⏱️ 30 phút</button>
+                    <button type="button" class="duration-chip" data-mins="45">⏱️ 45 phút</button>
+                    <button type="button" class="duration-chip active" data-mins="60">⏱️ 60 phút</button>
+                    <button type="button" class="duration-chip" data-mins="90">⏱️ 90 phút</button>
+                    <button type="button" class="duration-chip" data-mins="0">♾️ Không giới hạn</button>
+                </div>
+            </div>
+
+            <!-- Modal Action Buttons -->
+            <div class="setup-modal-actions">
+                <button type="button" class="btn-action" id="btn-cancel-setup">Quay lại</button>
+                <button type="button" class="btn-action btn-primary btn-cta-start-exam" id="btn-start-exam-session">
+                    🚀 Vào phòng thi ngay
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SAMPLE BANK GALLERY MODAL (PHASE 2 DIRECTIVE) -->
+    <div class="modal-overlay" id="sample-gallery-modal" style="display: none; z-index: 99989;">
+        <div class="modal-content sample-gallery-modal-card">
+            <div class="gallery-modal-header">
+                <div>
+                    <h3 class="gallery-modal-title">📚 Kho Đề Thi Tuyển Chọn</h3>
+                    <p class="gallery-modal-subtitle">Bộ đề chuẩn hóa cấu trúc Bộ GD&ĐT & Digital SAT quốc tế. Chọn để bắt đầu làm bài:</p>
+                </div>
+                <button type="button" class="btn-modal-close-icon" id="btn-close-gallery-modal" title="Đóng">✕</button>
+            </div>
+
+            <div class="gallery-cards-grid" id="gallery-cards-grid">
+                <!-- 1. Toán học 50 câu -->
+                <div class="gallery-item-card" data-bank="math_50">
+                    <div class="gallery-card-top">
+                        <div class="gallery-icon-ring">📐</div>
+                        <div class="gallery-badges">
+                            <span class="gallery-badge-count">50 câu</span>
+                            <span class="gallery-badge-tag">Toán THPT</span>
+                        </div>
+                    </div>
+                    <h4 class="gallery-item-title">Toán học - Đề thi thử THPT</h4>
+                    <p class="gallery-item-desc">Đề thi thử THPT Quốc gia bao gồm Hàm số, Mũ - Logarit, Tích phân và Hình Oxyz có công thức KaTeX.</p>
+                    <button type="button" class="btn-action btn-primary btn-select-gallery-exam" data-bank-key="math_50">
+                        Chọn đề này ➔
+                    </button>
+                </div>
+
+                <!-- 2. Hóa học 40 câu PDF -->
+                <div class="gallery-item-card" data-bank="chem_40_pdf">
+                    <div class="gallery-card-top">
+                        <div class="gallery-icon-ring">🧪</div>
+                        <div class="gallery-badges">
+                            <span class="gallery-badge-count">40 câu</span>
+                            <span class="gallery-badge-tag">PDF Auto-crop</span>
+                        </div>
+                    </div>
+                    <h4 class="gallery-item-title">Hóa học - 40 câu trắc nghiệm</h4>
+                    <p class="gallery-item-desc">Trích xuất tự động từ tài liệu PDF với hình ảnh sơ đồ thí nghiệm và phương trình hóa học chi tiết.</p>
+                    <button type="button" class="btn-action btn-primary btn-select-gallery-exam" data-bank-key="chem_40_pdf">
+                        Chọn đề này ➔
+                    </button>
+                </div>
+
+                <!-- 3. Tin học 10 câu -->
+                <div class="gallery-item-card" data-bank="informatics_10">
+                    <div class="gallery-card-top">
+                        <div class="gallery-icon-ring">💻</div>
+                        <div class="gallery-badges">
+                            <span class="gallery-badge-count">10 câu</span>
+                            <span class="gallery-badge-tag">CNTT & Lập trình</span>
+                        </div>
+                    </div>
+                    <h4 class="gallery-item-title">Tin học - CNTT & Python</h4>
+                    <p class="gallery-item-desc">Kiến thức cấu trúc dữ liệu, thuật toán, mạng máy tính và khối lệnh code Python có Shiki syntax highlight.</p>
+                    <button type="button" class="btn-action btn-primary btn-select-gallery-exam" data-bank-key="informatics_10">
+                        Chọn đề này ➔
+                    </button>
+                </div>
+
+                <!-- 4. SAT Math CBT -->
+                <div class="gallery-item-card" data-bank="sat_math">
+                    <div class="gallery-card-top">
+                        <div class="gallery-icon-ring">🎓</div>
+                        <div class="gallery-badges">
+                            <span class="gallery-badge-count">Digital SAT</span>
+                            <span class="gallery-badge-tag">Quốc tế CBT</span>
+                        </div>
+                    </div>
+                    <h4 class="gallery-item-title">Digital SAT Math CBT</h4>
+                    <p class="gallery-item-desc">Đề thi chuẩn cấu trúc College Board bằng Tiếng Anh: Algebra, Advanced Math, Problem-Solving and Geometry.</p>
+                    <button type="button" class="btn-action btn-primary btn-select-gallery-exam" data-bank-key="sat_math">
+                        Chọn đề này ➔
+                    </button>
+                </div>
+
+                <!-- 5. Vật lý 12 -->
+                <div class="gallery-item-card" data-bank="physics_12">
+                    <div class="gallery-card-top">
+                        <div class="gallery-icon-ring">⚡</div>
+                        <div class="gallery-badges">
+                            <span class="gallery-badge-count">5 câu</span>
+                            <span class="gallery-badge-tag">Vật lý 12</span>
+                        </div>
+                    </div>
+                    <h4 class="gallery-item-title">Vật lý 12 - Dao động cơ học</h4>
+                    <p class="gallery-item-desc">Các câu hỏi trọng tâm về dao động điều hòa, con lắc đơn, con lắc lò xo và tổng hợp dao động.</p>
+                    <button type="button" class="btn-action btn-primary btn-select-gallery-exam" data-bank-key="physics_12">
+                        Chọn đề này ➔
+                    </button>
+                </div>
+
+                <!-- 6. Hóa học 12 -->
+                <div class="gallery-item-card" data-bank="chem_12">
+                    <div class="gallery-card-top">
+                        <div class="gallery-icon-ring">🧪</div>
+                        <div class="gallery-badges">
+                            <span class="gallery-badge-count">5 câu</span>
+                            <span class="gallery-badge-tag">Este & Lipit</span>
+                        </div>
+                    </div>
+                    <h4 class="gallery-item-title">Hóa học 12 - Este & Lipit</h4>
+                    <p class="gallery-item-desc">Trắc nghiệm lý thuyết đồng phân, danh pháp và phản ứng xà phòng hóa este, chất béo.</p>
+                    <button type="button" class="btn-action btn-primary btn-select-gallery-exam" data-bank-key="chem_12">
+                        Chọn đề này ➔
+                    </button>
+                </div>
+
+                <!-- 7. Tiếng Anh THPT -->
+                <div class="gallery-item-card" data-bank="english_thpt">
+                    <div class="gallery-card-top">
+                        <div class="gallery-icon-ring">🇬🇧</div>
+                        <div class="gallery-badges">
+                            <span class="gallery-badge-count">5 câu</span>
+                            <span class="gallery-badge-tag">Ngữ pháp THPT</span>
+                        </div>
+                    </div>
+                    <h4 class="gallery-item-title">Tiếng Anh THPT - Ngữ pháp</h4>
+                    <p class="gallery-item-desc">Câu điều kiện, câu bị động, mệnh đề quan hệ và ngữ pháp cốt lõi ôn thi tốt nghiệp.</p>
+                    <button type="button" class="btn-action btn-primary btn-select-gallery-exam" data-bank-key="english_thpt">
+                        Chọn đề này ➔
+                    </button>
+                </div>
+
+                <!-- 8. KHXH (Sử - Địa) -->
+                <div class="gallery-item-card" data-bank="social_12">
+                    <div class="gallery-card-top">
+                        <div class="gallery-icon-ring">🌏</div>
+                        <div class="gallery-badges">
+                            <span class="gallery-badge-count">5 câu</span>
+                            <span class="gallery-badge-tag">Lịch sử - Địa lý</span>
+                        </div>
+                    </div>
+                    <h4 class="gallery-item-title">KHXH - Lịch sử & Địa lý</h4>
+                    <p class="gallery-item-desc">Lịch sử thế giới thời cận hiện đại và Địa lý các vùng kinh tế trọng điểm Việt Nam.</p>
+                    <button type="button" class="btn-action btn-primary btn-select-gallery-exam" data-bank-key="social_12">
+                        Chọn đề này ➔
+                    </button>
+                </div>
+
+                <!-- 9. Đề kiểm tra nhanh -->
+                <div class="gallery-item-card" data-bank="quick_5">
+                    <div class="gallery-card-top">
+                        <div class="gallery-icon-ring">⚡</div>
+                        <div class="gallery-badges">
+                            <span class="gallery-badge-count">5 câu</span>
+                            <span class="gallery-badge-tag">Quick Challenge</span>
+                        </div>
+                    </div>
+                    <h4 class="gallery-item-title">Đề kiểm tra nhanh (5 câu)</h4>
+                    <p class="gallery-item-desc">Đề kiểm tra ngắn gọn khởi động nhanh hệ thống thi thử trực tuyến OmniQuiz PRO.</p>
+                    <button type="button" class="btn-action btn-primary btn-select-gallery-exam" data-bank-key="quick_5">
+                        Chọn đề này ➔
+                    </button>
+                </div>
             </div>
         </div>
     </div>

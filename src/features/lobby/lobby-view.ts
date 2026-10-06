@@ -1,7 +1,7 @@
 /**
  * src/features/lobby/lobby-view.ts - Lobby & CBT Studio 2.0 Upload Hub
  * Governs the initial IDLE screen: Dropzone parsing, Curated Subject Banks,
- * and 6-digit PIN Online Exam entry point.
+ * Sample Modal Gallery, and 6-digit discrete OTP PIN Online Exam entry point.
  */
 
 export interface LobbyHandlers {
@@ -22,6 +22,7 @@ export class LobbyView {
     this.bindDropzone();
     this.bindFileInput();
     this.bindCuratedBanks();
+    this.bindSampleGalleryModal();
     this.bindPinJoin();
   }
 
@@ -119,22 +120,163 @@ export class LobbyView {
   }
 
   /**
-   * Zone 3: 6-Digit PIN Online Room Form
+   * Zone 2: Sample Bank Gallery Modal Trigger & Card Clicks
+   */
+  private bindSampleGalleryModal(): void {
+    const btnOpen = document.getElementById('btn-open-sample-gallery');
+    const modal = document.getElementById('sample-gallery-modal');
+    const btnClose = document.getElementById('btn-close-gallery-modal');
+
+    const openGallery = () => {
+      if (modal) modal.style.display = 'flex';
+    };
+
+    const closeGallery = () => {
+      if (modal) modal.style.display = 'none';
+    };
+
+    btnOpen?.addEventListener('click', openGallery);
+    btnClose?.addEventListener('click', closeGallery);
+
+    // Clicking modal overlay backdrop closes it
+    modal?.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeGallery();
+      }
+    });
+
+    // Gallery item selection buttons & cards
+    const galleryGrid = document.getElementById('gallery-cards-grid');
+    if (galleryGrid) {
+      galleryGrid.querySelectorAll<HTMLElement>('.gallery-item-card').forEach((card) => {
+        card.addEventListener('click', (e) => {
+          const target = e.target as HTMLElement;
+          const selectBtn = target.closest<HTMLElement>('.btn-select-gallery-exam');
+          const bankKey = selectBtn?.getAttribute('data-bank-key') || card.getAttribute('data-bank');
+          if (bankKey) {
+            closeGallery();
+            this.handlers?.onSampleSelected(bankKey);
+          }
+        });
+      });
+    }
+  }
+
+  /**
+   * Zone 3: 6-Digit Discrete OTP PIN Online Room Form
    */
   private bindPinJoin(): void {
     const btnJoin = document.getElementById('btn-join-room');
-    const inputPin = document.getElementById('input-join-pin') as HTMLInputElement | null;
+    const inputLegacyPin = document.getElementById('input-join-pin') as HTMLInputElement | null;
     const inputName = document.getElementById('input-join-name') as HTMLInputElement | null;
     const inputSbd = document.getElementById('input-join-sbd') as HTMLInputElement | null;
+    const otpInputs = Array.from(
+      document.querySelectorAll<HTMLInputElement>('.otp-digit')
+    );
 
+    const getFullPin = (): string => {
+      if (otpInputs.length === 6) {
+        return otpInputs.map((inp) => inp.value.trim().toUpperCase()).join('');
+      }
+      return inputLegacyPin?.value.trim().toUpperCase() || '';
+    };
+
+    const syncPinValue = (pin: string) => {
+      if (inputLegacyPin) {
+        inputLegacyPin.value = pin;
+      }
+    };
+
+    // OTP Discrete Inputs Management
+    otpInputs.forEach((inp, idx) => {
+      // 1. Auto-advance on input
+      inp.addEventListener('input', (e) => {
+        const target = e.target as HTMLInputElement;
+        const val = target.value.trim().toUpperCase();
+        target.value = val.charAt(0); // Enforce single char strictly typed
+
+        const full = getFullPin();
+        syncPinValue(full);
+
+        if (val && idx < otpInputs.length - 1) {
+          otpInputs[idx + 1]?.focus();
+          otpInputs[idx + 1]?.select();
+        } else if (val && idx === otpInputs.length - 1) {
+          // If 6th digit entered, advance to name input
+          inputName?.focus();
+        }
+      });
+
+      // 2. Backspace auto-retreat & Arrow key navigation
+      inp.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace') {
+          if (!inp.value && idx > 0) {
+            e.preventDefault();
+            const prev = otpInputs[idx - 1];
+            if (prev) {
+              prev.value = '';
+              prev.focus();
+              syncPinValue(getFullPin());
+            }
+          }
+        } else if (e.key === 'ArrowLeft' && idx > 0) {
+          e.preventDefault();
+          otpInputs[idx - 1]?.focus();
+        } else if (e.key === 'ArrowRight' && idx < otpInputs.length - 1) {
+          e.preventDefault();
+          otpInputs[idx + 1]?.focus();
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          inputName?.focus();
+        }
+      });
+
+      // 3. Paste support across all 6 inputs
+      inp.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const clipboardData = e.clipboardData;
+        if (!clipboardData) return;
+
+        const pastedText = clipboardData
+          .getData('text')
+          .trim()
+          .replace(/[^a-zA-Z0-9]/g, '')
+          .toUpperCase();
+
+        if (pastedText) {
+          for (let i = 0; i < otpInputs.length; i++) {
+            const char = pastedText.charAt(i);
+            const inputEl = otpInputs[i];
+            if (inputEl) inputEl.value = char;
+          }
+
+          syncPinValue(getFullPin());
+
+          // Focus next unfilled input or the candidate name
+          const focusIndex = Math.min(pastedText.length, otpInputs.length - 1);
+          if (pastedText.length >= 6) {
+            inputName?.focus();
+          } else {
+            otpInputs[focusIndex]?.focus();
+          }
+        }
+      });
+
+      // Auto-select text on focus
+      inp.addEventListener('focus', () => {
+        inp.select();
+      });
+    });
+
+    // Submit handler
     btnJoin?.addEventListener('click', () => {
-      const pin = inputPin?.value.trim().toUpperCase() || '';
+      const pin = getFullPin();
       const name = inputName?.value.trim() || '';
       const sbd = inputSbd?.value.trim() || undefined;
 
       if (!pin || pin.length < 4) {
-        alert('Vui lòng nhập mã PIN hợp lệ (từ 4 đến 6 ký tự).');
-        inputPin?.focus();
+        alert('Vui lòng nhập đầy đủ mã PIN phòng thi (tối thiểu 4 đến 6 ký tự).');
+        otpInputs[0]?.focus();
         return;
       }
 
@@ -147,10 +289,10 @@ export class LobbyView {
       this.handlers?.onJoinRoom(pin, name, sbd);
     });
 
-    // Enter key triggers join
-    inputPin?.addEventListener('keydown', (e) => {
+    // Enter in SBD triggers join
+    inputSbd?.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
-        inputName?.focus();
+        btnJoin?.click();
       }
     });
 

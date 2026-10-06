@@ -162,6 +162,10 @@ export class ExamView {
     document.querySelectorAll('.question-block').forEach((el) => el.classList.remove('active-focus'));
     const target = document.getElementById(`q-card-${index}`);
     target?.classList.add('active-focus');
+
+    document.querySelectorAll('.palette-btn').forEach((b) => b.classList.remove('active-current'));
+    const paletteBtn = document.getElementById(`palette-btn-${index}`);
+    paletteBtn?.classList.add('active-current');
   }
 }
 

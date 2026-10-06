@@ -23,6 +23,9 @@ import { themeManager } from '../features/theme/theme-manager';
 export class OmniQuizApp {
   private currentExam: Exam | null = null;
   private currentMode: StudyMode = 'exam';
+  private pendingExam: Exam | null = null;
+  private setupSelectedMode: StudyMode = 'exam';
+  private setupSelectedDuration: number = 60;
 
   public async bootstrap(): Promise<void> {
     console.log('🚀 [OmniQuiz PRO 2.5] Initializing Enterprise EdTech Architecture...');
@@ -85,14 +88,14 @@ export class OmniQuizApp {
         e.subject.toLowerCase().includes(subjectId.toLowerCase())
     );
     if (match) {
-      this.loadExam(match);
+      this.openExamSetupModal(match);
     } else {
       const samples = getPreloadedSampleExams();
       const fallback =
         samples.find((s) => s.id.toLowerCase().includes(subjectId.toLowerCase())) || samples[0];
       if (fallback) {
         await localDB.saveExam(fallback);
-        this.loadExam(fallback);
+        this.openExamSetupModal(fallback);
       }
     }
   }
@@ -115,7 +118,7 @@ export class OmniQuizApp {
       if (loadingModal) loadingModal.style.display = 'none';
 
       await localDB.saveExam(parsedExam);
-      this.loadExam(parsedExam);
+      this.openExamSetupModal(parsedExam);
     } catch (err: unknown) {
       const loadingModal = document.getElementById('loading-modal');
       if (loadingModal) loadingModal.style.display = 'none';
@@ -133,7 +136,7 @@ export class OmniQuizApp {
       const ok = await multiplayerRoomService.joinRoom(pin, fullName, {
         onParticipantListChange: (list) => console.log('[Room Members]', list),
         onExamStarted: (exam) => {
-          this.loadExam(exam);
+          this.openExamSetupModal(exam);
         },
         onLeaderboardUpdate: (ranked) => console.log('[Leaderboard Update]', ranked),
       });
@@ -146,12 +149,62 @@ export class OmniQuizApp {
   }
 
   /**
+   * Open Exam Configuration Setup Modal before starting test
+   */
+  public openExamSetupModal(exam: Exam): void {
+    this.pendingExam = exam;
+    this.setupSelectedMode = this.currentMode || 'exam';
+    this.setupSelectedDuration = exam.durationMinutes || 60;
+
+    const modal = document.getElementById('exam-setup-modal');
+    if (!modal) {
+      this.loadExam(exam);
+      return;
+    }
+
+    const titleEl = document.getElementById('setup-exam-title');
+    if (titleEl) titleEl.textContent = exam.title;
+
+    const metaEl = document.getElementById('setup-exam-meta');
+    if (metaEl) {
+      metaEl.textContent = `${exam.questions.length} câu hỏi • Môn: ${exam.subject || 'Tổng hợp'} • Thời lượng: ${exam.durationMinutes || 60} phút`;
+    }
+
+    // Active mode card state
+    document.querySelectorAll('.setup-mode-card').forEach((card) => {
+      const mode = card.getAttribute('data-mode');
+      card.classList.toggle('active', mode === this.setupSelectedMode);
+    });
+
+    // Active duration chip state
+    document.querySelectorAll('.duration-chip').forEach((chip) => {
+      const mins = parseInt(chip.getAttribute('data-mins') || '0', 10);
+      chip.classList.toggle('active', mins === this.setupSelectedDuration);
+    });
+
+    // Duration section visibility
+    const durationSection = document.getElementById('setup-duration-section');
+    if (durationSection) {
+      durationSection.style.display = this.setupSelectedMode === 'exam' ? 'block' : 'none';
+    }
+
+    modal.style.display = 'flex';
+  }
+
+  /**
    * Set UI to pure IDLE state (waiting for user to upload or choose exam)
    */
   public setIdleState(): void {
     examStateMachine.reset();
     proctoringService.stopProctoring();
     this.currentExam = null;
+    this.pendingExam = null;
+
+    const examSetupModal = document.getElementById('exam-setup-modal');
+    if (examSetupModal) examSetupModal.style.display = 'none';
+
+    const sampleGalleryModal = document.getElementById('sample-gallery-modal');
+    if (sampleGalleryModal) sampleGalleryModal.style.display = 'none';
 
     // Show CBT Studio 2.0 Upload Hub via lobbyView
     lobbyView.show();
@@ -430,9 +483,10 @@ export class OmniQuizApp {
         let stateClass = '';
         if (isAnswered) stateClass = 'answered-exam';
         if (isFlagged) stateClass += ' flagged';
+        if (idx === 0) stateClass += ' active-current';
 
         return `
-          <button type="button" class="palette-btn ${stateClass}" id="palette-btn-${idx}" data-idx="${idx}">
+          <button type="button" class="palette-btn ${stateClass}" id="palette-btn-${idx}" data-idx="${idx}" title="Câu ${idx + 1}">
             ${idx + 1}
           </button>
         `;
@@ -443,6 +497,9 @@ export class OmniQuizApp {
       btn.addEventListener('click', () => {
         const idx = parseInt(btn.getAttribute('data-idx') || '0', 10);
         questionNavigator.setIndex(idx);
+
+        paletteGrid.querySelectorAll('.palette-btn').forEach((b) => b.classList.remove('active-current'));
+        btn.classList.add('active-current');
 
         // Auto close mobile drawer upon selection
         if (window.innerWidth <= 960) {
@@ -462,7 +519,9 @@ export class OmniQuizApp {
     if (!btn) return;
     const attempt = examStateMachine.getAttempt();
     const ans = attempt?.answers[qIdx] || [];
+    const isFlagged = attempt?.flaggedQuestions.includes(qIdx) || false;
     btn.classList.toggle('answered-exam', ans.length > 0);
+    btn.classList.toggle('flagged', isFlagged);
   }
 
   private updateHeaderProgress(): void {
@@ -569,6 +628,54 @@ export class OmniQuizApp {
    * UI Binding
    */
   private bindGlobalEventListeners(): void {
+    // Exam Setup Modal Bindings (Mode Cards, Duration Chips & CTA)
+    document.querySelectorAll('.setup-mode-card').forEach((card) => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.setup-mode-card').forEach((c) => c.classList.remove('active'));
+        card.classList.add('active');
+        const mode = (card.getAttribute('data-mode') || 'exam') as StudyMode;
+        this.setupSelectedMode = mode;
+
+        const durationSection = document.getElementById('setup-duration-section');
+        if (durationSection) {
+          durationSection.style.display = mode === 'exam' ? 'block' : 'none';
+        }
+      });
+    });
+
+    document.querySelectorAll('.duration-chip').forEach((chip) => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.duration-chip').forEach((c) => c.classList.remove('active'));
+        chip.classList.add('active');
+        const mins = parseInt(chip.getAttribute('data-mins') || '60', 10);
+        this.setupSelectedDuration = mins;
+      });
+    });
+
+    const closeSetupModal = (): void => {
+      const modal = document.getElementById('exam-setup-modal');
+      if (modal) modal.style.display = 'none';
+    };
+
+    document.getElementById('btn-close-setup-modal')?.addEventListener('click', closeSetupModal);
+    document.getElementById('btn-cancel-setup')?.addEventListener('click', closeSetupModal);
+
+    const setupModal = document.getElementById('exam-setup-modal');
+    setupModal?.addEventListener('click', (e) => {
+      if (e.target === setupModal) closeSetupModal();
+    });
+
+    document.getElementById('btn-start-exam-session')?.addEventListener('click', () => {
+      closeSetupModal();
+      if (this.pendingExam) {
+        this.currentMode = this.setupSelectedMode;
+        if (this.setupSelectedDuration > 0) {
+          this.pendingExam.durationMinutes = this.setupSelectedDuration;
+        }
+        this.loadExam(this.pendingExam);
+      }
+    });
+
     // Mode Switcher buttons
     document.querySelectorAll('[data-study-mode]').forEach((btn) => {
       btn.addEventListener('click', (e) => {
