@@ -306,16 +306,85 @@ router.post('/rooms', authenticate(false), (req, res) => {
     }
 });
 
+// In-Memory Rate Limiter for PIN verification (Brute-Force Defense)
+const pinRateLimitMap = new Map();
+const MAX_PIN_FAILURES = 5;
+const PIN_FAIL_WINDOW_MS = 60 * 1000; // 1 minute
+const PIN_BLOCK_DURATION_MS = 60 * 1000; // 1 minute block
+
+function getClientIdentifier(req) {
+    const forwarded = req.headers['x-forwarded-for'];
+    if (forwarded) {
+        return forwarded.split(',')[0].trim();
+    }
+    return req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress || '127.0.0.1';
+}
+
+function checkPinRateLimit(ip) {
+    const now = Date.now();
+    const record = pinRateLimitMap.get(ip);
+    if (!record) return { blocked: false };
+
+    if (record.blockedUntil && now < record.blockedUntil) {
+        const remainingSec = Math.max(1, Math.ceil((record.blockedUntil - now) / 1000));
+        return { blocked: true, remainingSec };
+    }
+
+    if (now - record.firstFailedAt > PIN_FAIL_WINDOW_MS) {
+        pinRateLimitMap.delete(ip);
+        return { blocked: false };
+    }
+
+    if (record.failedCount >= MAX_PIN_FAILURES) {
+        record.blockedUntil = now + PIN_BLOCK_DURATION_MS;
+        return { blocked: true, remainingSec: 60 };
+    }
+
+    return { blocked: false };
+}
+
+function recordPinFailure(ip) {
+    const now = Date.now();
+    let record = pinRateLimitMap.get(ip);
+    if (!record || now - record.firstFailedAt > PIN_FAIL_WINDOW_MS) {
+        record = { failedCount: 1, firstFailedAt: now, blockedUntil: 0 };
+    } else {
+        record.failedCount++;
+        if (record.failedCount >= MAX_PIN_FAILURES) {
+            record.blockedUntil = now + PIN_BLOCK_DURATION_MS;
+        }
+    }
+    pinRateLimitMap.set(ip, record);
+    return record;
+}
+
+function recordPinSuccess(ip) {
+    pinRateLimitMap.delete(ip);
+}
+
 /**
  * GET /api/rooms/:pin
  */
 router.get('/rooms/:pin', (req, res) => {
     try {
+        const ip = getClientIdentifier(req);
+        const limitCheck = checkPinRateLimit(ip);
+        if (limitCheck.blocked) {
+            return res.status(429).json({
+                success: false,
+                error: 'Bạn đã nhập sai mã PIN quá nhiều lần. Vui lòng thử lại sau 1 phút!',
+                retryAfter: limitCheck.remainingSec || 60
+            });
+        }
+
         const { pin } = req.params;
         const room = Database.getRoomByPin(pin, true);
         if (!room) {
+            recordPinFailure(ip);
             return res.status(404).json({ success: false, error: 'Phòng thi không tồn tại hoặc mã PIN không đúng!' });
         }
+
+        recordPinSuccess(ip);
         res.json({
             success: true,
             data: room
@@ -477,5 +546,15 @@ router.get('/health', (req, res) => {
         res.status(500).json({ success: false, error: err.message });
     }
 });
+
+router.pinRateLimiter = {
+    checkPinRateLimit,
+    recordPinFailure,
+    recordPinSuccess,
+    pinRateLimitMap,
+    MAX_PIN_FAILURES,
+    PIN_FAIL_WINDOW_MS,
+    PIN_BLOCK_DURATION_MS
+};
 
 module.exports = router;

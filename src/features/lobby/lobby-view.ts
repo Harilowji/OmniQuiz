@@ -40,6 +40,49 @@ export class LobbyView {
     }
   }
 
+  private rateLimitInterval: ReturnType<typeof setInterval> | number = 0;
+
+  /**
+   * Temporarily lock OTP input controls during 429 Rate Limit
+   */
+  public lockForRateLimit(seconds = 60): void {
+    clearInterval(this.rateLimitInterval);
+    const otpInputs = document.querySelectorAll<HTMLInputElement>('.otp-digit');
+    const legacyPinInput = document.getElementById('input-join-pin') as HTMLInputElement | null;
+    const btnJoin = document.getElementById('btn-join-room') as HTMLButtonElement | null;
+
+    otpInputs.forEach((inp) => {
+      inp.disabled = true;
+    });
+    if (legacyPinInput) legacyPinInput.disabled = true;
+    if (btnJoin) btnJoin.disabled = true;
+
+    let remaining = seconds;
+    const updateBtnText = () => {
+      if (btnJoin) {
+        btnJoin.textContent = `⏳ Chờ ${remaining}s...`;
+      }
+    };
+    updateBtnText();
+
+    this.rateLimitInterval = setInterval(() => {
+      remaining--;
+      if (remaining <= 0) {
+        clearInterval(this.rateLimitInterval);
+        otpInputs.forEach((inp) => {
+          inp.disabled = false;
+        });
+        if (legacyPinInput) legacyPinInput.disabled = false;
+        if (btnJoin) {
+          btnJoin.disabled = false;
+          btnJoin.textContent = 'Vào phòng thi ➔';
+        }
+      } else {
+        updateBtnText();
+      }
+    }, 1000);
+  }
+
   /**
    * Zone 1: Drag & Drop Area
    */

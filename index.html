@@ -119,6 +119,12 @@
                     ⚙️ <span class="btn-tools-text" id="txt-btn-tools">Tiện ích</span>
                 </button>
 
+                <!-- PWA Offline / Online Network Indicator Badge -->
+                <div class="offline-indicator-badge" id="offline-indicator-badge" style="display: none;" aria-live="polite">
+                    <span class="offline-dot"></span>
+                    <span id="offline-indicator-text">Ngoại tuyến (Offline Mode) - Sẵn sàng làm bài</span>
+                </div>
+
                 <!-- Server Connection Status Badge (Hidden by default to keep UI distraction-free) -->
                 <button type="button" class="server-status-pill" id="server-status-badge" title="Trạng thái kết nối máy chủ OmniQuiz Cloud" aria-label="Trạng thái máy chủ" style="display: none;">
                     <span class="status-dot"></span>
@@ -426,6 +432,7 @@
             <div class="modal-actions">
                 <button class="btn-action" id="txt-modal-review">Xem lại bài làm</button>
                 <button class="btn-action btn-success" id="btn-export-pdf">📄 Xuất báo cáo PDF</button>
+                <button class="btn-action btn-ai-glow" id="btn-export-scorecard" title="Xuất thẻ chứng nhận vinh danh chuẩn OpenGraph để khoe điểm lên mạng xã hội">🏆 Xuất Thẻ Vinh Danh (Khoe Điểm)</button>
                 <button class="btn-action btn-primary" id="btn-export-csv">📊 Xuất CSV Gradebook</button>
                 <button class="btn-action btn-danger" id="txt-modal-new-quiz">🔄 Làm bài mới</button>
             </div>

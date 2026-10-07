@@ -20,6 +20,8 @@ import { multiplayerRoomService } from '../features/multiplayer/room-service';
 import { analyticsService } from '../features/analytics/analytics-service';
 import { themeManager } from '../features/theme/theme-manager';
 import { shuffleExam } from '../features/exam-engine/exam-shuffle';
+import { errorTracker } from '../shared/telemetry/error-tracker';
+import { downloadScoreCard } from '../features/analytics/score-card-generator';
 
 export class OmniQuizApp {
   private currentExam: Exam | null = null;
@@ -31,8 +33,10 @@ export class OmniQuizApp {
   public async bootstrap(): Promise<void> {
     console.log('🚀 [OmniQuiz PRO 2.5] Initializing Enterprise EdTech Architecture...');
 
-    // 0. Initialize Theme & Visual Appearance System
+    // 0. Initialize Error Telemetry & Theme Appearance System
+    errorTracker.init();
     themeManager.init();
+    this.setupNetworkMonitoring();
 
     // 1. Preload Sample Banks into Dexie if empty
     await this.seedInitialDatabases();
@@ -146,6 +150,28 @@ export class OmniQuizApp {
     sbd?: string
   ): Promise<void> {
     try {
+      // 1. Verify PIN and check rate limit against backend API
+      try {
+        const verifyRes = await fetch(`/api/rooms/${encodeURIComponent(pin)}`);
+        if (verifyRes.status === 429) {
+          const data = (await verifyRes.json()) as { error?: string; retryAfter?: number };
+          const retrySec = data.retryAfter || 60;
+          lobbyView.lockForRateLimit(retrySec);
+          const errText = data.error || 'Bạn đã nhập sai mã PIN quá nhiều lần. Vui lòng thử lại sau 1 phút!';
+          themeManager.showToast(`⛔ ${errText}`);
+          alert(`⛔ ${errText}`);
+          return;
+        }
+        if (verifyRes.status === 404) {
+          themeManager.showToast('❌ Phòng thi không tồn tại hoặc mã PIN không đúng!');
+          alert('❌ Phòng thi không tồn tại hoặc mã PIN không đúng!');
+          return;
+        }
+      } catch {
+        // Backend API unreachable or running offline: proceed with realtime or offline fallback
+      }
+
+      // 2. Connect to multiplayer realtime room
       const fullName = sbd ? `${candidateName} (SBD: ${sbd})` : candidateName;
       const ok = await multiplayerRoomService.joinRoom(pin, fullName, {
         onParticipantListChange: () => {},
@@ -915,6 +941,21 @@ export class OmniQuizApp {
       }
     });
 
+    // Viral Score Card Certificate Generator (OG 1200x630)
+    document.getElementById('btn-export-scorecard')?.addEventListener('click', async () => {
+      if (this.currentExam) {
+        const attempt = examStateMachine.getAttempt();
+        if (attempt) {
+          const report = analyticsService.generateReport(this.currentExam, attempt);
+          const candidateName =
+            (document.getElementById('input-join-name') as HTMLInputElement | null)?.value.trim() ||
+            'Thí sinh tự do';
+          themeManager.showToast('🎨 Đang kết xuất thẻ điểm vinh danh...');
+          await downloadScoreCard(this.currentExam, attempt, report, candidateName);
+        }
+      }
+    });
+
     // Multiplayer PIN Room Creation
     const createRoomHandler = async (): Promise<void> => {
       if (!this.currentExam) {
@@ -1067,6 +1108,44 @@ export class OmniQuizApp {
 
     const countEl = document.getElementById('stat-total-q') || document.getElementById('total-questions');
     if (countEl) countEl.textContent = `${exam.totalQuestions}`;
+  }
+
+  /**
+   * PWA Offline/Online Network Connection Monitoring
+   */
+  public setupNetworkMonitoring(): void {
+    const badge = document.getElementById('offline-indicator-badge');
+    const textEl = document.getElementById('offline-indicator-text');
+
+    const updateNetworkStatus = (isOnline: boolean) => {
+      if (!badge || !textEl) return;
+      if (!isOnline) {
+        badge.classList.remove('is-online');
+        badge.classList.add('is-offline');
+        badge.style.display = 'inline-flex';
+        textEl.textContent = '⚡ Ngoại tuyến (Offline Mode) - Sẵn sàng làm bài';
+        themeManager.showToast('⚡ Chế độ Ngoại tuyến: 9 đề thi mẫu và dữ liệu bài thi đã sẵn sàng!');
+      } else {
+        badge.classList.remove('is-offline');
+        badge.classList.add('is-online');
+        textEl.textContent = '🟢 Đã kết nối';
+        badge.style.display = 'inline-flex';
+        setTimeout(() => {
+          if (typeof navigator !== 'undefined' && navigator.onLine && badge) {
+            badge.style.display = 'none';
+          }
+        }, 3500);
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('offline', () => updateNetworkStatus(false));
+      window.addEventListener('online', () => updateNetworkStatus(true));
+
+      if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        updateNetworkStatus(false);
+      }
+    }
   }
 }
 

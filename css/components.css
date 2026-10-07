@@ -346,6 +346,47 @@
     box-shadow: 0 2px 8px rgba(225, 29, 72, 0.08);
 }
 
+/* PWA OFFLINE / ONLINE STATUS INDICATOR BADGE */
+.offline-indicator-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: var(--r-pill, 9999px);
+    transition: all 0.25s ease;
+    user-select: none;
+    line-height: 1.2;
+}
+.offline-indicator-badge .offline-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+.offline-indicator-badge.is-offline {
+    display: inline-flex !important;
+    background: rgba(245, 158, 11, 0.16);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+}
+.offline-indicator-badge.is-offline .offline-dot {
+    background: #f59e0b;
+    box-shadow: 0 0 6px #f59e0b;
+    animation: pulse 1.8s infinite;
+}
+.offline-indicator-badge.is-online {
+    display: inline-flex !important;
+    background: rgba(16, 185, 129, 0.14);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+}
+.offline-indicator-badge.is-online .offline-dot {
+    background: #10b981;
+    box-shadow: 0 0 6px #10b981;
+}
+
 /* QUESTION CARD - HIGH PERFORMANCE SAMEKO CARD */
 .question-block {
     background: var(--card-bg);

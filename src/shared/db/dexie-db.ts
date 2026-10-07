@@ -13,12 +13,23 @@ export interface ActiveSessionRecord {
   savedAt: number;
 }
 
+export interface SystemLogRecord {
+  id: string;
+  type: 'error' | 'unhandledrejection' | 'custom';
+  message: string;
+  stack?: string;
+  source?: string;
+  url: string;
+  timestamp: number;
+}
+
 export class OmniQuizDatabase extends Dexie {
   exams!: Table<Exam, string>;
   attempts!: Table<ExamAttempt, string>;
   flashcards!: Table<FlashcardItem, string>;
   activeSession!: Table<ActiveSessionRecord, string>;
   profiles!: Table<UserProfile, string>;
+  systemLogs!: Table<SystemLogRecord, string>;
 
   constructor() {
     super('OmniQuizPro_DB');
@@ -29,6 +40,10 @@ export class OmniQuizDatabase extends Dexie {
       flashcards: 'id, questionId, dueDate, interval, easeFactor',
       activeSession: 'id, savedAt',
       profiles: 'id, email, role',
+    });
+
+    this.version(2).stores({
+      systemLogs: 'id, type, timestamp',
     });
   }
 
@@ -201,6 +216,34 @@ export class OmniQuizDatabase extends Dexie {
     } catch (err) {
       console.error('[Dexie Import Error]', err);
       return { success: false, count: 0 };
+    }
+  }
+
+  /**
+   * Log an unexpected system/telemetry error to local IndexedDB
+   */
+  async logSystemError(entry: Omit<SystemLogRecord, 'id' | 'timestamp'>): Promise<string> {
+    const record: SystemLogRecord = {
+      id: `err_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      timestamp: Date.now(),
+      ...entry,
+    };
+    try {
+      await this.systemLogs.put(record);
+    } catch {
+      // Best-effort local logging
+    }
+    return record.id;
+  }
+
+  /**
+   * Retrieve recent system logs
+   */
+  async getSystemLogs(limit = 50): Promise<SystemLogRecord[]> {
+    try {
+      return await this.systemLogs.orderBy('timestamp').reverse().limit(limit).toArray();
+    } catch {
+      return [];
     }
   }
 }
