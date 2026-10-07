@@ -26,10 +26,10 @@
 /* Animated Video Background System (Sameko Gaming Live Wallpaper) */
 .app-bg-video {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
     object-fit: cover;
     object-position: center center;
     z-index: -3;
@@ -44,10 +44,10 @@
 
 .app-bg-still {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -70,10 +70,10 @@ body {
 body::before {
     content: '';
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
     z-index: -1;
     pointer-events: none;
     transform: translateZ(0);

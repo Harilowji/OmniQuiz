@@ -13,6 +13,7 @@ html {
     text-rendering: optimizeLegibility;
     overflow-x: hidden;
     width: 100%;
+    max-width: 100%;
 }
 
 body {
@@ -27,6 +28,47 @@ body {
     transition: color 0.3s ease;
     overflow-x: hidden;
     width: 100%;
+    max-width: 100%;
+}
+
+/* Chống tràn viền ngang tuyệt đối */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Scale mặc định 110% cho màn hình máy tính và máy tính bảng (>= 768px) */
+@media (min-width: 768px) {
+    html {
+        zoom: 1.1;
+        -moz-transform: scale(1.1);
+        -moz-transform-origin: 0 0;
+    }
+}
+
+/* Đảm bảo toàn bộ layout rem/em scale tương thích hoàn hảo */
+@supports not (zoom: 1.1) {
+    @media (min-width: 768px) {
+        html {
+            font-size: 110%; /* 17.6px thay vì 16px chuẩn */
+        }
+    }
+}
+
+/* Chống double-scaling trên trình duyệt hiện đại đã hỗ trợ zoom */
+@supports (zoom: 1.1) {
+    html {
+        -moz-transform: none;
+    }
+}
+
+/* Màn hình điện thoại nhỏ (< 768px): Giữ tỷ lệ scale gốc 100% an toàn */
+@media (max-width: 767px) {
+    html {
+        zoom: 1;
+        -moz-transform: none;
+        font-size: 100%;
+    }
 }
 
 /* Sameko Rounded Headings */

@@ -20,8 +20,9 @@
 #confetti-canvas {
     position: fixed;
     inset: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
     pointer-events: none !important;
     z-index: -1;
     display: none;
