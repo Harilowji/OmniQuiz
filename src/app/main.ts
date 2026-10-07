@@ -19,6 +19,7 @@ import { flashcardView } from '../features/study-modes/flashcard/flashcard-view'
 import { multiplayerRoomService } from '../features/multiplayer/room-service';
 import { analyticsService } from '../features/analytics/analytics-service';
 import { themeManager } from '../features/theme/theme-manager';
+import { shuffleExam } from '../features/exam-engine/exam-shuffle';
 
 export class OmniQuizApp {
   private currentExam: Exam | null = null;
@@ -712,7 +713,14 @@ export class OmniQuizApp {
         if (this.setupSelectedDuration > 0) {
           this.pendingExam.durationMinutes = this.setupSelectedDuration;
         }
-        this.loadExam(this.pendingExam);
+
+        const shuffleQuestions =
+          (document.getElementById('setup-shuffle-questions') as HTMLInputElement | null)?.checked ?? false;
+        const shuffleOptions =
+          (document.getElementById('setup-shuffle-options') as HTMLInputElement | null)?.checked ?? false;
+
+        const preparedExam = shuffleExam(this.pendingExam, shuffleQuestions, shuffleOptions);
+        this.loadExam(preparedExam);
       }
     });
 

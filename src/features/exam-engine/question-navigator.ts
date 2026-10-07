@@ -92,12 +92,20 @@ export class QuestionNavigator {
 
       // Minimum swipe threshold 50px, predominantly horizontal
       if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
-        if (diffX < 0) {
-          // Swipe left -> next question
-          this.nextQuestion();
+        const triggerNav = () => {
+          if (diffX < 0) {
+            // Swipe left -> next question
+            this.nextQuestion();
+          } else {
+            // Swipe right -> previous question
+            this.prevQuestion();
+          }
+        };
+
+        if (typeof requestAnimationFrame === 'function') {
+          requestAnimationFrame(triggerNav);
         } else {
-          // Swipe right -> previous question
-          this.prevQuestion();
+          triggerNav();
         }
       }
     };
@@ -129,13 +137,20 @@ export class QuestionNavigator {
   }
 
   /**
-   * Scroll smoothly to question element in DOM
+   * Scroll smoothly to question element in DOM (120 FPS requestAnimationFrame paced)
    */
   public scrollToQuestion(index: number): void {
     if (typeof document === 'undefined') return;
     const target = document.getElementById(`q-card-${index}`);
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (target && typeof target.scrollIntoView === 'function') {
+      const doScroll = () => {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
+      if (typeof requestAnimationFrame === 'function') {
+        requestAnimationFrame(doScroll);
+      } else {
+        doScroll();
+      }
     }
   }
 

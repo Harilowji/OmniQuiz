@@ -76,9 +76,23 @@ export class ExamView {
           `
           : '';
 
+        const mobileTabsHtml = q.passage
+          ? `
+            <div class="mobile-passage-tabs" role="tablist" aria-label="Khung đọc hiểu và câu hỏi">
+              <button type="button" role="tab" class="passage-tab-btn active" data-tab="question" data-q="${idx}" aria-selected="true">
+                📝 Câu hỏi & Đáp án
+              </button>
+              <button type="button" role="tab" class="passage-tab-btn" data-tab="passage" data-q="${idx}" aria-selected="false">
+                📖 Đoạn văn đọc hiểu
+              </button>
+            </div>
+          `
+          : '';
+
         return `
           <div class="question-block cbt-exam-card ${q.passage ? 'has-split-passage' : ''}" id="q-card-${idx}">
-            <div class="cbt-split-container">
+            ${mobileTabsHtml}
+            <div class="cbt-split-container active-pane-question">
               ${passageHtml}
               <div class="sat-question-pane">
                 <div class="q-header">
@@ -103,6 +117,27 @@ export class ExamView {
     this.bindEvents();
   }
 
+  public switchPassageTab(qIdx: number, tab: 'passage' | 'question'): void {
+    const card = document.getElementById(`q-card-${qIdx}`);
+    if (!card) return;
+    const splitContainer = card.querySelector('.cbt-split-container');
+    if (!splitContainer) return;
+
+    card.querySelectorAll<HTMLButtonElement>('.passage-tab-btn').forEach((btn) => {
+      const isTarget = btn.getAttribute('data-tab') === tab;
+      btn.classList.toggle('active', isTarget);
+      btn.setAttribute('aria-selected', isTarget ? 'true' : 'false');
+    });
+
+    if (tab === 'passage') {
+      splitContainer.classList.add('active-pane-passage');
+      splitContainer.classList.remove('active-pane-question');
+    } else {
+      splitContainer.classList.remove('active-pane-passage');
+      splitContainer.classList.add('active-pane-question');
+    }
+  }
+
   private bindEvents(): void {
     if (!this.container) return;
 
@@ -115,6 +150,16 @@ export class ExamView {
         const optIdx = parseInt(el.getAttribute('data-opt') || '0', 10);
         examStateMachine.selectAnswer(qIdx, optIdx);
         this.updateQuestionDom(qIdx);
+      });
+    });
+
+    // Mobile passage tabs
+    this.container.querySelectorAll<HTMLButtonElement>('.passage-tab-btn').forEach((tabBtn) => {
+      tabBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const tab = (tabBtn.getAttribute('data-tab') || 'question') as 'passage' | 'question';
+        const qIdx = parseInt(tabBtn.getAttribute('data-q') || '0', 10);
+        this.switchPassageTab(qIdx, tab);
       });
     });
 

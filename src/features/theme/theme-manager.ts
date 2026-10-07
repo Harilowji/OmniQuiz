@@ -106,10 +106,14 @@ class ThemeManager {
   private toastTimer: ReturnType<typeof setTimeout> | null = null;
   private isLiveBgEnabled = true;
   private bgOpacity = 0.45;
+  private ambientWorker: Worker | null = null;
 
   public init(): void {
     // 0. Initialize Live Wallpaper & Opacity preferences
     this.initBackgroundSettings();
+
+    // 0b. Initialize 120 FPS OffscreenCanvas Background Worker
+    this.initAmbientCanvas();
 
     // 1. Load saved theme from localStorage
     const saved = this.getSavedTheme();
@@ -236,6 +240,9 @@ class ThemeManager {
 
       // 7. Update animated live video or image background
       this.updateBackgroundMedia(config);
+
+      // 7b. Update ambient offscreen canvas particle theme
+      this.ambientWorker?.postMessage({ type: 'THEME', theme: config.id });
 
       // 8. Persist preference to localStorage
       try {
@@ -545,21 +552,71 @@ class ThemeManager {
   }
 
   /**
-   * Conserves device battery & GPU by pausing background video when tab is hidden
+   * Initializes 120 FPS high-refresh ambient canvas in a Web Worker using OffscreenCanvas
+   */
+  private initAmbientCanvas(): void {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
+    const canvas = document.getElementById('bg-ambient-canvas') as HTMLCanvasElement | null;
+    if (!canvas || typeof canvas.transferControlToOffscreen !== 'function') {
+      return;
+    }
+
+    try {
+      const offscreen = canvas.transferControlToOffscreen();
+      this.ambientWorker = new Worker(
+        new URL('../../workers/background-canvas.worker.ts', import.meta.url),
+        { type: 'module' }
+      );
+
+      this.ambientWorker.postMessage(
+        {
+          type: 'INIT',
+          canvas: offscreen,
+          width: window.innerWidth,
+          height: window.innerHeight,
+          theme: this.currentTheme,
+        },
+        [offscreen]
+      );
+
+      window.addEventListener(
+        'resize',
+        () => {
+          this.ambientWorker?.postMessage({
+            type: 'RESIZE',
+            width: window.innerWidth,
+            height: window.innerHeight,
+          });
+        },
+        { passive: true }
+      );
+    } catch (err) {
+      console.debug('[ThemeManager] Offscreen canvas worker initialized or fallback:', err);
+    }
+  }
+
+  /**
+   * Conserves device battery & GPU by pausing background video and offscreen worker when tab is hidden
    */
   private bindVisibilityChange(): void {
     document.addEventListener('visibilitychange', () => {
       const bgVideo = document.getElementById('app-bg-video') as HTMLVideoElement | null;
-      if (!bgVideo || !this.isLiveBgEnabled) return;
 
       if (document.hidden) {
-        try {
-          bgVideo.pause();
-        } catch {}
+        if (bgVideo && this.isLiveBgEnabled) {
+          try {
+            bgVideo.pause();
+          } catch {}
+        }
+        this.ambientWorker?.postMessage({ type: 'PAUSE' });
       } else {
-        try {
-          bgVideo.play().catch(() => {});
-        } catch {}
+        if (bgVideo && this.isLiveBgEnabled) {
+          try {
+            bgVideo.play().catch(() => {});
+          } catch {}
+        }
+        this.ambientWorker?.postMessage({ type: 'RESUME' });
       }
     });
   }

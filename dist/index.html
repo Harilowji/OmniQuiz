@@ -68,18 +68,19 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 
     <!-- Modular Stylesheets -->
-  <script type="module" crossorigin src="/assets/index-SvgdpPD2.js"></script>
+  <script type="module" crossorigin src="/assets/index-C5fkmZT7.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-C0FnF6B9.js">
   <link rel="modulepreload" crossorigin href="/assets/dexie-Bt_Vhrvy.js">
   <link rel="modulepreload" crossorigin href="/assets/supabase-Bl13M3oS.js">
   <link rel="modulepreload" crossorigin href="/assets/katex-CjWbGmc8.js">
   <link rel="modulepreload" crossorigin href="/assets/chart-DKPB83iI.js">
-  <link rel="stylesheet" crossorigin href="/assets/index-Cl3Ws1VM.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-gRz4XCOy.css">
 </head>
 <body class="theme-academic">
     <!-- Animated Gaming Video & Backdrop System (Sameko Studio Engine) -->
     <video id="app-bg-video" autoplay loop muted playsinline preload="auto" class="app-bg-video" aria-hidden="true"></video>
     <div id="app-bg-still" class="app-bg-still" aria-hidden="true"></div>
+    <canvas id="bg-ambient-canvas" class="bg-ambient-canvas" aria-hidden="true"></canvas>
 
     <canvas id="confetti-canvas"></canvas>
 
@@ -508,11 +509,28 @@
                 </div>
             </div>
 
+            <!-- Options: Question Shuffle & Option Shuffle -->
+            <div class="setup-section" id="setup-options-section">
+                <label class="setup-section-label">3. Tùy chọn bài thi:</label>
+                <div class="setup-toggles-row">
+                    <label class="setup-toggle-item" for="setup-shuffle-questions">
+                        <input type="checkbox" id="setup-shuffle-questions">
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-text">🔀 Xáo trộn thứ tự câu hỏi</span>
+                    </label>
+                    <label class="setup-toggle-item" for="setup-shuffle-options">
+                        <input type="checkbox" id="setup-shuffle-options">
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-text">🔀 Xáo trộn thứ tự đáp án</span>
+                    </label>
+                </div>
+            </div>
+
             <!-- Modal Action Buttons -->
             <div class="setup-modal-actions">
                 <button type="button" class="btn-action" id="btn-cancel-setup">Quay lại</button>
                 <button type="button" class="btn-action btn-primary btn-cta-start-exam" id="btn-start-exam-session">
-                    🚀 Vào phòng thi ngay
+                    🚀 BẮT ĐẦU LÀM BÀI
                 </button>
             </div>
         </div>
