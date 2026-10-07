@@ -25,7 +25,7 @@ export type ExamState =
 
 export interface ExamStateCallbacks {
   onStateChange: (state: ExamState) => void;
-  onTimerTick: (timeRemaining: number, isWarning: boolean) => void;
+  onTimerTick: (timeRemaining: number, isWarning: boolean, isUnlimited?: boolean) => void;
   onAnswerChange: (questionIndex: number, selectedOptions: number[]) => void;
   onAutoSaved: (timestamp: number) => void;
   onExamSubmitted: (attempt: ExamAttempt) => void;
@@ -329,6 +329,25 @@ export class ExamStateMachine {
   private startTimer(): void {
     clearInterval(this.timerInterval);
     if (!this.currentAttempt) return;
+
+    const isUnlimited = (this.currentAttempt.totalDurationSeconds ?? 0) <= 0;
+
+    // Unlimited time mode: count up elapsed seconds, never auto-submit
+    if (isUnlimited) {
+      this.lastReportedSeconds = -1;
+      this.timerInterval = setInterval(() => {
+        if (!this.currentAttempt) return;
+        const now = Date.now();
+        const elapsedSeconds = Math.max(0, Math.floor((now - this.currentAttempt.startedAt) / 1000));
+        this.currentAttempt.timeRemainingSeconds = 0;
+
+        if (elapsedSeconds !== this.lastReportedSeconds) {
+          this.lastReportedSeconds = elapsedSeconds;
+          this.callbacks?.onTimerTick(elapsedSeconds, false, true);
+        }
+      }, 250);
+      return;
+    }
 
     this.targetEndWallTime = Date.now() + this.currentAttempt.timeRemainingSeconds * 1000;
     this.lastReportedSeconds = this.currentAttempt.timeRemainingSeconds;

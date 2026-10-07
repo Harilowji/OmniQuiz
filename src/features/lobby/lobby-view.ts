@@ -189,19 +189,19 @@ export class LobbyView {
 
     // OTP Discrete Inputs Management
     otpInputs.forEach((inp, idx) => {
-      // 1. Auto-advance on input
+      // 1. Auto-advance on input (strictly digits 0-9)
       inp.addEventListener('input', (e) => {
         const target = e.target as HTMLInputElement;
-        const val = target.value.trim().toUpperCase();
-        target.value = val.charAt(0); // Enforce single char strictly typed
+        const digitsOnly = target.value.replace(/\D/g, '');
+        target.value = digitsOnly.charAt(0);
 
         const full = getFullPin();
         syncPinValue(full);
 
-        if (val && idx < otpInputs.length - 1) {
+        if (target.value && idx < otpInputs.length - 1) {
           otpInputs[idx + 1]?.focus();
           otpInputs[idx + 1]?.select();
-        } else if (val && idx === otpInputs.length - 1) {
+        } else if (target.value && idx === otpInputs.length - 1) {
           // If 6th digit entered, advance to name input
           inputName?.focus();
         }
@@ -209,6 +209,17 @@ export class LobbyView {
 
       // 2. Backspace auto-retreat & Arrow key navigation
       inp.addEventListener('keydown', (e) => {
+        // Block letters and special characters (allow navigation and control keys)
+        if (
+          !/[0-9]/.test(e.key) &&
+          !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'].includes(e.key) &&
+          !e.ctrlKey &&
+          !e.metaKey
+        ) {
+          e.preventDefault();
+          return;
+        }
+
         if (e.key === 'Backspace') {
           if (!inp.value && idx > 0) {
             e.preventDefault();
@@ -231,33 +242,31 @@ export class LobbyView {
         }
       });
 
-      // 3. Paste support across all 6 inputs
+      // 3. Paste support across all 6 inputs (strips spaces, dashes, letters)
       inp.addEventListener('paste', (e) => {
         e.preventDefault();
         const clipboardData = e.clipboardData;
         if (!clipboardData) return;
 
-        const pastedText = clipboardData
+        const pastedDigits = clipboardData
           .getData('text')
-          .trim()
-          .replace(/[^a-zA-Z0-9]/g, '')
-          .toUpperCase();
+          .replace(/\D/g, '')
+          .substring(0, 6);
 
-        if (pastedText) {
+        if (pastedDigits) {
           for (let i = 0; i < otpInputs.length; i++) {
-            const char = pastedText.charAt(i);
+            const digit = pastedDigits.charAt(i);
             const inputEl = otpInputs[i];
-            if (inputEl) inputEl.value = char;
+            if (inputEl) inputEl.value = digit;
           }
 
           syncPinValue(getFullPin());
 
           // Focus next unfilled input or the candidate name
-          const focusIndex = Math.min(pastedText.length, otpInputs.length - 1);
-          if (pastedText.length >= 6) {
+          if (pastedDigits.length >= 6) {
             inputName?.focus();
           } else {
-            otpInputs[focusIndex]?.focus();
+            otpInputs[pastedDigits.length]?.focus();
           }
         }
       });

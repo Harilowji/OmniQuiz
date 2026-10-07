@@ -11,6 +11,8 @@ html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+    width: 100%;
 }
 
 body {
@@ -18,11 +20,13 @@ body {
     background-color: transparent;
     color: var(--text-color);
     min-height: 100vh;
+    min-height: 100dvh;
     padding: 16px 20px 60px 20px;
     line-height: 1.6;
     letter-spacing: -0.005em;
     transition: color 0.3s ease;
     overflow-x: hidden;
+    width: 100%;
 }
 
 /* Sameko Rounded Headings */
@@ -89,6 +93,13 @@ body.quiz-active .app-layout {
     body.quiz-active .app-layout {
         grid-template-columns: 1fr;
         gap: 20px;
+    }
+}
+
+/* iOS Safari Auto-Zoom Prevention */
+@media (max-width: 768px) {
+    input, select, textarea, .otp-digit {
+        font-size: 16px !important;
     }
 }
 

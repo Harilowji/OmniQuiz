@@ -582,8 +582,8 @@
     border: 1.5px solid var(--card-border);
     border-radius: var(--r-xl, 26px);
     box-shadow: var(--card-shadow);
-    padding: 22px;
     max-height: calc(100vh - 100px);
+    max-height: calc(100dvh - 100px);
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: thin;
@@ -831,7 +831,7 @@ body.theme-cyberpunk .palette-btn.in-progress {
 }
 .badge-q-unattempted {
     background: #f1f5f9;
-    color: #64748b;
+    color: #475569;
     border: 1px solid #cbd5e1;
 }
 body.theme-cyberpunk .badge-q-correct {
@@ -1820,6 +1820,7 @@ body.theme-emerald .quiz-inline-code {
     left: 0;
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     background: rgba(11, 15, 25, 0.96);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
@@ -2899,6 +2900,7 @@ body.focus-mode {
     inset: 0;
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
@@ -3874,7 +3876,7 @@ body.mobile-drawer-open .floating-palette-fab {
 .server-status-pill.offline {
     border-color: rgba(148, 163, 184, 0.4);
     background: rgba(148, 163, 184, 0.12);
-    color: #64748b;
+    color: #94a3b8;
 }
 .server-status-pill.error {
     border-color: rgba(239, 68, 68, 0.35);
@@ -4953,6 +4955,7 @@ body.mobile-drawer-open .floating-palette-fab {
     left: 0;
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     pointer-events: none;
     z-index: 0;
     opacity: 0.35;
@@ -5071,6 +5074,24 @@ body.mobile-drawer-open .floating-palette-fab {
     .has-split-passage .cbt-split-container:not(.active-pane-passage) .sat-question-pane {
         display: block !important;
     }
+}
+
+/* ==========================================================================
+   ACCESSIBILITY FOCUS RINGS & KEYBOARD NAVIGATION (WCAG 2.1 AA)
+   ========================================================================== */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.option:focus-visible,
+.palette-btn:focus-visible,
+.duration-chip:focus-visible,
+.setup-mode-card:focus-visible,
+.otp-digit:focus-visible {
+    outline: 2px solid #6366f1 !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.35) !important;
 }
 
 

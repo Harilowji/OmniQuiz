@@ -88,21 +88,21 @@ describe('Bento Grid Lobby & 6-Digit OTP Room Entry', () => {
 
     expect(otpDigits.length).toBe(6);
 
-    // Simulate typing 'A' into first digit
-    otpDigits[0].value = 'a';
+    // Simulate typing '5' into first digit
+    otpDigits[0].value = '5';
     otpDigits[0].dispatchEvent(new Event('input', { bubbles: true }));
 
-    expect(otpDigits[0].value).toBe('A');
-    expect(legacyPin.value).toBe('A');
+    expect(otpDigits[0].value).toBe('5');
+    expect(legacyPin.value).toBe('5');
 
-    // Simulate typing remaining characters 'B', '1', '2', '3', '4'
-    const chars = ['B', '1', '2', '3', '4'];
-    chars.forEach((char, i) => {
-      otpDigits[i + 1].value = char.toLowerCase();
+    // Simulate typing remaining digits '8', '1', '2', '3', '4'
+    const digits = ['8', '1', '2', '3', '4'];
+    digits.forEach((digit, i) => {
+      otpDigits[i + 1].value = digit;
       otpDigits[i + 1].dispatchEvent(new Event('input', { bubbles: true }));
     });
 
-    expect(legacyPin.value).toBe('AB1234');
+    expect(legacyPin.value).toBe('581234');
   });
 
   it('should support pasting full 6-digit PIN across OTP fields', () => {

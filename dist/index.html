@@ -68,13 +68,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 
     <!-- Modular Stylesheets -->
-  <script type="module" crossorigin src="/assets/index-C5fkmZT7.js"></script>
+  <script type="module" crossorigin src="/assets/index-9hZAZrFO.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-C0FnF6B9.js">
   <link rel="modulepreload" crossorigin href="/assets/dexie-Bt_Vhrvy.js">
   <link rel="modulepreload" crossorigin href="/assets/supabase-Bl13M3oS.js">
   <link rel="modulepreload" crossorigin href="/assets/katex-CjWbGmc8.js">
   <link rel="modulepreload" crossorigin href="/assets/chart-DKPB83iI.js">
-  <link rel="stylesheet" crossorigin href="/assets/index-gRz4XCOy.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-BcwGzQWr.css">
 </head>
 <body class="theme-academic">
     <!-- Animated Gaming Video & Backdrop System (Sameko Studio Engine) -->
@@ -108,38 +108,38 @@
                 <!-- Group 1: Exam Active Controls (Hidden in IDLE state) -->
                 <div id="exam-active-controls" class="exam-active-controls" style="display: none;">
                     <!-- Reset / New Quiz Button -->
-                    <button class="btn-action btn-danger" id="btn-reset" title="Làm mới và quay về trang nhập đề thi">🔄 Đổi đề</button>
+                    <button class="btn-action btn-danger" id="btn-reset" title="Làm mới và quay về trang nhập đề thi" aria-label="Làm mới và quay về trang chọn đề">🔄 Đổi đề</button>
                 </div>
 
                 <!-- Group 2: Always Available Utilities -->
                 <!-- 3. Smart AI Tutor CTA Button -->
-                <button class="btn-action btn-ai-glow" id="btn-open-ai-tutor" title="Trợ lý Gia sư AI & Trích xuất đề thi từ ảnh (Gemini OCR)">
+                <button class="btn-action btn-ai-glow" id="btn-open-ai-tutor" title="Trợ lý Gia sư AI & Trích xuất đề thi từ ảnh (Gemini OCR)" aria-label="Mở trợ lý gia sư AI">
                     🤖 <span class="btn-ai-text" id="txt-btn-ai-tutor">Gia sư AI</span>
                 </button>
 
                 <!-- 4. Tools & Settings Center Button -->
-                <button type="button" class="btn-action btn-tools-trigger" id="btn-tools-toggle" title="Tiện ích & Cài đặt hệ thống">
+                <button type="button" class="btn-action btn-tools-trigger" id="btn-tools-toggle" title="Tiện ích & Cài đặt hệ thống" aria-label="Mở tiện ích và cài đặt">
                     ⚙️ <span class="btn-tools-text" id="txt-btn-tools">Tiện ích</span>
                 </button>
 
                 <!-- Server Connection Status Badge (Hidden by default to keep UI distraction-free) -->
-                <button type="button" class="server-status-pill" id="server-status-badge" title="Trạng thái kết nối máy chủ OmniQuiz Cloud" style="display: none;">
+                <button type="button" class="server-status-pill" id="server-status-badge" title="Trạng thái kết nối máy chủ OmniQuiz Cloud" aria-label="Trạng thái máy chủ" style="display: none;">
                     <span class="status-dot"></span>
                     <span class="status-label" id="server-status-text">Đang kết nối...</span>
                 </button>
 
                 <!-- User Authentication & Profile Button (Accessible from Tools modal) -->
-                <button type="button" class="btn-action btn-auth" id="btn-auth-toggle" title="Đăng nhập / Quản lý tài khoản" style="display: none;">
+                <button type="button" class="btn-action btn-auth" id="btn-auth-toggle" title="Đăng nhập / Quản lý tài khoản" aria-label="Đăng nhập hoặc quản lý tài khoản" style="display: none;">
                     <span>👤</span> <span id="auth-btn-label">Tài khoản</span>
                 </button>
 
                 <!-- Quick Theme Switcher Pill -->
-                <button type="button" class="btn-action" id="btn-quick-theme" title="Đổi màu giao diện / Chế độ tập trung (Sepia, Sage, Dark...)">
+                <button type="button" class="btn-action" id="btn-quick-theme" title="Đổi màu giao diện / Chế độ tập trung (Sepia, Sage, Dark...)" aria-label="Đổi màu giao diện và chế độ hiển thị">
                     <span id="txt-quick-theme-icon">🎨</span>
                 </button>
 
                 <!-- 5. Fullscreen Toggle -->
-                <button class="btn-action" id="btn-fullscreen-toggle" title="Toàn màn hình">⛶</button>
+                <button class="btn-action" id="btn-fullscreen-toggle" title="Toàn màn hình" aria-label="Bật hoặc tắt toàn màn hình">⛶</button>
             </div>
         </header>
 
@@ -267,12 +267,12 @@
                             <div class="join-room-otp-form">
                                 <label class="otp-label" for="pin-digit-1">MÃ PHÒNG THI (6 KÝ TỰ):</label>
                                 <div class="otp-inputs-wrap" id="otp-inputs-wrap">
-                                    <input type="text" class="otp-digit" id="pin-digit-1" data-index="0" maxlength="1" inputmode="text" autocomplete="off" aria-label="Mã PIN ký tự 1">
-                                    <input type="text" class="otp-digit" id="pin-digit-2" data-index="1" maxlength="1" inputmode="text" autocomplete="off" aria-label="Mã PIN ký tự 2">
-                                    <input type="text" class="otp-digit" id="pin-digit-3" data-index="2" maxlength="1" inputmode="text" autocomplete="off" aria-label="Mã PIN ký tự 3">
-                                    <input type="text" class="otp-digit" id="pin-digit-4" data-index="3" maxlength="1" inputmode="text" autocomplete="off" aria-label="Mã PIN ký tự 4">
-                                    <input type="text" class="otp-digit" id="pin-digit-5" data-index="4" maxlength="1" inputmode="text" autocomplete="off" aria-label="Mã PIN ký tự 5">
-                                    <input type="text" class="otp-digit" id="pin-digit-6" data-index="5" maxlength="1" inputmode="text" autocomplete="off" aria-label="Mã PIN ký tự 6">
+                                    <input type="text" class="otp-digit" id="pin-digit-1" data-index="0" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="Mã PIN số 1">
+                                    <input type="text" class="otp-digit" id="pin-digit-2" data-index="1" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="Mã PIN số 2">
+                                    <input type="text" class="otp-digit" id="pin-digit-3" data-index="2" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="Mã PIN số 3">
+                                    <input type="text" class="otp-digit" id="pin-digit-4" data-index="3" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="Mã PIN số 4">
+                                    <input type="text" class="otp-digit" id="pin-digit-5" data-index="4" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="Mã PIN số 5">
+                                    <input type="text" class="otp-digit" id="pin-digit-6" data-index="5" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="Mã PIN số 6">
                                 </div>
                                 <input type="hidden" id="input-join-pin" value="">
 
@@ -374,14 +374,15 @@
     </div>
 
     <!-- AZOTA FLOATING QUICK PALETTE TRIGGER (FOR MOBILE & TABLET) -->
-    <button id="btn-mobile-palette-toggle" class="floating-palette-fab" style="display: none;" title="Mở bản đồ câu hỏi">
+    <button id="btn-mobile-palette-toggle" class="floating-palette-fab" style="display: none;" title="Mở bản đồ câu hỏi" aria-label="Mở bản đồ câu hỏi">
         📋 <span id="txt-mobile-fab-lbl">Bản đồ</span> (<span id="fab-answered-count">0</span>/<span id="fab-total-count">0</span>)
     </button>
     <div class="drawer-backdrop" id="palette-drawer-backdrop" style="display: none;"></div>
 
     <!-- SUMMARY SCORE MODAL -->
     <div class="modal-overlay" id="summary-modal">
-        <div class="modal-content">
+        <div class="modal-content" style="position: relative;">
+            <button type="button" class="btn-modal-close-icon" id="btn-close-summary-modal" aria-label="Đóng bảng tổng kết kết quả" title="Đóng modal" style="position: absolute; top: 16px; right: 18px;">✕</button>
             <h2 id="modal-title" style="color: var(--heading-color); margin-bottom: 5px;">Hoàn thành bài thi!</h2>
             <p id="modal-subtitle" style="font-size: 0.9em; opacity: 0.8;">Kết quả chi tiết bài làm của bạn</p>
             
@@ -400,7 +401,7 @@
                     <div class="lbl" id="txt-modal-incorrect">Câu sai</div>
                 </div>
                 <div class="modal-box">
-                    <div class="num" id="modal-unattempted" style="color: #64748b;">0</div>
+                    <div class="num" id="modal-unattempted" style="color: #94a3b8;">0</div>
                     <div class="lbl" id="txt-modal-unattempted">Chưa làm</div>
                 </div>
                 <div class="modal-box" id="modal-box-violations" style="display: none;">
@@ -445,7 +446,7 @@
                         <p id="setup-exam-meta" class="setup-modal-meta">Đề thi sẵn sàng • Thiết lập chế độ thi phù hợp</p>
                     </div>
                 </div>
-                <button type="button" class="btn-modal-close-icon" id="btn-close-setup-modal" title="Đóng modal">✕</button>
+                <button type="button" class="btn-modal-close-icon" id="btn-close-setup-modal" title="Đóng modal" aria-label="Đóng cửa sổ cấu hình phòng thi">✕</button>
             </div>
 
             <!-- Mode Selection: 3 Cards -->
@@ -544,7 +545,7 @@
                     <h3 class="gallery-modal-title">📚 Kho Đề Thi Tuyển Chọn</h3>
                     <p class="gallery-modal-subtitle">Bộ đề chuẩn hóa cấu trúc Bộ GD&ĐT & Digital SAT quốc tế. Chọn để bắt đầu làm bài:</p>
                 </div>
-                <button type="button" class="btn-modal-close-icon" id="btn-close-gallery-modal" title="Đóng">✕</button>
+                <button type="button" class="btn-modal-close-icon" id="btn-close-gallery-modal" title="Đóng" aria-label="Đóng thư viện đề mẫu">✕</button>
             </div>
 
             <div class="gallery-cards-grid" id="gallery-cards-grid">
@@ -1304,7 +1305,7 @@
                         <p class="tools-modal-subtitle" id="txt-tools-modal-subtitle">Tùy chỉnh giao diện, công cụ đề thi, phòng thi trực tuyến và trợ lý AI</p>
                     </div>
                 </div>
-                <button type="button" class="btn-action btn-history-action btn-del" id="btn-close-tools-modal" title="Đóng tiện ích" style="padding: 6px 14px; font-size: 1.1em;">✕</button>
+                <button type="button" class="btn-action btn-history-action btn-del" id="btn-close-tools-modal" title="Đóng tiện ích" aria-label="Đóng cửa sổ tiện ích" style="padding: 6px 14px; font-size: 1.1em;">✕</button>
             </div>
 
             <!-- Body Grid (2x2 Cards) -->

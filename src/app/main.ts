@@ -102,13 +102,16 @@ export class OmniQuizApp {
   }
 
   public async handleFileUpload(file: File): Promise<void> {
-    try {
-      const loadingModal = document.getElementById('loading-modal');
-      const loadingStep = document.getElementById('loading-modal-step');
-      const loadingBar = document.getElementById('loading-progress-bar');
-      const loadingNum = document.getElementById('loading-progress-num');
+    const loadingModal = document.getElementById('loading-modal');
+    const loadingStep = document.getElementById('loading-modal-step');
+    const loadingBar = document.getElementById('loading-progress-bar');
+    const loadingNum = document.getElementById('loading-progress-num');
 
+    try {
       if (loadingModal) loadingModal.style.display = 'flex';
+      if (loadingBar) loadingBar.style.width = '0%';
+      if (loadingNum) loadingNum.textContent = '0%';
+      if (loadingStep) loadingStep.textContent = 'Đang đọc và phân tích tệp tin...';
 
       const parsedExam = await documentParserService.parseFile(file, undefined, (pct, status) => {
         if (loadingStep) loadingStep.textContent = status;
@@ -116,14 +119,24 @@ export class OmniQuizApp {
         if (loadingNum) loadingNum.textContent = `${pct}%`;
       });
 
+      if (!parsedExam || !parsedExam.questions || parsedExam.questions.length === 0) {
+        throw new Error('Tệp không chứa câu hỏi hợp lệ hoặc định dạng bị lỗi. Vui lòng kiểm tra lại!');
+      }
+
       if (loadingModal) loadingModal.style.display = 'none';
 
       await localDB.saveExam(parsedExam);
       this.openExamSetupModal(parsedExam);
     } catch (err: unknown) {
-      const loadingModal = document.getElementById('loading-modal');
       if (loadingModal) loadingModal.style.display = 'none';
-      alert(err instanceof Error ? err.message : String(err));
+      if (loadingBar) loadingBar.style.width = '0%';
+      if (loadingNum) loadingNum.textContent = '0%';
+      const errorMsg =
+        err instanceof Error && err.message
+          ? err.message
+          : 'Tệp không chứa câu hỏi hợp lệ hoặc định dạng bị lỗi. Vui lòng kiểm tra lại!';
+      themeManager.showToast(errorMsg);
+      alert(errorMsg);
     }
   }
 
@@ -135,11 +148,11 @@ export class OmniQuizApp {
     try {
       const fullName = sbd ? `${candidateName} (SBD: ${sbd})` : candidateName;
       const ok = await multiplayerRoomService.joinRoom(pin, fullName, {
-        onParticipantListChange: (list) => console.log('[Room Members]', list),
+        onParticipantListChange: () => {},
         onExamStarted: (exam) => {
           this.openExamSetupModal(exam);
         },
-        onLeaderboardUpdate: (ranked) => console.log('[Leaderboard Update]', ranked),
+        onLeaderboardUpdate: () => {},
       });
       if (ok) {
         alert(`Đã tham gia phòng thi PIN: ${pin}! Đang chờ giám thị bắt đầu bài thi...`);
@@ -288,6 +301,13 @@ export class OmniQuizApp {
     const badge = document.getElementById('palette-completion-badge');
     if (badge) badge.textContent = '0%';
 
+    // Clean up active proctoring, question navigator hotkeys, and FSM
+    proctoringService.stopProctoring();
+    questionNavigator.destroy();
+    examStateMachine.reset();
+    this.currentExam = null;
+    this.pendingExam = null;
+
     document.body.classList.remove('quiz-active');
   }
 
@@ -320,7 +340,8 @@ export class OmniQuizApp {
 
             await examStateMachine.recoverExpiredSession(active.exam, active.attempt, {
               onStateChange: (state) => this.handleStateChange(state),
-              onTimerTick: (timeRemaining, isWarning) => this.updateTimerDisplay(timeRemaining, isWarning),
+              onTimerTick: (timeRemaining, isWarning, isUnlimited) =>
+                this.updateTimerDisplay(timeRemaining, isWarning, isUnlimited),
               onAnswerChange: (qIdx) => {
                 this.updateQuestionPalette(qIdx);
                 this.updateHeaderProgress();
@@ -455,7 +476,8 @@ export class OmniQuizApp {
       this.currentMode,
       {
         onStateChange: (state) => this.handleStateChange(state),
-        onTimerTick: (timeRemaining, isWarning) => this.updateTimerDisplay(timeRemaining, isWarning),
+        onTimerTick: (timeRemaining, isWarning, isUnlimited) =>
+          this.updateTimerDisplay(timeRemaining, isWarning, isUnlimited),
         onAnswerChange: (qIdx) => {
           this.updateQuestionPalette(qIdx);
           this.updateHeaderProgress();
@@ -578,29 +600,39 @@ export class OmniQuizApp {
     const totalQuestionsEl = document.getElementById('total-questions') || document.getElementById('stat-total-q');
     if (totalQuestionsEl) totalQuestionsEl.textContent = `${total}`;
 
+    const pct = total > 0 ? Math.round((answeredCount / total) * 100) : 0;
+
     const progressBar = document.getElementById('quiz-progress-bar');
-    if (progressBar && total > 0) {
-      const pct = Math.round((answeredCount / total) * 100);
+    if (progressBar) {
       progressBar.style.width = `${pct}%`;
     }
 
     const badge = document.getElementById('palette-completion-badge');
-    if (badge && total > 0) {
-      badge.textContent = `${Math.round((answeredCount / total) * 100)}%`;
+    if (badge) {
+      badge.textContent = `${pct}%`;
     }
   }
 
   /**
    * Update Timer UI Display
    */
-  private updateTimerDisplay(seconds: number, isWarning: boolean): void {
+  private updateTimerDisplay(seconds: number, isWarning: boolean, isUnlimited: boolean = false): void {
     const timerEl = document.getElementById('txt-timer') || document.getElementById('time-remaining');
     if (!timerEl) return;
 
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    timerEl.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    timerEl.classList.toggle('timer-warning', isWarning);
+    const formatted = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+    if (isUnlimited) {
+      timerEl.textContent = `∞ ${formatted}`;
+      timerEl.classList.remove('timer-warning');
+      timerEl.title = 'Chế độ làm bài không giới hạn thời gian (Đang đếm tiến)';
+    } else {
+      timerEl.textContent = formatted;
+      timerEl.title = 'Thời gian làm bài còn lại';
+      timerEl.classList.toggle('timer-warning', isWarning);
+    }
   }
 
   /**
@@ -641,7 +673,11 @@ export class OmniQuizApp {
     if (txtUnattempted) txtUnattempted.textContent = `${report.unansweredCount}`;
 
     const txtTime = document.getElementById('stat-modal-time') || document.getElementById('modal-pacing');
-    if (txtTime) txtTime.textContent = `${Math.round(report.averageTimePerQuestion)}s/câu`;
+    if (txtTime) {
+      txtTime.textContent = report.averageTimePerQuestion > 0
+        ? `${Math.round(report.averageTimePerQuestion)}s/câu`
+        : '--';
+    }
 
     const violationsEl = document.getElementById('modal-violations');
     if (violationsEl) {
@@ -710,9 +746,7 @@ export class OmniQuizApp {
       closeSetupModal();
       if (this.pendingExam) {
         this.currentMode = this.setupSelectedMode;
-        if (this.setupSelectedDuration > 0) {
-          this.pendingExam.durationMinutes = this.setupSelectedDuration;
-        }
+        this.pendingExam.durationMinutes = this.setupSelectedDuration;
 
         const shuffleQuestions =
           (document.getElementById('setup-shuffle-questions') as HTMLInputElement | null)?.checked ?? false;
@@ -823,6 +857,26 @@ export class OmniQuizApp {
     };
     document.getElementById('txt-modal-review')?.addEventListener('click', closeModal);
     document.getElementById('btn-modal-close')?.addEventListener('click', closeModal);
+    document.getElementById('btn-close-summary-modal')?.addEventListener('click', closeModal);
+
+    const summaryModal = document.getElementById('results-modal') || document.getElementById('summary-modal');
+    summaryModal?.addEventListener('click', (e) => {
+      if (e.target === summaryModal) closeModal();
+    });
+
+    // Global Escape Key to close all modals and drawers
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+        closePaletteDrawer();
+        const setupModal = document.getElementById('exam-setup-modal');
+        if (setupModal) setupModal.style.display = 'none';
+        const galleryModal = document.getElementById('sample-gallery-modal');
+        if (galleryModal) galleryModal.style.display = 'none';
+        const toolsModal = document.getElementById('tools-modal');
+        if (toolsModal) toolsModal.style.display = 'none';
+      }
+    });
 
     // Results Modal "Làm bài mới" -> Return to IDLE state
     document.getElementById('txt-modal-new-quiz')?.addEventListener('click', () => {
@@ -869,9 +923,9 @@ export class OmniQuizApp {
       }
       const hostName = prompt('Nhập tên của bạn (Giáo viên / Host):', 'Thầy Giáo') || 'Giáo viên';
       const pin = await multiplayerRoomService.createRoom(hostName, this.currentExam, {
-        onParticipantListChange: (list) => console.log('[Room Members]', list),
+        onParticipantListChange: () => {},
         onExamStarted: (ex) => this.loadExam(ex),
-        onLeaderboardUpdate: (ranked) => console.log('[Leaderboard]', ranked),
+        onLeaderboardUpdate: () => {},
       });
       alert(`Đã tạo phòng thi trực tuyến! Mã PIN: ${pin}`);
     };
@@ -944,7 +998,7 @@ export class OmniQuizApp {
   }
 
   private handleStateChange(state: string): void {
-    console.log(`[Exam State Change] -> ${state}`);
+    console.debug(`[Exam State Change] -> ${state}`);
   }
 
   private showAutoSaveIndicator(): void {
