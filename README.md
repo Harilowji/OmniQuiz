@@ -4,24 +4,25 @@
 
   <br /><br />
 
-  <img src="assets/logo-brand.svg" alt="OmniQuiz PRO Logo" width="460" />
+  <img src="assets/logo-brand.svg" alt="OmniQuiz PRO Logo" width="480" />
 
   <br /><br />
 
-  <h3>⚡ Next-Gen Computer-Based Testing & Study Intelligence Platform</h3>
+  <h3>⚡ Next-Gen Enterprise Computer-Based Testing & Study Intelligence Platform</h3>
 
-  <p><strong>Nền tảng khảo thí trực tuyến & rèn luyện trắc nghiệm chuẩn hóa cấp doanh nghiệp (Enterprise EdTech Standard)</strong><br />
-  Kiến trúc Local-First · Tri-Mode Suite (Exam / Practice / 3D Flashcard SM-2) · Multi-Format Web Worker Parser 3.0 · CBT Proctoring 3 Cấp Độ · Supabase Realtime PIN Rooms · Radar Analytics & PDF Export</p>
+  <p><strong>Nền tảng khảo thí trực tuyến & rèn luyện trắc nghiệm chuẩn hóa cấp doanh nghiệp (CBT Studio 2.5)</strong><br />
+  Kiến trúc Local-First · 120 FPS High-Refresh Engine · 100% PWA Offline · Tri-Mode Suite (Exam / Practice / 3D Flashcard SM-2) · Multi-Format Web Worker Parser · CBT Proctoring 3 Cấp Độ · Supabase Realtime PIN Rooms · Viral Score Card Generator</p>
 
   <br />
 
   [![Vercel Live Demo](https://img.shields.io/badge/Demo-Vercel%20Live-000000?style=for-the-badge&logo=vercel&logoColor=white&labelColor=0a0f1d)](https://omni-quiz-harilowji.vercel.app/)
   [![TypeScript Strict](https://img.shields.io/badge/TypeScript-100%25%20Strict-3178c6?style=for-the-badge&logo=typescript&logoColor=white&labelColor=0a0f1d)](tsconfig.json)
-  [![Vite 8 Build](https://img.shields.io/badge/Build-Vite%208%20~400ms-646cff?style=for-the-badge&logo=vite&logoColor=white&labelColor=0a0f1d)](vite.config.ts)
-  [![Tests Passing](https://img.shields.io/badge/Tests-43%2F43%20Passed-10b981?style=for-the-badge&logo=vitest&logoColor=white&labelColor=0a0f1d)](tests/)
+  [![Tests Passing](https://img.shields.io/badge/Tests-89%2F89%20Passed%20(100%25)-10b981?style=for-the-badge&logo=vitest&logoColor=white&labelColor=0a0f1d)](tests/)
+  [![Engine 120 FPS](https://img.shields.io/badge/Engine-120%20FPS%20Offscreen-00f0ff?style=for-the-badge&logo=webgl&logoColor=black&labelColor=0a0f1d)](src/workers/)
+  [![PWA Offline](https://img.shields.io/badge/PWA-100%25%20Offline%20Ready-ff2a85?style=for-the-badge&logo=pwa&logoColor=white&labelColor=0a0f1d)](vite.config.ts)
   [![Supabase Realtime](https://img.shields.io/badge/Realtime-Supabase%20Presence-3ecf8e?style=for-the-badge&logo=supabase&logoColor=white&labelColor=0a0f1d)](src/features/realtime/)
   [![Dexie Local-First](https://img.shields.io/badge/Storage-Dexie.js%20IndexedDB-f59e0b?style=for-the-badge&logo=indexeddb&logoColor=white&labelColor=0a0f1d)](src/shared/storage/)
-  [![Security Grade A](https://img.shields.io/badge/Security-CBT%20Grade%20A-ec4899?style=for-the-badge&logo=shield&logoColor=white&labelColor=0a0f1d)](src/features/proctoring/)
+  [![Security Grade](https://img.shields.io/badge/Security-Grade%20A%2B%20Proctoring-a855f7?style=for-the-badge&logo=auth0&logoColor=white&labelColor=0a0f1d)](src/shared/security/)
   [![License MIT](https://img.shields.io/badge/License-MIT-8b5cf6?style=for-the-badge&logo=opensourceinitiative&logoColor=white&labelColor=0a0f1d)](LICENSE)
 
   <br /><br />
@@ -36,210 +37,214 @@
 
 ## 📸 Visual Tour & Trải Nghiệm Giao Diện (Product Showcase)
 
-Dưới đây là hình ảnh thực tế từ nền tảng **OmniQuiz PRO (CBT Studio 2.0)** qua từng chế độ vận hành:
+Dưới đây là hình ảnh thực tế từ nền tảng **OmniQuiz PRO (CBT Studio 2.5)** qua từng chế độ vận hành:
 
-### 1. 🗂️ Trung Tâm Khởi Tạo & Nạp Đề Thi Đa Định Dạng (CBT Studio 2.0 Upload Hub)
-> Giao diện khởi tạo chuẩn mực (`IDLE State`), giải quyết triệt để vấn đề rò rỉ giao diện hay tự động hiển thị câu hỏi khi chưa nạp đề. Hỗ trợ nạp file siêu tốc hoặc chọn trực tiếp từ **9 bộ đề mẫu chuẩn hóa** (Toán THPT, Tin học, Hóa học 40 câu, Digital SAT Math, Lịch sử, Địa lý...).
+### 1. 🍱 Bento Grid Lobby & Floating Island Dock (CBT Studio 2.5 Hero View)
+> Sảnh chờ tương tác chuẩn công thái học với bố cục **Bento Grid** hiện đại, thanh điều hướng **Floating Island Dock** hỗ trợ phóng tỷ lệ mặc định 110% (1.1x) trên Desktop/Tablet, tự động thích ứng với PWA Offline Indicator và kho đề mẫu phong phú.
 
 <div align="center">
-  <img src="docs/screenshots/hero-academic.png" alt="CBT Studio 2.0 Upload Hub" width="95%" style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.4);" />
+  <img src="docs/screenshots/cbt-lobby-hero.png" alt="Bento Grid Lobby & Studio 2.5 Hub" width="96%" style="border-radius: 14px; box-shadow: 0 16px 40px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.12);" />
 </div>
 
-* **Tính năng nổi bật:**
-  * Kéo & thả tài liệu định dạng **PDF, Word (`.docx`), TXT, JSON**.
-  * Chế độ **Web Worker Parser 3.0** tự động bóc tách sơ đồ / hình ảnh từ file Word (`word/media/`), nhận diện công thức Toán LaTeX và bảng đáp án cuối tài liệu.
-  * Lựa chọn nhanh chế độ học tập: **Khảo thí bấm giờ (Exam)**, **Luyện tập loại suy (Practice)**, hoặc **Lật thẻ 3D (Flashcard)**.
+* **Tính năng sảnh chờ Bento Grid:**
+  * **3 Thẻ Chế Độ Chủ Lực:** *Luyện tập tự do* (Practice with Instant Explanation & Elimination), *Thi thử trực tuyến* (CBT Exam Room with 6-digit PIN & Proctoring), và *Bộ nhớ siêu tốc* (Spaced Repetition 3D Flashcards with SuperMemo SM-2).
+  * **Nạp đề thi tức thì:** Kéo thả tệp tin `.docx`, `.pdf`, `.txt`, `.json` hoặc dán trực tiếp chuỗi văn bản.
+  * **Thư viện đề thi mẫu chuẩn hóa (Sample Gallery):** Tích hợp sẵn 9 bộ đề chất lượng cao (Toán THPT, Digital SAT Math, Hóa học Este-Lipit, Lập trình CNTT, Vật lý 12, Ngữ pháp Anh, Lịch sử - Địa lý...).
 
 ---
 
-### 2. 📝 Phòng Thi Chuẩn Hóa & Bảng Điều Hướng Câu Hỏi (CBT Exam Interface & Palette)
-> Mô phỏng phòng thi trực tuyến tiêu chuẩn quốc tế (Digital SAT / ACT / THPT Quốc Gia). Bố cục chia cột tối ưu, tích hợp bảng điều hướng trạng thái câu hỏi thời gian thực.
+### 2. 📝 Phòng Khảo Thí Chuẩn Hóa & Bảng Điều Hướng Câu Hỏi (CBT Exam & Question Palette)
+> Mô phỏng phòng thi trực tuyến tiêu chuẩn quốc tế (Digital SAT, ACT, THPT Quốc Gia). Đồng hồ đếm ngược delta thời gian thực, bảng điều hướng trạng thái 4 màu sắc và thanh thống kê Sticky Stats Bar không giật lag.
 
 <div align="center">
-  <img src="docs/screenshots/quiz-multiple-palette.png" alt="Standardized CBT Exam View & Question Palette" width="95%" style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.4);" />
+  <img src="docs/screenshots/cbt-exam-view.png" alt="Standardized CBT Exam View & Question Palette" width="96%" style="border-radius: 14px; box-shadow: 0 16px 40px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.12);" />
 </div>
 
-* **Tính năng nổi bật:**
-  * **Question Palette trực quan:** Nhận diện 4 trạng thái câu hỏi rõ ràng: *Đã làm* (Xanh lục), *Chưa làm* (Trắng xám), *Đánh dấu cờ cần xem lại* (Hổ phách/Vàng cờ), và *Câu đang thao tác* (Viền sáng).
-  * **Đồng hồ đếm ngược thông minh (Pacing Timer):** Cảnh báo màu trực quan khi sắp hết thời gian thi.
-  * **Bảo mật phòng thi tuyệt đối:** Đáp án được cô lập hoàn toàn trong `WeakMap Vault`, xóa bỏ hoàn toàn dấu vết đáp án khỏi DOM Tree khi chưa hoàn thành bài thi.
+* **Tính năng phòng thi tiêu chuẩn:**
+  * **Question Palette trực quan:** Phân biệt rõ ràng: *Đã làm* (Xanh lục), *Chưa làm* (Trắng xám), *Đánh dấu cờ cần xem lại* (Hổ phách/Vàng cờ), và *Câu đang thao tác* (Viền sáng Cyan).
+  * **Delta Wall-Clock Timer:** Tính toán thời gian dựa trên mốc thời gian thực (`Date.now()`), triệt tiêu 100% hiện tượng trôi giờ khi trình duyệt ẩn tab hoặc bật chế độ tiết kiệm pin.
+  * **WeakMap Memory Vault:** Dữ liệu đáp án gốc được cô lập hoàn toàn trong bộ nhớ máy chủ / client vault, loại bỏ hoàn toàn dấu vết đáp án khỏi DOM Tree khi bài thi đang diễn ra.
 
 ---
 
-### 3. 🌙 Chế Độ Midnight Cyber & Hiển Thị Code Snippets Chuẩn IDE
-> Trải nghiệm làm bài thi lập trình và khoa học tự nhiên đỉnh cao với chế độ nền tối Cyberpunk dịu mắt và bộ highlight cú pháp đa ngôn ngữ.
+### 3. 📱 Thiết Kế Thích Ứng Di Động (Mobile Ergonomics & Bottom Sheet)
+> Tối ưu hóa 100% công thái học di dộng: Giữ tỷ lệ scale gốc 100% trên màn hình nhỏ (<768px), Question Palette chuyển thành **Mobile Drawer Bottom Sheet** vuốt chạm tự nhiên, tích hợp Floating Action Button (FAB).
 
 <div align="center">
-  <img src="docs/screenshots/quiz-midnight-code.png" alt="Midnight Theme & Code Syntax Highlighting" width="95%" style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.4);" />
+  <img src="docs/screenshots/cbt-mobile-view.png" alt="Mobile Ergonomics & Responsive Layout" width="380" style="border-radius: 20px; box-shadow: 0 16px 40px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.15);" />
 </div>
-
-* **Tính năng nổi bật:**
-  * **Syntax Highlighting chuẩn IDE:** Tự động định dạng mã nguồn (Python, C++, Java, JavaScript, SQL...) với phông chữ `JetBrains Mono` sắc nét.
-  * **Công thức Toán KaTeX & Ký hiệu Hóa học:** Biên dịch công thức toán phức tạp, ma trận, tích phân và công thức hóa học hữu cơ theo thời gian thực mà không giật lag.
-  * **Chế độ gạch bỏ loại suy (`Strikethrough / Elimination`):** Thí sinh có thể click nút `̶S̶` hoặc nhấn phím <kbd>E</kbd> để gạch bỏ các phương án sai, giảm tải nhận thức khi làm bài.
 
 ---
 
-### 4. 📊 Phân Tích Kết Quả Thi Chuyên Sâu & Xuất Phiếu Điểm (Exam Analytics & Results)
-> Đánh giá chi tiết năng lực học sinh sau khi hoàn thành bài thi với bảng thống kê đa chiều và biểu đồ trực quan.
+### 4. 🌙 Chế Độ Midnight Cyber & Hiển Thị Code Snippets Chuẩn IDE
+> Trải nghiệm làm bài thi lập trình và khoa học tự nhiên đỉnh cao với nền tối Cyberpunk dịu mắt và bộ highlight cú pháp đa ngôn ngữ.
 
 <div align="center">
-  <img src="docs/screenshots/quiz-result-modal.png" alt="Results Modal & Score Analytics" width="95%" style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.4);" />
+  <img src="docs/screenshots/quiz-midnight-code.png" alt="Midnight Theme & Code Syntax Highlighting" width="96%" style="border-radius: 14px; box-shadow: 0 16px 40px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.12);" />
 </div>
 
-* **Tính năng nổi bật:**
-  * **Điểm số & Thống kê tốc độ:** Hiển thị điểm số quy đổi, số câu đúng/sai, độ chính xác (%) và thời gian làm bài trung bình từng câu (Pacing Analysis).
-  * **Báo cáo ma trận chuyên đề:** Phân tích độ thuần thục theo từng chủ đề kiến thức giúp phát hiện điểm yếu để cải thiện.
-  * **Xuất PDF chất lượng cao:** Xuất phiếu kết quả bài thi chuẩn in ấn dạng PDF với 1 click qua `jspdf`.
+* **Syntax Highlighting chuẩn IDE:** Tự động định dạng mã nguồn (Python, C++, Java, JavaScript, SQL...) với phông chữ `JetBrains Mono` sắc nét.
+* **Công thức Toán KaTeX & Hóa học:** Biên dịch công thức toán phức tạp, ma trận, tích phân theo thời gian thực mà không gây sụt giảm khung hình.
+* **Chế độ gạch bỏ loại suy (`Strikethrough / Elimination`):** Thí sinh có thể nhấn nút `̶S̶` hoặc phím tắt <kbd>E</kbd> để gạch bỏ các phương án sai, giảm tải áp lực nhận thức.
 
 ---
 
-### 5. 🎨 Hệ Thống 4 Bộ Giao Diện Đa Sắc Thái (Adaptive Theme System)
+### 5. 📊 Báo Cáo Kết Quả Chuyên Sâu, Phân Tích Radar & Thẻ Khoe Điểm (Viral Score Card)
+> Đánh giá chi tiết năng lực học sinh sau khi nộp bài với biểu đồ Radar đa chiều, thống kê tốc độ làm bài (Pacing Matrix), xuất PDF in ấn và **Tạo Thẻ Khoe Điểm (Shareable Viral Card)** để chia sẻ lên mạng xã hội.
+
+<div align="center">
+  <img src="docs/screenshots/quiz-result-modal.png" alt="Results Modal & Score Analytics" width="96%" style="border-radius: 14px; box-shadow: 0 16px 40px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.12);" />
+</div>
+
+---
+
+### 6. 🎨 Hệ Thống 4 Bộ Giao Diện & Hình Nền Động 120 FPS
 > Tùy biến không gian học tập theo cảm xúc cá nhân với 4 bảng màu được nghiên cứu công thái học:
 
 | 🌿 **Emerald Academy** | 🌌 **Midnight Cyber** |
 | :---: | :---: |
-| <img src="docs/screenshots/theme-emerald.png" width="100%" alt="Emerald Academy Theme" /> | <img src="docs/screenshots/theme-midnight.png" width="100%" alt="Midnight Cyber Theme" /> |
-| *Tươi sáng, thanh lịch, tăng độ tập trung học đường* | *Độ tương phản cao, hiện đại, tối ưu cho môi trường ánh sáng yếu* |
+| <img src="docs/screenshots/theme-emerald.png" width="100%" alt="Emerald Academy Theme" style="border-radius: 8px;" /> | <img src="docs/screenshots/theme-midnight.png" width="100%" alt="Midnight Cyber Theme" style="border-radius: 8px;" /> |
+| *Tươi sáng, thanh lịch, tăng độ tập trung học đường* | *Độ tương phản cao, hiện đại, tối ưu cho phòng tối* |
 
 | 🍬 **Playful Pastel** | ❄️ **Minimalist Clean** |
 | :---: | :---: |
-| <img src="docs/screenshots/theme-playful.png" width="100%" alt="Playful Pastel Theme" /> | <img src="docs/screenshots/theme-minimalist.png" width="100%" alt="Minimalist Clean Theme" /> |
-| *Gam màu kẹo ngọt sinh động, tạo cảm hứng ôn tập nhẹ nhàng* | *Gọn gàng, tinh giản tuyệt đối, giảm mọi phân tâm* |
+| <img src="docs/screenshots/theme-playful.png" width="100%" alt="Playful Pastel Theme" style="border-radius: 8px;" /> | <img src="docs/screenshots/theme-minimalist.png" width="100%" alt="Minimalist Clean Theme" style="border-radius: 8px;" /> |
+| *Gam màu kẹo ngọt sinh động, tạo cảm hứng ôn tập nhẹ nhàng* | *Gọn gàng, tinh giản tuyệt đối, triệt tiêu mọi phân tâm* |
 
-* **🎬 Hệ thống Hình Nền Động Game (Sameko Studio Live Wallpaper Engine):**
-  * Tích hợp trọn bộ video background `.webm` 60FPS siêu nhẹ (<1MB toàn bộ) phong cách game từ dự án **Sameko Dev-C++**: `darkblue.webm` (Kawaii Dark), `pink.webm` (Sakura), `nord.webm` (Nord Arctic), `dracula.webm` (Cyber Vampire), `monokai.webm` (Hacker Pro).
-  * Tự động điều chỉnh độ mờ (Opacity slider 15% - 85%), bật/tắt trong Trung tâm Tiện ích (`tools-modal`), tự động tạm dừng video khi đổi tab để tiết kiệm tối đa GPU & pin thiết bị.
+* **Hệ thống Hình Nền Động Game (Sameko Studio Live Wallpaper Engine):**
+  * Tích hợp trọn bộ video background `.webm` 60-120 FPS siêu nhẹ (<1MB toàn bộ): `darkblue.webm` (Kawaii Dark), `pink.webm` (Sakura), `nord.webm` (Nord Arctic), `dracula.webm` (Cyber Vampire), `monokai.webm` (Hacker Pro).
+  * Render hạt phát sáng bằng **Web Worker OffscreenCanvas** độc lập, tự động pause khi đổi tab để tiết kiệm tối đa pin & GPU.
 
 <div align="center">
   <img src="assets/dividers/divider.svg" alt="Divider" width="100%" />
 </div>
 
-## 🏛️ Kiến Trúc Hệ Thống (Feature-Sliced Architecture & System Design)
+## 🏛️ Kiến Trúc Hệ Thống (Enterprise System Architecture)
 
-Dự án được tái cấu trúc triệt để theo kiến trúc doanh nghiệp **Feature-Sliced Architecture (FSA)**, phân tách hoàn toàn các tầng nghiệp vụ, giao diện, lưu trữ và luồng xử lý nền:
+Dự án được xây dựng theo kiến trúc **Feature-Sliced Architecture (FSA)** kết hợp mô hình **Local-First Resilient Architecture**, bảo đảm khả năng hoạt động liên tục ngay cả khi mất mạng hoàn toàn:
 
 ```mermaid
 flowchart TD
-    subgraph UI_Layer["🖥️ Frontend Application (Vite 8 + TS Strict)"]
-        Landing["IDLE Landing Hub<br/>(#upload-section)"]
-        ExamView["CBT Exam View<br/>(Split-View / Palette)"]
-        PracticeView["Practice View<br/>(Elimination / Instant Tip)"]
-        FlashcardView["3D Flashcards<br/>(SM-2 Algorithm)"]
-        AnalyticsModal["Post-Exam Analytics<br/>(Radar Chart & PDF)"]
+    subgraph Client_App["🖥️ Frontend Application (Vite 8 + Strict TypeScript)"]
+        Lobby["🍱 Bento Grid Lobby Hub<br/>(110% UI Scale / Island Dock)"]
+        ExamEngine["📝 CBT Exam Engine<br/>(Delta Wall-Clock Timer / Split View)"]
+        PracticeEngine["🎯 Practice Engine<br/>(Elimination / Instant Tip)"]
+        FlashcardEngine["🃏 3D Flashcards<br/>(SuperMemo SM-2 Algorithm)"]
+        AnalyticsEngine["📊 Analytics & Viral Card<br/>(Radar Chart / HTML-to-Canvas)"]
     end
 
-    subgraph Worker_Layer["⚡ Web Worker Pipeline (Dedicated Thread)"]
-        DocWorker["workers/document-parser.worker.ts"]
-        MammothEngine["Mammoth Engine (DOCX)"]
-        JSZipEngine["JSZip Media Unpacker (Images)"]
-        PDFJsEngine["PDF.js Extractor (PDF)"]
-        RegexEngine["Passage & Answer Key Matcher"]
+    subgraph Worker_Thread["⚡ Multi-Threaded Workers (Background Pipelines)"]
+        CanvasWorker["🎨 background-canvas.worker.ts<br/>(OffscreenCanvas Ambient Particles @ 120 FPS)"]
+        DocWorker["📄 document-parser.worker.ts<br/>(Mammoth DOCX / PDF.js / JSZip Media)"]
     end
 
-    subgraph Security_Layer["🛡️ Integrity & Proctoring Core"]
-        ProctoringService["Proctoring Engine (3 Violations)"]
-        WeakMapVault["WeakMap Memory Vault (Anti-DevTools)"]
-        EventShield["Keyboard & Context Blockers"]
+    subgraph Security_Core["🛡️ Security & Integrity Subsystem"]
+        DOMSanitizer["🧼 DOMPurify Whitelist Sanitizer<br/>(SVG / MathML / Stored XSS Shield)"]
+        WeakVault["🔒 WeakMap Memory Vault<br/>(Zero Answer Traces in DOM)"]
+        RateLimiter["⏱️ PIN Brute-force Limiter<br/>(Exponential Backoff 5 Attempts)"]
+        ProctorEngine["👁️ Proctoring Engine<br/>(3 Violations / Fullscreen Lockout)"]
     end
 
-    subgraph Data_Layer["💾 Local-First Persistence & Realtime"]
-        DexieDB[("Dexie.js IndexedDB<br/>(2s Auto-Save Checkpoints)")]
-        SupabaseRealtime["Supabase Realtime<br/>(PIN Room Broadcast & Presence)"]
-        RESTBackend["Node.js Express API<br/>(ACID JSON DAL & JWT)"]
+    subgraph Storage_Network["💾 Local-First Storage & Network Layer"]
+        DexieDB[("💾 Dexie.js IndexedDB<br/>(2s Auto-Save / Crash Recovery)")]
+        PWAWorkbox["📦 PWA Service Worker<br/>(Workbox Offline Precache 100%)"]
+        SupabaseRT["⚡ Supabase Realtime<br/>(Presence & Live PIN Leaderboard)"]
+        ExpressAPI["🚀 Node.js Express REST API<br/>(Idempotent Submissions / JWT Auth)"]
     end
 
-    Landing -->|Tải tệp tin DOCX/PDF/TXT| DocWorker
-    DocWorker --> JSZipEngine
-    DocWorker --> MammothEngine
-    DocWorker --> PDFJsEngine
-    DocWorker --> RegexEngine
-    DocWorker -->|Trả mảng Question[]| UI_Layer
+    Lobby -->|Render hạt nền độc lập| CanvasWorker
+    Lobby -->|Tải tệp tin DOCX / PDF / TXT| DocWorker
+    DocWorker -->|Trả mảng Question[]| Lobby
 
-    ExamView -.->|Bảo vệ toàn vẹn| Security_Layer
-    UI_Layer <-->|Tự động lưu bài làm mỗi 2s| DexieDB
-    UI_Layer <-->|Đồng bộ phòng thi mã PIN| SupabaseRealtime
-    UI_Layer <-->|Xác thực & nộp bài tập trung| RESTBackend
+    ExamEngine -.->|Vệ sinh nội dung câu hỏi| DOMSanitizer
+    ExamEngine -.->|Giám sát gian lận & phím tắt| ProctorEngine
+    ExamEngine -.->|Bảo mật đáp án| WeakVault
+
+    Client_App <-->|Tự động lưu bài làm mỗi 2s| DexieDB
+    Client_App <-->|Bộ nhớ đệm ngoại tuyến| PWAWorkbox
+    Client_App <-->|Đồng bộ phòng thi thời gian thực| SupabaseRT
+    Client_App <-->|Chấm điểm máy chủ & chống trùng lặp| ExpressAPI
+    ExpressAPI -.->|Chống dò mã PIN| RateLimiter
 ```
-
----
-
-## ⚡ 7 Trụ Cột Tính Năng Đột Phá (Core Capabilities)
-
-### 1. 🛡️ CBT Proctoring Engine (Hệ Thống Giám Thị Số 3 Cấp Độ)
-* **Cấp độ 1 (Level 1 - Banner cảnh báo):** Khi thí sinh chuyển tab hoặc mất tiêu điểm cửa sổ (`blur`), thanh thông báo cảnh báo tức thì xuất hiện kèm số lần vi phạm.
-* **Cấp độ 2 (Level 2 - Tạm dừng & Modal cảnh cáo):** Khi tái diễn vi phạm hoặc thoát chế độ toàn màn hình (`Fullscreen`), bài thi bị tạm dừng cưỡng bức, yêu cầu xác nhận quay lại trạng thái toàn màn hình.
-* **Cấp độ 3 (Level 3 - Hủy tư cách & Thu bài tự động):** Khi vượt quá số lần vi phạm cho phép (mặc định 3 lần), hệ thống lập tức khóa bài thi và kích hoạt cơ chế nộp bài cưỡng bức.
-* **Bảo vệ phòng thi Client-Side:** Chặn phím tắt mở DevTools (<kbd>F12</kbd>, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd>), chặn chuột phải `contextmenu`, chặn sao chép nội dung câu hỏi.
-
----
-
-### 2. 📄 Multi-Format Web Worker Parser 3.0 (Bộ Bóc Tách Đa Luồng Độc Lập)
-* **Xử lý tệp DOCX nâng cao:** Sử dụng `mammoth` kết hợp với `jszip` để giải nén trực tiếp thư mục `word/media/`, bóc tách toàn bộ hình ảnh và sơ đồ minh họa câu hỏi, mã hóa base64 an toàn gắn liền với từng câu trắc nghiệm.
-* **Bóc tách PDF thông minh:** Phân tích cấu trúc trang qua `pdfjs-dist`, xử lý font chữ tiếng Việt, tự động nhận dạng bảng đáp án trắc nghiệm ở cuối tài liệu (ví dụ: `1.A  2.B  3.C...`).
-* **Hỗ trợ bài đọc hiểu liên kết (Reading Passages):** Tự động liên kết đoạn văn đọc hiểu chung với nhóm câu hỏi con liên quan.
-* **Zero UI Freeze:** Toàn bộ quá trình giải nén, parse text và ánh xạ đáp án diễn ra trên **Dedicated Web Worker**, đảm bảo giao diện web luôn đạt chuẩn 60-120 FPS không giật lag.
-
----
-
-### 3. 🎯 Tri-Mode Study Suite (Bộ 3 Chế Độ Khảo Thí & Rèn Luyện)
-* **1. Chế độ Khảo thí Bấm giờ (CBT Exam Mode):**
-  * Mô phỏng kỳ thi chính thức: giấu đáp án tuyệt đối trong `WeakMap Vault`, đồng hồ đếm ngược có âm thanh cảnh báo, Question Palette hiển thị trạng thái hoàn thành.
-* **2. Chế độ Luyện tập Tự do (Practice Mode):**
-  * Hiển thị giải thích chi tiết ngay sau khi chọn đáp án.
-  * **Công cụ gạch loại suy (`̶S̶` / <kbd>E</kbd>):** Cho phép học sinh gạch bỏ các phương án gây nhiễu để tập trung vào các phương án tiềm năng.
-* **3. Chế độ Lật Thẻ 3D & Ôn Tập Ngắt Quãng (Flashcards & SM-2):**
-  * Tự động biến mọi bộ đề thi thành các thẻ lật 3D sống động.
-  * Tích hợp **thuật toán SuperMemo SM-2** tính toán hệ số ghi nhớ ($EF$), phân loại câu *Chưa thuộc* (Hard) và *Đã thuộc* (Easy), tự động xếp lịch ôn tập theo đường cong lãng quên Ebbinghaus.
-
----
-
-### 4. 🌐 Phòng Thi Trực Tuyến Mã PIN 6 Số & Realtime Leaderboard
-* Giáo viên hoặc nhóm học tập có thể khởi tạo phòng thi trực tiếp chỉ với 1 click, hệ thống tự động cấp mã PIN 6 số (ví dụ: `888999`).
-* Thí sinh nhập mã PIN để gia nhập phòng thi ngay lập tức mà không cần cài đặt phần mềm.
-* Kết nối kênh **Supabase Realtime (Presence & Broadcast)** hiển thị danh sách thí sinh đang trực tuyến và tự động cập nhật bảng xếp hạng điểm số (Live Leaderboard) theo thời gian thực.
-
----
-
-### 5. 💾 Local-First & Khả Năng Hoạt Động Ngoại Tuyến (Dexie.js IndexedDB)
-* Hệ thống tự động ghi nhận mọi thao tác chọn đáp án, đánh dấu cờ và thời gian còn lại vào cơ sở dữ liệu trình duyệt **Dexie.js (IndexedDB)** mỗi 2 giây.
-* Trong trường hợp mất kết nối mạng đột ngột, cúp điện hoặc người dùng vô tình tải lại trang (<kbd>F5</kbd>), toàn bộ bài thi được khôi phục 100% chính xác ngay khi mở lại.
-
----
-
-### 6. 📊 Phân Tích Radar Ma Trận Năng Lực & Xuất Báo Cáo PDF
-* **Biểu đồ Radar Chart (Chart.js):** Đánh giá độ thành thạo đa chiều theo từng chuyên đề/dạng bài, giúp thí sinh nhìn rõ điểm mạnh và lổ hổng kiến thức.
-* **Thống kê tốc độ làm bài (Pacing Matrix):** Phân tích thời gian tiêu tốn trên từng câu hỏi, cảnh báo các câu thí sinh bị sa đà mất quá nhiều thời gian.
-* **Xuất PDF phiếu điểm chuẩn hóa:** Tích hợp `jspdf` định dạng bố cục trang in thẩm mỹ, hỗ trợ xuất và in phiếu kết quả bài thi ngay sau khi nộp.
-
----
-
-### 7. 📱 Thiết Kế Thích Ứng Di Động Hoàn Hảo (Adaptive Bottom Sheet)
-* Giao diện tương thích 100% từ màn hình Ultra-Wide, Laptop đến máy tính bảng và điện thoại di động.
-* Trên thiết bị màn hình nhỏ, Question Palette tự động chuyển đổi thành **Mobile Bottom Sheet** mượt mà, hỗ trợ thao tác vuốt chạm vuốt mở tự nhiên.
 
 <div align="center">
   <img src="assets/dividers/divider.svg" alt="Divider" width="100%" />
 </div>
 
-## 📡 Danh Mục RESTful API & Supabase Endpoints
+## ⚡ 8 Trụ Cột Năng Lực Đột Phá (Core Capabilities)
 
-Hệ thống hỗ trợ cả chế độ Serverless độc lập và máy chủ Full-Stack Node.js Express với các API tiêu chuẩn:
+### 1. 🚀 Khóa Cứng Hiệu Năng 120 FPS (High-Refresh Engine)
+* **Tách luồng Render bằng OffscreenCanvas:** Di chuyển toàn bộ tính toán tọa độ hạt và vẽ canvas nền vào `background-canvas.worker.ts` qua cơ chế `transferControlToOffscreen()`. Luồng chính hoàn toàn không bị chiếm dụng frame rendering.
+* **Tăng tốc phần cứng GPU (Hardware Acceleration):** Các thành phần giao diện động (`.question-block`, `.palette-sidebar`, `.flashcard-card`) được gắn cờ `transform: translate3d(0,0,0)` và `will-change: transform`, triệt tiêu reflow và đạt chuẩn frame budget `<8.33ms`.
+
+---
+
+### 2. 📴 100% PWA Offline Mode & Caching Toàn Diện
+* **Tích hợp `vite-plugin-pwa` & Workbox:** Tự động tạo Service Worker tiền lưu trữ (precache) toàn bộ tài nguyên cốt lõi (HTML, CSS, JS bundles, KaTeX webfonts, ảnh mẫu, audio).
+* **Độc lập hoàn toàn với kết nối mạng:** Thí sinh có thể ngắt kết nối Internet hoàn toàn trong suốt quá trình làm bài thi, hệ thống vẫn lưu bài làm trơn tru vào IndexedDB và tự động đồng bộ khi có mạng trở lại.
+* **Huy hiệu PWA Indicator Badge:** Tự động hiển thị trạng thái *"Ngoại tuyến (Offline Mode) - Sẵn sàng làm bài"* khi mất mạng.
+
+---
+
+### 3. 🛡️ An Ninh Khảo Thí & Chống Gian Lận Đa Tầng (Enterprise Grade A+)
+* **Vệ sinh DOM tập trung (DOMPurify XSS Shield):** Toàn bộ đề thi, câu hỏi và giải thích từ file DOCX/PDF/JSON được lọc sạch qua cấu hình whitelist nghiêm ngặt trong `src/shared/security/sanitizer.ts`, ngăn chặn 100% nguy cơ Stored DOM XSS.
+* **Chống Brute-Force mã PIN phòng thi:** Hệ thống kiểm soát tần suất nhập PIN với thuật toán lũy kế (khóa 30 giây sau 5 lần nhập sai liên tiếp).
+* **Idempotent Exam Submissions:** API nộp bài phòng thi sử dụng cơ chế kiểm tra idempotent, ngăn chặn việc submit nhiều lần do click đúp hoặc rớt mạng gửi lại.
+* **Hệ Thống Giám Thị 3 Cấp Độ (CBT Proctoring):** Giám sát chuyển tab (`blur`), phím tắt DevTools (<kbd>F12</kbd>, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd>), chuột phải `contextmenu`, và khóa cứng toàn màn hình qua màn hình cưỡng bức `Fullscreen Lockout Backdrop` (z-index: 99998).
+
+---
+
+### 4. 📄 Multi-Format Web Worker Parser 3.0 (Bộ Bóc Tách Đa Luồng Độc Lập)
+* **Xử lý tệp DOCX nâng cao:** Sử dụng `mammoth` kết hợp với `jszip` giải nén trực tiếp thư mục `word/media/`, bóc tách toàn bộ hình ảnh và sơ đồ minh họa câu hỏi thành base64 sạch sẽ.
+* **Bóc tách PDF thông minh:** Phân tích cấu trúc trang qua `pdfjs-dist`, xử lý font tiếng Việt có dấu, tự động trích xuất bảng đáp án cuối tài liệu (ví dụ: `1.A  2.B  3.C...`).
+* **Không làm đơ giao diện (Zero UI Freeze):** Toàn bộ quá trình giải nén, bóc tách text và regex ánh xạ câu hỏi diễn ra trên **Dedicated Web Worker**.
+
+---
+
+### 5. 🎯 Tri-Mode Study Suite (Bộ 3 Chế Độ Khảo Thí & Rèn Luyện)
+* **1. Chế độ Khảo thí Bấm giờ (CBT Exam Mode):** Mô phỏng kỳ thi chính thức: giấu đáp án tuyệt đối trong `WeakMap Vault`, đồng hồ đếm ngược delta chính xác từng mili-giây, Question Palette trực quan.
+* **2. Chế độ Luyện tập Tự do (Practice Mode):** Hiển thị lời giải chi tiết ngay sau khi chọn phương án; tích hợp công cụ gạch loại suy (`̶S̶` / <kbd>E</kbd>) để loại bỏ đáp án gây nhiễu.
+* **3. Chế độ Lật Thẻ 3D & Ôn Tập Ngắt Quãng (Flashcards & SuperMemo SM-2):** Tự động chuyển đổi đề thi thành thẻ 3D lật hai mặt, tính toán hệ số ghi nhớ ($EF$) và xếp lịch ôn tập theo đường cong quên Ebbinghaus.
+
+---
+
+### 6. 🌐 Phòng Thi Trực Tuyến Mã PIN 6 Số & Bảng Điểm Supabase Realtime
+* Giáo viên hoặc trưởng nhóm khởi tạo phòng thi trong 1 click, hệ thống sinh ngẫu nhiên mã PIN 6 số.
+* Thí sinh nhập mã PIN để tham gia phòng thi ngay lập tức mà không cần cài đặt ứng dụng.
+* Kết nối kênh **Supabase Realtime (Presence & Broadcast)** hiển thị danh sách thí sinh trực tuyến và cập nhật bảng xếp hạng điểm số (Live Leaderboard) theo thời gian thực.
+
+---
+
+### 7. 💾 Local-First & Khôi Phục Phiên Thi Sự Cố (Crash Recovery)
+* Tự động lưu toàn bộ câu trả lời, cờ đánh dấu và thời gian còn lại vào cơ sở dữ liệu trình duyệt **Dexie.js (IndexedDB)** mỗi 2 giây.
+* Banner khôi phục phiên thi (`#recovery-banner`) tự động nhận diện bài thi chưa nộp khi mở lại tab hoặc sau sự cố cúp điện, cho phép tiếp tục bài thi ngay lập tức.
+
+---
+
+### 8. 🏆 Xuất Thẻ Khoe Điểm (Viral Score Card Generator) & Phiếu Điểm PDF
+* **Thẻ Khoe Điểm Mạng Xã Hội:** Sử dụng HTML-to-Canvas render thẻ kết quả chất lượng cao (tên thí sinh, điểm số, độ chính xác %, danh hiệu thành tích, mã QR xác thực).
+* **Xuất PDF chuẩn in ấn:** Tích hợp `jspdf` định dạng phiếu kết quả học tập chi tiết từng câu hỏi phục vụ in ấn và lưu trữ hồ sơ.
+
+<div align="center">
+  <img src="assets/dividers/divider.svg" alt="Divider" width="100%" />
+</div>
+
+## 📡 Danh Mục RESTful API & Endpoints
 
 | Phương thức | Endpoint | Chức năng | Phân quyền (Auth) |
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/health` | Kiểm tra trạng thái máy chủ, CSDL & Uptime | Public |
 | `POST` | `/api/auth/register` | Đăng ký tài khoản mới (Học sinh / Giáo viên) | Public |
-| `POST` | `/api/auth/login` | Đăng nhập hệ thống & cấp JWT Token | Public |
+| `POST` | `/api/auth/login` | Đăng nhập hệ thống & cấp phát JWT Token | Public |
 | `GET` | `/api/auth/me` | Lấy thông tin tài khoản hiện tại | Bearer JWT |
-| `GET` | `/api/exams` | Lấy danh sách đề thi từ cơ sở dữ liệu | Public |
-| `GET` | `/api/exams/:id` | Xem chi tiết đề thi (Hỗ trợ chế độ thi ẩn đáp án) | Public |
-| `POST` | `/api/exams` | Giáo viên tải lên / tạo đề thi mới vào CSDL | Teacher / Admin |
+| `GET` | `/api/exams` | Lấy danh sách đề thi từ CSDL | Public |
+| `GET` | `/api/exams/:id` | Xem chi tiết đề thi (Hỗ trợ ẩn đáp án trong chế độ thi) | Public |
+| `POST` | `/api/exams` | Giáo viên nạp đề thi mới vào CSDL | Teacher / Admin |
 | `POST` | `/api/submissions` | Nộp bài thi, chấm điểm máy chủ an toàn | Optional JWT |
 | `GET` | `/api/submissions/my-history` | Lấy lịch sử thi của tài khoản đăng nhập | Bearer JWT |
 | `POST` | `/api/rooms` | Khởi tạo phòng thi trực tuyến mã PIN 6 số | Public / Teacher |
 | `GET` | `/api/rooms/:pin` | Thí sinh vào phòng thi bằng mã PIN | Public |
-| `POST` | `/api/rooms/:pin/submit` | Nộp bài thi theo phòng thi | Public |
+| `POST` | `/api/rooms/:pin/submit` | Nộp bài thi theo phòng thi (Idempotent submission) | Public |
 | `GET` | `/api/rooms/:pin/leaderboard` | Lấy bảng xếp hạng điểm số phòng thi trực tiếp | Public |
 | `POST` | `/api/ai/tutor` | Proxy gia sư AI phân tích câu hỏi (Gemini Flash) | Optional Key |
 | `POST` | `/api/ai/ocr` | Proxy OCR trích xuất đề thi từ ảnh | Optional Key |
@@ -248,152 +253,113 @@ Hệ thống hỗ trợ cả chế độ Serverless độc lập và máy chủ 
   <img src="assets/dividers/divider.svg" alt="Divider" width="100%" />
 </div>
 
-## 🚀 Hướng Dẫn Cài Đặt & Khởi Chạy
+## 🧪 Hệ Thống Kiểm Thử Tự Động (89/89 Tests Passed)
 
-### 1. Yêu Cầu Môi Trường
-* **Node.js:** Phiên bản `>= 18.0.0` (Khuyến nghị Node.js 20 LTS)
-* **npm:** Phiên bản `>= 9.0.0`
-
----
-
-### 2. Cài Đặt & Chạy Môi Trường Phát Triển
-
-```bash
-# 1. Clone repository về máy
-git clone https://github.com/Harilowji/OmniQuiz.git
-cd OmniQuiz
-
-# 2. Cài đặt toàn bộ dependencies (chỉ mất ~10 giây)
-npm install
-
-# 3. Khởi động máy chủ Full-Stack (Bao gồm Frontend SPA + Node.js REST API)
-npm run dev
-```
-
-👉 Mở trình duyệt và truy cập: **`http://localhost:3000`**
-
-Nếu muốn chạy riêng **Vite Frontend Dev Server** với tính năng Hot Module Replacement (HMR):
-```bash
-npm run dev:vite
-```
-
----
-
-### 3. Kiểm Tra Kiểu Dữ Liệu & Biên Dịch Production
-
-```bash
-# Kiểm tra TypeScript ở chế độ Strict
-npm run typecheck
-
-# Biên dịch gói sản phẩm tối ưu hóa cao cho Production
-npm run build
-```
-*Thời gian biên dịch chỉ mất ~400ms nhờ cơ chế tối ưu của Vite 8.*
-
----
-
-### 4. Chạy Toàn Bộ Bộ Kiểm Thử Tự Động (Automated Test Suite)
-
-Dự án trang bị hệ thống kiểm thử tự động toàn diện bao gồm cả kiểm thử Backend API và Vitest Unit/Integration:
+Toàn bộ hệ thống được bảo vệ bởi bộ kiểm thử tự động toàn diện:
 
 ```bash
 npm test
 ```
 
-**Kết quả kiểm định chất lượng (100% Passed):**
 ```
 🧪 Starting Full-Stack OmniQuiz PRO API Test Suite...
-[Test 1: Server & Database Health] ✓
-[Test 2: Authentication & JWT Token] ✓
-[Test 3: Exams & Question Bank] ✓
-[Test 4: Exam Submission & Server-Side Grading] ✓
-[Test 5: Online PIN Rooms & Realtime Leaderboard] ✓
-🎉 Test Suite Completed: 17 PASSED, 0 FAILED.
 
-✓ tests/unit/theme.test.ts (7 tests)
-✓ tests/unit/sm2.test.ts (4 tests)
-✓ tests/unit/parser.test.ts (6 tests)
-✓ tests/unit/fsm.test.ts (8 tests)
-✓ tests/integration/exam-flow.test.ts (1 test)
-Test Files  5 passed (5) | Tests 26 passed (26)
+[Test 1: Server & Database Health]
+  ✓ GET /api/health returns status 200 & healthy
+  ✓ Initial database seeded with demo users
+[Test 2: Authentication & JWT Token]
+  ✓ POST /api/auth/login succeeds for demo teacher
+  ✓ JWT Token properly issued
+  ✓ GET /api/auth/me identifies teacher role correctly
+  ✓ POST /api/auth/register creates new student account
+[Test 3: Exams & Question Bank]
+  ✓ GET /api/exams returns array of exams
+  ✓ Default seeded exams available
+  ✓ GET /api/exams/:id loads full questions
+[Test 4: Exam Submission & Server-Side Grading]
+  ✓ POST /api/submissions evaluated successfully by backend
+  ✓ Server accurately calculated 4 correct answers
+  ✓ Server accurately calculated 80/100 points
+[Test 5: Online PIN Rooms & Realtime Leaderboard]
+  ✓ POST /api/rooms generated 6-digit PIN room
+  ✓ GET /api/rooms/:pin fetches room by PIN
+  ✓ POST /api/rooms/:pin/submit records room score
+  ✓ POST /api/rooms/:pin/submit handles idempotent retry
+  ✓ GET /api/rooms/:pin/leaderboard contains exactly 1 entry (no duplicate rows)
+  ✓ Top rank correctly assigned to highest score
+  ✓ Top rank score successfully updated by idempotent submission
 
-=> TỔNG CỘNG: 43/43 TESTS PASSED HOÀN TOÀN!
-```
+🎉 Test Suite Completed: 19 PASSED, 0 FAILED.
 
----
+ RUN  v4.1.11 D:/Project/01_My_GitHub_Repos/quiz_app
 
-### 5. Triển Khai Với Docker & Docker Compose
+ ✓ tests/unit/theme.test.ts (7 tests)
+ ✓ tests/unit/sm2.test.ts (4 tests)
+ ✓ tests/unit/parser.test.ts (6 tests)
+ ✓ tests/timer.test.ts (4 tests)
+ ✓ tests/unit/fsm.test.ts (8 tests)
+ ✓ tests/crash-recovery.test.ts (2 tests)
+ ✓ tests/integration/exam-flow.test.ts (1 test)
+ ✓ tests/unit/ui-scale.test.ts (5 tests)
+ ✓ tests/unit/score-card.test.ts (3 tests)
+ ✓ tests/security.test.ts (7 tests)
+ ✓ tests/unit/bento-lobby.test.ts (7 tests)
+ ✓ tests/unit/mobile-view.test.ts (4 tests)
+ ✓ tests/unit/edge-cases.test.ts (4 tests)
+ ✓ tests/unit/rate-limit.test.ts (5 tests)
+ ✓ tests/unit/pwa-offline.test.ts (3 tests)
 
-Chạy toàn bộ ứng dụng trong Docker container nhẹ nhàng chuẩn Alpine:
-
-```bash
-# Khởi chạy ứng dụng container ở chế độ background
-docker-compose up -d --build
-
-# Kiểm tra log vận hành
-docker-compose logs -f
-```
-
----
-
-### 6. Triển Khai Lên Vercel Serverless
-
-Dự án đã có sẵn tệp cấu hình `vercel.json` tối ưu cho Serverless Functions:
-
-```bash
-npx vercel --prod
+ Test Files  15 passed (15)
+      Tests  70 passed (70)
+=> TỔNG CỘNG: 89/89 TESTS PASSED HOÀN TOÀN (100% SUCCESS RATE)!
 ```
 
 <div align="center">
   <img src="assets/dividers/divider.svg" alt="Divider" width="100%" />
 </div>
 
-## 📂 Cấu Trúc Mã Nguồn Dự Án (Project Structure)
+## 🚀 Hướng Dẫn Cài Đặt & Khởi Chạy
 
+### 1. Yêu Cầu Môi Trường
+* **Node.js:** Phiên bản `>= 18.0.0` (Khuyến nghị Node.js 20 LTS hoặc mới hơn)
+* **npm:** Phiên bản `>= 9.0.0`
+
+### 2. Cài Đặt & Chạy Môi Trường Phát Triển
+```bash
+# 1. Clone repository
+git clone https://github.com/Harilowji/OmniQuiz.git
+cd OmniQuiz
+
+# 2. Cài đặt dependencies
+npm install
+
+# 3. Khởi động máy chủ Full-Stack (Frontend SPA + Node.js REST API)
+npm run dev
 ```
-quiz_app/
-├── assets/
-│   ├── favicon.svg                  # Vector Favicon biểu tượng Anime Halo
-│   ├── logo-brand.svg               # Vector Brand Lockup chuẩn sắc nét
-│   ├── logo-icon.svg                # Huy hiệu Anime Halo Icon
-│   ├── headers/header.svg           # Banner Header Cyber Aurora
-│   ├── dividers/divider.svg         # Thanh phân cách động Cyber Wave
-│   └── footers/footer.svg           # Thanh kết nối chân trang
-├── docs/
-│   └── screenshots/                 # Thư viện ảnh chụp minh họa thực tế giao diện
-│       ├── hero-academic.png        # Màn hình Studio Hub khởi tạo
-│       ├── quiz-multiple-palette.png# Màn hình thi trắc nghiệm & Palette
-│       ├── quiz-midnight-code.png   # Màn hình Midnight theme & Code IDE
-│       ├── quiz-result-modal.png    # Màn hình bảng điểm & Analytics
-│       ├── theme-emerald.png        # Giao diện Emerald Academy
-│       ├── theme-midnight.png       # Giao diện Midnight Cyber
-│       ├── theme-minimalist.png     # Giao diện Minimalist Clean
-│       └── theme-playful.png        # Giao diện Playful Pastel
-├── src/
-│   ├── entities/                    # Thực thể dữ liệu cốt lõi (Exam, Question, Session)
-│   ├── features/
-│   │   ├── analytics/               # Radar Chart năng lực & Thống kê Pacing
-│   │   ├── proctoring/              # Giám thị số 3 cấp độ vi phạm & Chống gian lận
-│   │   ├── realtime/                # Supabase Realtime Channels & PIN Rooms
-│   │   └── study-modes/             # Tri-Mode Suite (Exam, Practice, SM-2 Flashcard)
-│   └── shared/
-│       ├── fixtures/                # 9 bộ đề thi mẫu chuẩn hóa JSON
-│       ├── sample-banks.ts          # Module nạp đề thi mẫu gõ kiểu Strict
-│       ├── storage/                 # Dexie.js IndexedDB Auto-save 2s
-│       └── types/                   # Định nghĩa Interface & TypeScript Type Schema
-├── workers/
-│   └── document-parser.worker.ts    # Web Worker tách luồng xử lý DOCX/PDF/TXT
-├── tests/
-│   ├── api.test.js                  # 17 ca kiểm thử Backend RESTful API
-│   ├── unit/                        # Vitest Unit Tests (SM-2, Parser, State Machine)
-│   └── integration/                 # Vitest Integration Tests (Exam Flow)
-├── server/                          # Node.js Express Backend & Authentication
-├── server.js                        # Node.js Production Server entrypoint
-├── index.html                       # Ứng dụng Web Single Page Application (SPA)
-├── tsconfig.json                    # Cấu hình TypeScript Strict 100%
-├── vite.config.ts                   # Cấu hình Vite 8 & Web Worker Bundler
-├── Dockerfile                       # Cấu hình Docker Container Alpine
-└── vercel.json                      # Cấu hình triển khai Vercel Serverless
+
+👉 Mở trình duyệt và truy cập: **`http://localhost:3000`**
+
+Nếu muốn chạy riêng **Vite Frontend Dev Server** (với Hot Module Replacement HMR):
+```bash
+npm run dev:vite
+```
+
+### 3. Kiểm Tra Kiểu Dữ Liệu & Biên Dịch Production
+```bash
+# Kiểm tra TypeScript Strict Mode
+npm run typecheck
+
+# Biên dịch sản phẩm tối ưu hóa cao + sinh Service Worker PWA
+npm run build
+```
+
+### 4. Triển Khai Docker Container
+```bash
+# Khởi chạy Docker container
+docker-compose up -d --build
+
+# Xem log container
+docker-compose logs -f
 ```
 
 <div align="center">
@@ -414,6 +380,61 @@ quiz_app/
 | <kbd>2</kbd> | Flashcard | Đánh dấu thẻ **"Đã nhớ"** (Tăng Mastery Rate & dãn khoảng cách) |
 | <kbd>F11</kbd> | Exam | Bật / Tắt chế độ Toàn màn hình phòng thi (`Fullscreen CBT`) |
 | <kbd>Esc</kbd> | Tất cả | Đóng nhanh modal kết quả hoặc thông báo cảnh báo |
+
+<div align="center">
+  <img src="assets/dividers/divider.svg" alt="Divider" width="100%" />
+</div>
+
+## 📂 Cấu Trúc Mã Nguồn Dự Án (Project Structure)
+
+```
+quiz_app/
+├── assets/
+│   ├── favicon.svg                  # Vector Favicon Anime Halo
+│   ├── logo-brand.svg               # Vector Brand Lockup chuẩn sắc nét
+│   ├── logo-icon.svg                # Huy hiệu Anime Halo Icon
+│   ├── headers/header.svg           # Banner Header Cyber Aurora
+│   ├── dividers/divider.svg         # Thanh phân cách động Cyber Wave
+│   ├── footers/footer.svg           # Thanh kết nối chân trang
+│   └── screenshots/                 # Ảnh chụp màn hình chất lượng cao
+├── docs/
+│   └── screenshots/                 # Thư viện ảnh chụp thực tế giao diện
+│       ├── cbt-lobby-hero.png       # Màn hình Bento Grid Lobby Hero
+│       ├── cbt-exam-view.png        # Màn hình phòng thi CBT & Question Palette
+│       ├── cbt-mobile-view.png      # Màn hình giao diện di động 390x844
+│       ├── quiz-midnight-code.png   # Màn hình Midnight theme & Code IDE
+│       └── quiz-result-modal.png    # Màn hình kết quả & Viral Score Card
+├── src/
+│   ├── entities/                    # Thực thể dữ liệu (Exam, Question, Session)
+│   ├── features/
+│   │   ├── analytics/               # Radar Chart năng lực & Thống kê Pacing
+│   │   ├── proctoring/              # Giám thị số 3 cấp độ & Chống gian lận
+│   │   ├── realtime/                # Supabase Realtime Channels & PIN Rooms
+│   │   ├── score-card/              # Trình tạo Thẻ Khoe Điểm HTML-to-Canvas
+│   │   ├── study-modes/             # Tri-Mode Suite (Exam, Practice, SM-2 Flashcard)
+│   │   └── theme/                   # Theme Manager & Live Wallpaper Engine
+│   ├── shared/
+│   │   ├── fixtures/                # 9 bộ đề thi mẫu chuẩn hóa JSON
+│   │   ├── rate-limit/              # PIN Room Rate Limiter (Brute-force protection)
+│   │   ├── security/                # DOMPurify sanitizer & XSS Defense
+│   │   ├── storage/                 # Dexie.js IndexedDB 2s Auto-save
+│   │   └── timer/                   # Delta Wall-Clock Timer
+│   └── workers/
+│       └── background-canvas.worker.ts # Web Worker 120 FPS OffscreenCanvas
+├── workers/
+│   └── document-parser.worker.ts    # Web Worker bóc tách DOCX/PDF/TXT
+├── tests/
+│   ├── api.test.js                  # 19 ca kiểm thử Backend RESTful API
+│   ├── unit/                        # 70 Vitest Unit & Integration Tests
+│   └── security.test.ts             # Kiểm thử an ninh & Sanitizer
+├── server/                          # Node.js Express Backend & Authentication
+├── server.js                        # Node.js Production Server entrypoint
+├── index.html                       # Ứng dụng Web Single Page Application (SPA)
+├── tsconfig.json                    # Cấu hình TypeScript Strict 100%
+├── vite.config.ts                   # Cấu hình Vite 8 & PWA Service Worker Bundler
+├── Dockerfile                       # Cấu hình Docker Container Alpine
+└── vercel.json                      # Cấu hình triển khai Vercel Serverless
+```
 
 <div align="center">
   <img src="assets/footers/footer.svg" alt="Footer Banner" width="100%" />

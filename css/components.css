@@ -980,7 +980,7 @@ body.theme-cyberpunk .badge-q-unattempted {
     background: rgba(15, 23, 42, 0.45);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    z-index: 100;
+    z-index: 99900;
     justify-content: center;
     align-items: center;
     padding: 20px;
@@ -1412,7 +1412,7 @@ body.theme-cyberpunk .badge-q-unattempted {
     inset: 0;
     background: rgba(0, 0, 0, 0.88);
     backdrop-filter: blur(8px);
-    z-index: 999;
+    z-index: 99995;
     display: none;
     align-items: center;
     justify-content: center;
@@ -1467,30 +1467,35 @@ body.theme-cyberpunk .badge-q-unattempted {
 /* TOAST NOTIFICATION */
 .omni-toast {
     position: fixed;
-    top: 86px;
-    bottom: auto;
+    bottom: max(28px, calc(env(safe-area-inset-bottom, 0px) + 20px));
+    top: auto;
     left: 50%;
-    transform: translateX(-50%) translateY(-12px);
+    transform: translateX(-50%) translateY(16px) scale(0.96);
     background: rgba(15, 23, 42, 0.94);
     color: #ffffff;
-    padding: 10px 24px;
-    border-radius: 99px;
-    font-size: 0.92em;
+    padding: 11px 26px;
+    border-radius: 999px;
+    font-size: 0.94em;
     font-weight: 600;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-    z-index: 99999;
+    letter-spacing: 0.2px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.12);
+    z-index: 100000;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    max-width: 90vw;
+    transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    max-width: min(90vw, 480px);
     text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .omni-toast.show {
     opacity: 1;
-    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0) scale(1);
 }
 
 /* PROCESSING & LOADING MODAL */
@@ -1865,7 +1870,7 @@ body.theme-emerald .quiz-inline-code {
     background: rgba(11, 15, 25, 0.96);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    z-index: 500;
+    z-index: 99998;
     display: none;
     justify-content: center;
     align-items: center;
