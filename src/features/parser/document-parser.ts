@@ -3,8 +3,14 @@
  * Spawns Web Worker, manages progress, handles Blob generation, and falls back gracefully.
  */
 
-import type { ParserWorkerPayload, ParserWorkerResult, Exam } from '../../shared/types';
+import type { ParserWorkerPayload, ParserWorkerResult, ParserWarning, Exam } from '../../shared/types';
 import { tokenizeExamDocument } from '../../../workers/document-parser.worker';
+
+export interface ParseExamReportResult {
+  exam: Exam;
+  warnings: ParserWarning[];
+  rawExtractedText?: string;
+}
 
 export class DocumentParserService {
   private worker: Worker | null = null;
@@ -27,13 +33,13 @@ export class DocumentParserService {
   }
 
   /**
-   * Parse uploaded File (PDF, DOCX, TXT) asynchronously
+   * Parse uploaded File (PDF, DOCX, TXT) and return Exam with Validation Report
    */
-  async parseFile(
+  async parseFileWithReport(
     file: File,
     subjectHint?: string,
     onProgress?: (percent: number, status: string) => void
-  ): Promise<Exam> {
+  ): Promise<ParseExamReportResult> {
     onProgress?.(15, `Đang đọc nội dung tệp ${file.name}...`);
     const fileBuffer = await file.arrayBuffer();
 
@@ -76,6 +82,7 @@ export class DocumentParserService {
       result = {
         success: true,
         ...parsed,
+        rawExtractedText: text,
       };
     }
 
@@ -99,7 +106,23 @@ export class DocumentParserService {
     };
 
     onProgress?.(100, 'Tải tài liệu hoàn tất!');
-    return exam;
+    return {
+      exam,
+      warnings: result.warnings || [],
+      rawExtractedText: result.rawExtractedText,
+    };
+  }
+
+  /**
+   * Parse uploaded File (PDF, DOCX, TXT) asynchronously
+   */
+  async parseFile(
+    file: File,
+    subjectHint?: string,
+    onProgress?: (percent: number, status: string) => void
+  ): Promise<Exam> {
+    const report = await this.parseFileWithReport(file, subjectHint, onProgress);
+    return report.exam;
   }
 }
 

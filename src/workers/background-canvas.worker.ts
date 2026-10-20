@@ -75,29 +75,29 @@ class BackgroundCanvasWorker {
   public setTheme(theme: string): void {
     switch (theme) {
       case 'academic':
-        this.particleColor = 'rgba(74, 155, 201, 0.45)';
-        this.lineColor = 'rgba(74, 155, 201, 0.15)';
+        this.particleColor = 'rgba(74, 155, 201, 0.65)';
+        this.lineColor = 'rgba(74, 155, 201, 0.28)';
         break;
       case 'playful':
-        this.particleColor = 'rgba(255, 154, 175, 0.45)';
-        this.lineColor = 'rgba(255, 154, 175, 0.15)';
+        this.particleColor = 'rgba(255, 154, 175, 0.65)';
+        this.lineColor = 'rgba(255, 154, 175, 0.28)';
         break;
       case 'emerald':
-        this.particleColor = 'rgba(16, 185, 129, 0.45)';
-        this.lineColor = 'rgba(16, 185, 129, 0.15)';
+        this.particleColor = 'rgba(16, 185, 129, 0.65)';
+        this.lineColor = 'rgba(16, 185, 129, 0.28)';
         break;
       case 'sepia':
-        this.particleColor = 'rgba(245, 158, 11, 0.45)';
-        this.lineColor = 'rgba(245, 158, 11, 0.15)';
+        this.particleColor = 'rgba(245, 158, 11, 0.65)';
+        this.lineColor = 'rgba(245, 158, 11, 0.28)';
         break;
       case 'minimalist':
-        this.particleColor = 'rgba(189, 147, 249, 0.45)';
-        this.lineColor = 'rgba(189, 147, 249, 0.15)';
+        this.particleColor = 'rgba(189, 147, 249, 0.65)';
+        this.lineColor = 'rgba(189, 147, 249, 0.28)';
         break;
       case 'cyberpunk':
       default:
-        this.particleColor = 'rgba(0, 240, 255, 0.45)';
-        this.lineColor = 'rgba(0, 240, 255, 0.15)';
+        this.particleColor = 'rgba(0, 240, 255, 0.65)';
+        this.lineColor = 'rgba(0, 240, 255, 0.28)';
         break;
     }
   }

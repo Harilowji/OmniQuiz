@@ -10,8 +10,10 @@ const SupabaseClient = (() => {
     let client = null;
 
     function getStoredConfig() {
-        const url = localStorage.getItem(STORAGE_KEY_URL) || '';
-        const key = localStorage.getItem(STORAGE_KEY_ANON) || '';
+        const envUrl = (typeof window !== 'undefined' && window.VITE_SUPABASE_URL) || 'https://xykbfxocdquvcvjcfbqt.supabase.co';
+        const envKey = (typeof window !== 'undefined' && window.VITE_SUPABASE_ANON_KEY) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5a2JmeG9jZHF1dmN2amNmYnF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjYwNDgzNDIsImV4cCI6MjA0MTYyNDM0Mn0.N5ZkFvFz4zB8m08hI286-9L5q8WqB3F1-m6b-0F7y5Y';
+        const url = localStorage.getItem(STORAGE_KEY_URL) || envUrl;
+        const key = localStorage.getItem(STORAGE_KEY_ANON) || envKey;
         return { url, key };
     }
 
@@ -162,6 +164,18 @@ const SupabaseClient = (() => {
         return data.user;
     }
 
+    async function signInWithGoogle() {
+        if (!isConfigured()) throw new Error('Supabase chưa được cấu hình URL và Anon Key');
+        const { error } = await client.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: window.location.origin
+            }
+        });
+        if (error) throw error;
+        return true;
+    }
+
     async function signOut() {
         if (!isConfigured()) return;
         await client.auth.signOut();
@@ -177,6 +191,7 @@ const SupabaseClient = (() => {
         getCurrentUser,
         signInWithEmail,
         signUpWithEmail,
+        signInWithGoogle,
         signOut
     };
 })();

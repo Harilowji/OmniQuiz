@@ -12,6 +12,7 @@ import { examStateMachine } from '../features/exam-engine/exam-state-machine';
 import { questionNavigator } from '../features/exam-engine/question-navigator';
 import { proctoringService } from '../features/proctoring/proctoring-service';
 import { documentParserService } from '../features/parser/document-parser';
+import { smartReviewEditor } from '../features/parser/smart-review-editor';
 import { lobbyView } from '../features/lobby/lobby-view';
 import { examView } from '../features/study-modes/exam/exam-view';
 import { practiceView } from '../features/study-modes/practice/practice-view';
@@ -22,6 +23,8 @@ import { themeManager } from '../features/theme/theme-manager';
 import { shuffleExam } from '../features/exam-engine/exam-shuffle';
 import { errorTracker } from '../shared/telemetry/error-tracker';
 import { downloadScoreCard } from '../features/analytics/score-card-generator';
+import { animeMascot } from '../features/mascot/anime-mascot';
+import { guildCardManager } from '../features/gamification/guild-card';
 
 export class OmniQuizApp {
   private currentExam: Exam | null = null;
@@ -36,6 +39,7 @@ export class OmniQuizApp {
     // 0. Initialize Error Telemetry & Theme Appearance System
     errorTracker.init();
     themeManager.init();
+    animeMascot.init();
     this.setupNetworkMonitoring();
 
     // 1. Preload Sample Banks into Dexie if empty
@@ -117,20 +121,23 @@ export class OmniQuizApp {
       if (loadingNum) loadingNum.textContent = '0%';
       if (loadingStep) loadingStep.textContent = 'Đang đọc và phân tích tệp tin...';
 
-      const parsedExam = await documentParserService.parseFile(file, undefined, (pct, status) => {
+      const report = await documentParserService.parseFileWithReport(file, undefined, (pct, status) => {
         if (loadingStep) loadingStep.textContent = status;
         if (loadingBar) loadingBar.style.width = `${pct}%`;
         if (loadingNum) loadingNum.textContent = `${pct}%`;
       });
 
-      if (!parsedExam || !parsedExam.questions || parsedExam.questions.length === 0) {
+      if (!report.exam || !report.exam.questions || report.exam.questions.length === 0) {
         throw new Error('Tệp không chứa câu hỏi hợp lệ hoặc định dạng bị lỗi. Vui lòng kiểm tra lại!');
       }
 
       if (loadingModal) loadingModal.style.display = 'none';
 
-      await localDB.saveExam(parsedExam);
-      this.openExamSetupModal(parsedExam);
+      // Open Azota-style Smart Review & Split-Screen Editor
+      smartReviewEditor.open(report, async (verifiedExam) => {
+        await localDB.saveExam(verifiedExam);
+        this.openExamSetupModal(verifiedExam);
+      });
     } catch (err: unknown) {
       if (loadingModal) loadingModal.style.display = 'none';
       if (loadingBar) loadingBar.style.width = '0%';
@@ -537,14 +544,18 @@ export class OmniQuizApp {
    * CBT Proctoring Initialization
    */
   private initProctoring(): void {
+    animeMascot.onExamModeStart();
     proctoringService.startProctoring({
       onTier1Warning: (violation) => {
+        animeMascot.onTabSwitchWarning(1);
         this.showProctoringBanner(violation.detail);
       },
       onTier2Modal: (violation, resumeCallback) => {
+        animeMascot.onTabSwitchWarning(2);
         this.showProctoringModal(violation.detail, resumeCallback);
       },
       onTier3Disqualified: () => {
+        animeMascot.speak('🚫 Giám thị Sensei: Bạn đã vi phạm quy chế 3 lần và bị đình chỉ làm bài!', 8000, 'serious');
         alert('CẢNH BÁO VI PHẠM: Bạn đã vi phạm quy chế thi 3 lần. Bài thi sẽ bị thu và khóa kết quả!');
         examStateMachine.disqualify();
       },
@@ -658,6 +669,9 @@ export class OmniQuizApp {
       timerEl.textContent = formatted;
       timerEl.title = 'Thời gian làm bài còn lại';
       timerEl.classList.toggle('timer-warning', isWarning);
+      if (seconds === 300) {
+        animeMascot.onTimeRunningLow();
+      }
     }
   }
 
@@ -677,6 +691,20 @@ export class OmniQuizApp {
         spread: 80,
         origin: { y: 0.6 },
       });
+    }
+
+    // Award Gamification EXP & Mascot speech
+    const { bonusExp, leveledUp } = guildCardManager.recordExamCompleted(report.scorePercentage);
+    if (report.scorePercentage >= 80) {
+      animeMascot.speak(`👑 Xuất sắc Senpai ơi! Đạt ${report.scorePercentage}% (+${bonusExp} XP)! Sensei cực kỳ tự hào! 🌸`, 7000, 'proud');
+    } else {
+      animeMascot.speak(`💪 Cố gắng lắm Senpai! Nhận ngay +${bonusExp} XP! Lần sau sẽ đột phá hơn nhé! ✨`, 6000, 'happy');
+    }
+
+    if (leveledUp) {
+      setTimeout(() => {
+        animeMascot.speak(`🎉 THĂNG CẤP! Chúc mừng Senpai đạt Level ${guildCardManager.getProfile().level}! 🌟`, 6000, 'proud');
+      }, 7500);
     }
 
     this.showResultsModal(report);

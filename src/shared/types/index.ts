@@ -192,12 +192,20 @@ export interface ParserWorkerPayload {
   subjectHint?: string;
 }
 
+export interface ParserWarning {
+  questionIndex: number;
+  type: 'missing_options' | 'missing_answer' | 'irregular_format';
+  message: string;
+}
+
 export interface ParserWorkerResult {
   success: boolean;
   examTitle: string;
   description?: string;
   durationMinutes?: number;
   questions: Question[];
+  warnings?: ParserWarning[];
+  rawExtractedText?: string;
   diagramBlobs?: Record<string, string>; // questionId -> base64/blob string
   error?: string;
 }

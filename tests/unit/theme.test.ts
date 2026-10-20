@@ -146,7 +146,8 @@ describe('ThemeManager & Gaming Live Wallpaper Engine', () => {
     expect(getThemeConfig('emerald').mediaUrl).toContain('nord.webm');
     expect(getThemeConfig('minimalist').mediaUrl).toContain('dracula.webm');
     expect(getThemeConfig('sepia').mediaUrl).toContain('monokai.webm');
-    expect(getThemeConfig('academic').mediaUrl).toContain('background.jpg');
+    expect(getThemeConfig('academic').mediaUrl).toContain('darkblue.webm');
+    expect(getThemeConfig('academic').mediaType).toBe('video');
   });
 
   it('manages live wallpaper state and default opacity', () => {

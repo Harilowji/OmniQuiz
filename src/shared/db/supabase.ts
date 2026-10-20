@@ -34,12 +34,18 @@ export class SupabaseSyncService {
   }
 
   private initClient(): void {
+    const metaEnv = typeof import.meta !== 'undefined' ? (import.meta as unknown as { env?: Record<string, string> }).env : undefined;
+    const envUrl = metaEnv?.VITE_SUPABASE_URL;
+    const envKey = metaEnv?.VITE_SUPABASE_ANON_KEY;
+
     const url =
+      envUrl ||
       (typeof process !== 'undefined' && process.env?.VITE_SUPABASE_URL) ||
       this.getStorageItem('omniquiz_supabase_url') ||
       DEFAULT_SUPABASE_URL;
 
     const anonKey =
+      envKey ||
       (typeof process !== 'undefined' && process.env?.VITE_SUPABASE_ANON_KEY) ||
       this.getStorageItem('omniquiz_supabase_key') ||
       DEFAULT_SUPABASE_ANON_KEY;
@@ -220,6 +226,120 @@ export class SupabaseSyncService {
     if (this.currentRoomChannel) {
       this.currentRoomChannel.unsubscribe();
       this.currentRoomChannel = null;
+    }
+  }
+
+  // ==========================================================================
+  // SUPABASE AUTH & USER PROFILE MODULE
+  // ==========================================================================
+  async signUp(email: string, password: string, username: string, role: 'student' | 'teacher' = 'student') {
+    if (!this.client) throw new Error('Supabase Client chưa được khởi tạo');
+    return this.client.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          username,
+          full_name: username,
+          role,
+        },
+      },
+    });
+  }
+
+  async signIn(email: string, password: string) {
+    if (!this.client) throw new Error('Supabase Client chưa được khởi tạo');
+    return this.client.auth.signInWithPassword({
+      email,
+      password,
+    });
+  }
+
+  async signInWithGoogle() {
+    if (!this.client) throw new Error('Supabase Client chưa được khởi tạo');
+    return this.client.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+  }
+
+  async resetPassword(email: string) {
+    if (!this.client) throw new Error('Supabase Client chưa được khởi tạo');
+    return this.client.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/#reset-password`,
+    });
+  }
+
+  async signOut() {
+    if (!this.client) return;
+    return this.client.auth.signOut();
+  }
+
+  async getCurrentSession() {
+    if (!this.client) return null;
+    const { data } = await this.client.auth.getSession();
+    return data.session;
+  }
+
+  async getProfile(userId: string) {
+    if (!this.client) return null;
+    const { data, error } = await this.client
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .maybeSingle();
+    if (error) return null;
+    return data;
+  }
+
+  // ==========================================================================
+  // SECURED RPC EXAM GRADING (Anti-Cheat Server-Side Evaluation)
+  // ==========================================================================
+  async submitExamViaRPC(
+    examId: string,
+    answers: Record<string | number, number[]>,
+    timeSpentSeconds: number,
+    tabSwitches: number = 0,
+    candidateName?: string
+  ): Promise<{
+    success: boolean;
+    data?: {
+      submission_id: string;
+      exam_id: string;
+      score: number;
+      score100: number;
+      total_questions: number;
+      correct_count: number;
+      rank_tier: string;
+      exp_earned: number;
+      time_spent_seconds: number;
+      tab_switches: number;
+    };
+    error?: string;
+  }> {
+    if (!this.client) {
+      return { success: false, error: 'Supabase chưa kết nối. Bài nộp được lưu cục bộ trên máy.' };
+    }
+
+    try {
+      const { data, error } = await this.client.rpc('submit_exam', {
+        p_exam_id: examId,
+        p_answers: answers,
+        p_time_spent: timeSpentSeconds,
+        p_tab_switches: tabSwitches,
+        p_candidate_name: candidateName || null,
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      return { success: true, data };
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return { success: false, error: msg };
     }
   }
 }

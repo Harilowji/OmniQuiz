@@ -9,11 +9,14 @@ import { questionNavigator } from '../../exam-engine/question-navigator';
 import { KaTeXRenderer } from '../../../shared/renderers/katex';
 import { CodeRenderer } from '../../../shared/renderers/code';
 import { sanitizeHtml } from '../../../shared/security/sanitizer';
+import { animeMascot } from '../../mascot/anime-mascot';
+import { guildCardManager } from '../../gamification/guild-card';
 
 export class PracticeView {
   private exam: Exam | null = null;
   private container: HTMLElement | null = null;
   private isEliminateMode: boolean = false;
+  private processedQuestions = new Set<number>();
 
   constructor() {}
 
@@ -21,6 +24,7 @@ export class PracticeView {
     this.exam = exam;
     this.container = document.getElementById(containerId);
     this.isEliminateMode = false;
+    this.processedQuestions.clear();
 
     questionNavigator.init(exam.questions.length, {
       onQuestionSelect: (idx) => this.highlightActiveQuestion(idx),
@@ -156,6 +160,7 @@ export class PracticeView {
         }
 
         examStateMachine.selectAnswer(qIdx, optIdx);
+        this.evaluateGamificationOnAnswer(qIdx);
         this.render();
       });
     });
@@ -169,6 +174,36 @@ export class PracticeView {
         this.render();
       });
     });
+  }
+
+  private evaluateGamificationOnAnswer(qIdx: number): void {
+    if (this.processedQuestions.has(qIdx) || !this.exam) return;
+
+    const q = this.exam.questions[qIdx];
+    const attempt = examStateMachine.getAttempt();
+    const selected = attempt?.answers[qIdx] || [];
+    if (!q || selected.length === 0) return;
+
+    this.processedQuestions.add(qIdx);
+    const isCorrect =
+      q.correctAnswer.length > 0 &&
+      q.correctAnswer.every((a) => selected.includes(a)) &&
+      selected.length === q.correctAnswer.length;
+
+    if (isCorrect) {
+      animeMascot.onCorrectAnswer();
+      const { leveledUp } = guildCardManager.recordAnswer(true);
+      if (leveledUp) {
+        animeMascot.speak(
+          `🎉 Chúc mừng Senpai vừa thăng cấp lên Level ${guildCardManager.getProfile().level}! Quá xuất sắc! 👑`,
+          6000,
+          'proud'
+        );
+      }
+    } else {
+      animeMascot.onWrongAnswer();
+      guildCardManager.recordAnswer(false);
+    }
   }
 }
 

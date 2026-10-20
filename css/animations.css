@@ -24,6 +24,6 @@
     height: 100%;
     max-width: 100%;
     pointer-events: none !important;
-    z-index: -1;
+    z-index: 9999;
     display: none;
 }

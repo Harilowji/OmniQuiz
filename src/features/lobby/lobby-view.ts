@@ -4,6 +4,8 @@
  * Sample Modal Gallery, and 6-digit discrete OTP PIN Online Exam entry point.
  */
 
+import { guildCardManager } from '../gamification/guild-card';
+
 export interface LobbyHandlers {
   onFileSelected: (file: File) => Promise<void> | void;
   onSampleSelected: (bankKey: string) => Promise<void> | void;
@@ -24,6 +26,7 @@ export class LobbyView {
     this.bindCuratedBanks();
     this.bindSampleGalleryModal();
     this.bindPinJoin();
+    this.bindGuildCard();
   }
 
   public show(): void {
@@ -31,6 +34,7 @@ export class LobbyView {
     if (uploadSection) {
       uploadSection.style.display = 'block';
     }
+    this.bindGuildCard();
   }
 
   public hide(): void {
@@ -351,6 +355,24 @@ export class LobbyView {
     inputName?.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         btnJoin?.click();
+      }
+    });
+  }
+
+  /**
+   * Zone 4: Student Guild Card & Dojo/Arena Quick Select
+   */
+  private bindGuildCard(): void {
+    const container = document.getElementById('guild-card-container');
+    if (!container) return;
+
+    guildCardManager.renderTo(container, (mode) => {
+      if (mode === 'practice') {
+        const sampleBtn = document.getElementById('btn-open-gallery-modal');
+        if (sampleBtn) sampleBtn.click();
+      } else {
+        const firstDigit = document.getElementById('pin-digit-1');
+        if (firstDigit) (firstDigit as HTMLInputElement).focus();
       }
     });
   }

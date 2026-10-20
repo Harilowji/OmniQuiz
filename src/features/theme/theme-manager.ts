@@ -2,7 +2,7 @@
  * src/features/theme/theme-manager.ts
  * Enterprise Theme Management & Gaming Live Wallpaper Engine (Sameko Studio Port)
  * Supports 6 Material 3 Expressive & Eye-Comfort Palettes with 60FPS Video Backgrounds:
- * - Academic (Kawaii Light / Ocean Saba) -> background.jpg
+ * - Academic (Kawaii Light / Ocean Saba) -> darkblue.webm
  * - Playful (Sakura Pastel Pink) -> pink.webm
  * - Cyberpunk (Kawaii Dark / Deep Ocean) -> darkblue.webm
  * - Emerald (Nord Arctic Frost) -> nord.webm
@@ -31,8 +31,8 @@ export const THEMES_LIST: ThemeConfig[] = [
     icon: '🌊',
     dotColor: '#4a9bc9',
     metaThemeColor: '#e8f4fc',
-    mediaType: 'image',
-    mediaUrl: 'assets/backgrounds/background.jpg',
+    mediaType: 'video',
+    mediaUrl: 'assets/backgrounds/darkblue.webm',
   },
   {
     id: 'playful',
@@ -93,8 +93,8 @@ export const DEFAULT_THEME_CONFIG: ThemeConfig = {
   icon: '🌊',
   dotColor: '#4a9bc9',
   metaThemeColor: '#e8f4fc',
-  mediaType: 'image',
-  mediaUrl: 'assets/backgrounds/background.jpg',
+  mediaType: 'video',
+  mediaUrl: 'assets/backgrounds/darkblue.webm',
 };
 
 export function getThemeConfig(id: ThemeId): ThemeConfig {
@@ -312,6 +312,10 @@ class ThemeManager {
         if (playPromise && typeof playPromise.catch === 'function') {
           playPromise.catch((err) => {
             console.debug('[ThemeManager] Video autoplay deferred/blocked by browser policy:', err);
+            if (bgStill && bgVideo.paused) {
+              bgStill.style.backgroundImage = "url('assets/backgrounds/background.jpg')";
+              bgStill.style.display = 'block';
+            }
           });
         }
       } catch {}

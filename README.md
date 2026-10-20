@@ -4,7 +4,7 @@
 
   <br /><br />
 
-  <img src="assets/logo-brand.svg" alt="OmniQuiz PRO Logo" width="480" />
+  <img src="assets/omniquiz-animated-title.svg" alt="OmniQuiz PRO Animated Logo" width="600" />
 
   <br /><br />
 
@@ -17,7 +17,7 @@
 
   [![Vercel Live Demo](https://img.shields.io/badge/Demo-Vercel%20Live-000000?style=for-the-badge&logo=vercel&logoColor=white&labelColor=0a0f1d)](https://omni-quiz-harilowji.vercel.app/)
   [![TypeScript Strict](https://img.shields.io/badge/TypeScript-100%25%20Strict-3178c6?style=for-the-badge&logo=typescript&logoColor=white&labelColor=0a0f1d)](tsconfig.json)
-  [![Tests Passing](https://img.shields.io/badge/Tests-89%2F89%20Passed%20(100%25)-10b981?style=for-the-badge&logo=vitest&logoColor=white&labelColor=0a0f1d)](tests/)
+  [![Tests Passing](https://img.shields.io/badge/Tests-100%2F100%20Passed%20(100%25)-10b981?style=for-the-badge&logo=vitest&logoColor=white&labelColor=0a0f1d)](tests/)
   [![Engine 120 FPS](https://img.shields.io/badge/Engine-120%20FPS%20Offscreen-00f0ff?style=for-the-badge&logo=webgl&logoColor=black&labelColor=0a0f1d)](src/workers/)
   [![PWA Offline](https://img.shields.io/badge/PWA-100%25%20Offline%20Ready-ff2a85?style=for-the-badge&logo=pwa&logoColor=white&labelColor=0a0f1d)](vite.config.ts)
   [![Supabase Realtime](https://img.shields.io/badge/Realtime-Supabase%20Presence-3ecf8e?style=for-the-badge&logo=supabase&logoColor=white&labelColor=0a0f1d)](src/features/realtime/)
@@ -118,6 +118,40 @@ Dưới đây là hình ảnh thực tế từ nền tảng **OmniQuiz PRO (CBT 
 <div align="center">
   <img src="assets/dividers/divider.svg" alt="Divider" width="100%" />
 </div>
+
+## 🌸 Azota Anime Edition — Hệ Sinh Thái Trắc Nghiệm Thông Minh & Gamification 2026
+
+OmniQuiz PRO 2.5 tích hợp gói nâng cấp chiến lược **"Azota Phong Cách Anime"** giải quyết triệt để các bài toán hóc búa của đề thi thực tế Việt Nam:
+
+```mermaid
+flowchart LR
+    A["📄 Tệp DOCX / PDF<br/>(Gạch chân / Đậm / Bảng ĐA)"] --> B["⚡ Worker Parser 3.1<br/>(Y-Coord Sorting & Auto Option Split)"]
+    B --> C["📋 Smart Review Split Editor<br/>(40% Bản Gốc / 60% Bento Cards)"]
+    C --> D["🛡️ Supabase Vault RLS<br/>(question_keys ẩn danh / submit_exam RPC)"]
+    D --> E["🌸 Anime Sensei & Guild Card<br/>(Combo Cheers / Rank S-D / Leveling)"]
+```
+
+### 1. ⚡ Bộ Phân Tích Đề Thông Minh Parser 3.1 (Multi-Format Document Engine)
+* **Khắc phục triệt để lỗi PDF dính chữ, mất ngắt dòng:** Phân cụm các đối tượng chữ từ `pdfjs-dist` theo tọa độ trục Y ($\Delta Y \le 4\text{px}$) và sắp xếp theo trục X, giữ nguyên cấu trúc đoạn văn, thụt dòng và bảng biểu.
+* **Bảo toàn định dạng Word `.docx` & Tự động nhận diện đáp án đúng:** Chuyển đổi qua HTML với Mammoth `styleMap`, tự động trích xuất các đáp án được **gạch chân (`<u>`)**, **in đậm (`<strong>`)** hoặc đánh dấu sao (`*A.`), gắn cờ `[CORRECT_OPT]` an toàn.
+* **Chuẩn hóa phương án Inline:** Tự động phát hiện và bẻ dòng các phương án nằm chung một hàng (`A. ... B. ... C. ... D. ...`) thành từng dòng độc lập.
+* **Tách bảng đáp án cuối file chuẩn xác:** Thuật toán phát hiện thông minh tách biệt phần thân đề thi và bảng đáp án (`1.A 2.B 3.C...`), không cắt nhầm văn bản khi gặp cụm từ *"Chọn đáp án đúng"*.
+
+### 2. 📋 Trình Soát Đề Chia Đôi Màn Hình (Smart Review Split-Screen Editor)
+* **Giao diện 2 cột chuẩn công thái học:**
+  * **Cột trái (40%):** Hiển thị nguyên bản văn bản gốc kèm thanh lọc nhanh (*Tất cả*, *Thiếu đáp án*, *Lỗi định dạng*).
+  * **Cột phải (60%):** Thẻ câu hỏi Bento trực quan, hỗ trợ bấm 1 chạm vào huy hiệu tròn A/B/C/D để đảo đáp án đúng tức thì, gõ sửa trực tiếp có hiển thị công thức toán học KaTeX.
+* **Thanh điều hướng thông minh:** Tự động cảnh báo số câu chưa có đáp án và cung cấp nút `🔍 Nhảy tới câu chưa có đáp án` (cuộn mượt + hiệu ứng sáng viền).
+
+### 3. 🛡️ Kiến Trúc Bảo Mật Đám Mây Supabase RLS & Kho Báu `question_keys`
+* **Triệt tiêu nguy cơ lộ đề qua F12:** Đáp án đúng được lưu trữ độc lập tại bảng `question_keys`, chính sách RLS chặn 100% quyền `SELECT` từ tài khoản thí sinh.
+* **Chấm điểm an toàn tại Server qua RPC:** Hàm cơ sở dữ liệu `submit_exam(...)` thực thi với quyền `SECURITY DEFINER`, tự động đối chiếu đáp án, tính điểm, ghi nhận số vi phạm và cộng điểm kinh nghiệm (EXP).
+
+### 4. 🌸 Trợ Lý Đồng Hành Anime Sensei & Thẻ Hội Viên Thợ Săn Tri Thức (Student Guild Card)
+* **Anime Sensei Interactive Mascot:** Widget linh vật góc màn hình tương tác cảm xúc (*happy, excited, thinking, serious, proud*), tung bóng thoại cổ vũ chuỗi Combo x3, x5, x10 và nhắc nhở nghiêm khắc khi rời tab thi.
+* **Thẻ Sinh Viên Anime (Student Guild Card):** Phân hạng cấp bậc thợ săn (*Rank S / A / B / C / D*), thanh tiến độ kinh nghiệm EXP, chuỗi ngày học Streak ngọn lửa và nút chuyển đổi nhanh giữa **Dojo Tu Luyện (Practice)** và **Đấu Trường (Arena CBT)**.
+
+---
 
 ## 🏛️ Kiến Trúc Hệ Thống (Enterprise System Architecture)
 
@@ -405,27 +439,33 @@ quiz_app/
 │       ├── quiz-midnight-code.png   # Màn hình Midnight theme & Code IDE
 │       └── quiz-result-modal.png    # Màn hình kết quả & Viral Score Card
 ├── src/
-│   ├── entities/                    # Thực thể dữ liệu (Exam, Question, Session)
+│   ├── app/                         # Điều phối chính AppController (FSA Bootstrapper)
 │   ├── features/
 │   │   ├── analytics/               # Radar Chart năng lực & Thống kê Pacing
+│   │   ├── exam-engine/             # FSM máy trạng thái đề thi & Trộn câu hỏi
+│   │   ├── gamification/            # Thẻ Sinh Viên Student Guild Card & EXP Level
+│   │   ├── lobby/                   # Sảnh Bento Grid & Đăng nhập phòng OTP PIN 6 số
+│   │   ├── mascot/                  # Anime Sensei Companion Widget tương tác
+│   │   ├── multiplayer/             # Phòng thi trực tuyến nhiều người chơi Realtime
+│   │   ├── parser/                  # Smart Review Split Editor & Parser Service
 │   │   ├── proctoring/              # Giám thị số 3 cấp độ & Chống gian lận
-│   │   ├── realtime/                # Supabase Realtime Channels & PIN Rooms
-│   │   ├── score-card/              # Trình tạo Thẻ Khoe Điểm HTML-to-Canvas
 │   │   ├── study-modes/             # Tri-Mode Suite (Exam, Practice, SM-2 Flashcard)
 │   │   └── theme/                   # Theme Manager & Live Wallpaper Engine
 │   ├── shared/
-│   │   ├── fixtures/                # 9 bộ đề thi mẫu chuẩn hóa JSON
-│   │   ├── rate-limit/              # PIN Room Rate Limiter (Brute-force protection)
-│   │   ├── security/                # DOMPurify sanitizer & XSS Defense
-│   │   ├── storage/                 # Dexie.js IndexedDB 2s Auto-save
-│   │   └── timer/                   # Delta Wall-Clock Timer
+│   │   ├── db/                      # Dexie.js IndexedDB & Supabase Client
+│   │   ├── renderers/               # KaTeX Math & Markdown Code Blocks
+│   │   ├── security/                # DOMPurify Sanitizer & Anti-XSS Shield
+│   │   ├── telemetry/               # Error Tracker & Báo cáo chất lượng
+│   │   └── types/                   # Định nghĩa kiểu dữ liệu TypeScript Strict
 │   └── workers/
 │       └── background-canvas.worker.ts # Web Worker 120 FPS OffscreenCanvas
 ├── workers/
-│   └── document-parser.worker.ts    # Web Worker bóc tách DOCX/PDF/TXT
+│   └── document-parser.worker.ts    # Web Worker bóc tách DOCX/PDF/TXT Parser 3.1
+├── supabase/
+│   └── schema.sql                   # Cơ sở dữ liệu PostgreSQL RLS, Vault & submit_exam RPC
 ├── tests/
 │   ├── api.test.js                  # 19 ca kiểm thử Backend RESTful API
-│   ├── unit/                        # 70 Vitest Unit & Integration Tests
+│   ├── unit/                        # 81 Vitest Unit & Integration Tests (100% Pass)
 │   └── security.test.ts             # Kiểm thử an ninh & Sanitizer
 ├── server/                          # Node.js Express Backend & Authentication
 ├── server.js                        # Node.js Production Server entrypoint

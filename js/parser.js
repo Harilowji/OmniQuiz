@@ -478,7 +478,8 @@ const QuestionParser = (() => {
         questionText = firstLine;
 
         function isMarkedOptionLine(str) {
-            return /^(?:<[ub]>|<strong>|<ins>|\*\*|\*|__|_)\s*[\(\[]?[A-H][\)\]\.\:\*\-\/]*\s*(?:<\/[ub]>|<\/strong>|<\/ins>|\*\*|\*|__|_)/i.test(str) ||
+            return str.includes('[CORRECT_OPT]') ||
+                /^(?:<[ub]>|<strong>|<ins>|\*\*|\*|__|_)\s*[\(\[]?[A-H][\)\]\.\:\*\-\/]*\s*(?:<\/[ub]>|<\/strong>|<\/ins>|\*\*|\*|__|_)/i.test(str) ||
                 /^\s*\*+\s*[\(\[]?[A-H][\)\]\.\:\*\-\/]/i.test(str) ||
                 /^\s*[\(\[]?[A-H]\*+[\)\]\.\:\-\/]/i.test(str) ||
                 /[\(\[]\s*(?:đáp\s*án\s*đúng|đúng|correct|đ\/a|da)\s*[\)\]]\s*$/i.test(str) ||
@@ -488,6 +489,7 @@ const QuestionParser = (() => {
 
         function cleanOptionText(text) {
             return text
+                .replace(/\[CORRECT_OPT\]\s*/gi, '')
                 .replace(/<\/?(?:u|b|strong|ins)>/gi, '')
                 .replace(/\s*\((?:đáp\s*án\s*đúng|đúng|correct|đ\/a|da)\)\s*$/gi, '')
                 .replace(/\s*\*+\s*$/, '')
