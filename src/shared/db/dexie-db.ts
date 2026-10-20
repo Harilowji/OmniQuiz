@@ -23,6 +23,14 @@ export interface SystemLogRecord {
   timestamp: number;
 }
 
+export interface PendingSyncItem {
+  id: string;
+  type: 'submission' | 'profile' | 'exam';
+  payload: any;
+  createdAt: number;
+  retries: number;
+}
+
 export class OmniQuizDatabase extends Dexie {
   exams!: Table<Exam, string>;
   attempts!: Table<ExamAttempt, string>;
@@ -30,6 +38,7 @@ export class OmniQuizDatabase extends Dexie {
   activeSession!: Table<ActiveSessionRecord, string>;
   profiles!: Table<UserProfile, string>;
   systemLogs!: Table<SystemLogRecord, string>;
+  pendingSyncQueue!: Table<PendingSyncItem, string>;
 
   constructor() {
     super('OmniQuizPro_DB');
@@ -45,6 +54,40 @@ export class OmniQuizDatabase extends Dexie {
     this.version(2).stores({
       systemLogs: 'id, type, timestamp',
     });
+
+    this.version(3).stores({
+      pendingSyncQueue: 'id, type, createdAt',
+    });
+  }
+
+  /**
+   * Enqueue an operation when offline or network fails
+   */
+  async enqueuePendingSync(type: 'submission' | 'profile' | 'exam', payload: any): Promise<string> {
+    const id = `sync_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const record: PendingSyncItem = {
+      id,
+      type,
+      payload,
+      createdAt: Date.now(),
+      retries: 0,
+    };
+    await this.pendingSyncQueue.put(record);
+    return id;
+  }
+
+  /**
+   * Fetch all pending sync operations in FIFO order
+   */
+  async getPendingSyncQueue(): Promise<PendingSyncItem[]> {
+    return this.pendingSyncQueue.orderBy('createdAt').toArray();
+  }
+
+  /**
+   * Remove item from sync queue once completed
+   */
+  async removePendingSync(id: string): Promise<void> {
+    await this.pendingSyncQueue.delete(id);
   }
 
   /**
@@ -249,3 +292,4 @@ export class OmniQuizDatabase extends Dexie {
 }
 
 export const localDB = new OmniQuizDatabase();
+export const omniQuizDb = localDB;

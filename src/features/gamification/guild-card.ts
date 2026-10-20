@@ -4,6 +4,9 @@
  * and Dojo (Practice) vs Arena (CBT) quick modes for the "Azota Anime Edition".
  */
 
+import { supabaseSync } from '../../shared/db/supabase';
+import { offlineSyncQueue } from '../../shared/db/offline-queue';
+
 export type GuildRankTier = 'S' | 'A' | 'B' | 'C' | 'D';
 
 export interface GuildProfile {
@@ -161,6 +164,79 @@ export class GuildCardManager {
     }
 
     this.profile.lastActiveDate = today;
+  }
+
+  /**
+   * Two-way Cloud Synchronization with Supabase user_profiles
+   * Merges local & cloud metrics (takes highest EXP, Streak, Answer count)
+   * Falls back to offline queue if disconnected.
+   */
+  public async syncWithCloud(): Promise<void> {
+    const client = supabaseSync.getClient();
+    if (!client) return;
+
+    try {
+      const { data: sessionData } = await client.auth.getSession();
+      const user = sessionData?.session?.user;
+      if (!user) return;
+
+      const { data: cloudProfile, error } = await client
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.warn('[GuildCard] Error fetching cloud profile, queuing update:', error);
+        await offlineSyncQueue.enqueue('profile', {
+          id: user.id,
+          exp: this.profile.exp,
+          level: this.profile.level,
+          streakDays: this.profile.streakDays,
+          totalAnswered: this.profile.totalAnswered,
+          totalCorrect: this.profile.totalCorrect,
+          rankTier: this.profile.rankTier,
+        });
+        return;
+      }
+
+      if (cloudProfile) {
+        // Merge strategy: take highest progress values
+        const mergedExp = Math.max(this.profile.exp, Number(cloudProfile.exp) || 0);
+        const mergedStreak = Math.max(this.profile.streakDays, Number(cloudProfile.streak_days) || 1);
+        const mergedAnswered = Math.max(this.profile.totalAnswered, Number(cloudProfile.total_answered) || 0);
+        const mergedCorrect = Math.max(this.profile.totalCorrect, Number(cloudProfile.total_correct) || 0);
+
+        this.profile.exp = mergedExp;
+        this.profile.streakDays = mergedStreak;
+        this.profile.totalAnswered = mergedAnswered;
+        this.profile.totalCorrect = mergedCorrect;
+        if (cloudProfile.username && this.profile.username === 'Senpai') {
+          this.profile.username = cloudProfile.username;
+        }
+
+        this.updateLevelAndRank();
+        this.saveProfile();
+
+        // Write merged progress back to Supabase
+        await client
+          .from('profiles')
+          .update({
+            exp: this.profile.exp,
+            level: this.profile.level,
+            streak_days: this.profile.streakDays,
+            total_answered: this.profile.totalAnswered,
+            total_correct: this.profile.totalCorrect,
+            rank_tier: this.profile.rankTier,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', user.id);
+
+        console.log('[GuildCard] Successfully synced two-way profile with Supabase!');
+      }
+    } catch (err) {
+      console.warn('[GuildCard] Failed two-way sync:', err);
+    }
   }
 
   /**

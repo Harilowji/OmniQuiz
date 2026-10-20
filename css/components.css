@@ -5290,6 +5290,181 @@ body.mobile-drawer-open .floating-palette-fab {
     word-break: break-word;
 }
 
+/* Bi-directional Sync Scroll Anchors */
+.raw-question-anchor {
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.raw-question-anchor:hover {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.raw-question-anchor.anchor-active {
+    background: rgba(99, 102, 241, 0.22) !important;
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.35);
+}
+
+.anchor-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #818cf8;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
+
+/* Live KaTeX Math Preview */
+.live-math-preview-box {
+    display: none;
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px dashed rgba(99, 102, 241, 0.4);
+    font-size: 0.9rem;
+    color: #e0e7ff;
+}
+
+.math-preview-tag {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #a5b4fc;
+    margin-right: 6px;
+}
+
+/* Image Attachment & Ctrl+V */
+.review-image-attachment {
+    position: relative;
+    margin: 10px 0;
+    display: inline-block;
+    max-width: 100%;
+}
+
+.review-attached-img {
+    max-width: 100%;
+    max-height: 220px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.btn-remove-attachment {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: rgba(239, 68, 68, 0.85);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.btn-remove-attachment:hover {
+    background: #ef4444;
+}
+
+.review-card-paste-hint {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-style: italic;
+}
+
+/* Short Answer Section */
+.review-short-answer-section {
+    margin: 12px 0;
+}
+
+.review-short-input {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+/* True/False Sub-items */
+.review-tf-subitems-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.review-tf-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.tf-letter-badge {
+    font-weight: 700;
+    color: #a5b4fc;
+    font-size: 0.9rem;
+    min-width: 24px;
+}
+
+.tf-text-editable {
+    flex: 1;
+}
+
+.tf-toggle-group {
+    display: flex;
+    gap: 4px;
+}
+
+.btn-tf-choice {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: transparent;
+    color: var(--text-color, #cbd5e1);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-tf-choice.active-true {
+    background: #10b981 !important;
+    border-color: #10b981 !important;
+    color: #fff !important;
+}
+
+.btn-tf-choice.active-false {
+    background: #ef4444 !important;
+    border-color: #ef4444 !important;
+    color: #fff !important;
+}
+
+.select-q-type {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    color: #e0e7ff;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-quick-key-import {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+    color: #ffffff !important;
+}
+
 .smart-review-cards-pane {
     flex: 1;
     overflow-y: auto;

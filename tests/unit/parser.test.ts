@@ -4,6 +4,7 @@ import {
   convertDocxHtmlToText,
   normalizeInlineOptions,
   extractEndOfFileAnswerKey,
+  convertOmmlToLatex,
 } from '../../workers/document-parser.worker';
 
 describe('Document Parser Engine 3.0 (Heuristic Tokenizer)', () => {
@@ -311,5 +312,130 @@ D. Phương án 4
 
     const warnMissingAns = result.warnings.filter((w) => w.type === 'missing_answer');
     expect(warnMissingAns.map((w) => w.questionIndex)).toEqual([1, 2]);
+  });
+
+  it('should NOT falsely split geometry/chemistry variables like triangle ABC and angle B in question body', () => {
+    const rawLine = 'Cho tam giác ABC vuông tại A, góc B. Tính độ dài cạnh C.';
+    const normalized = normalizeInlineOptions(rawLine);
+    expect(normalized).toBe(rawLine); // Untouched! No spurious splits!
+  });
+
+  it('should cleanly split inline sequential options (4 on 1 line and 2 on 1 line)', () => {
+    // 4 on 1 line:
+    const line4 = 'A. 10    B. 20    C. 30    D. 40';
+    const split4 = normalizeInlineOptions(line4);
+    const parts4 = split4.split('\n');
+    expect(parts4).toHaveLength(4);
+    expect(parts4[0]).toBe('A. 10');
+    expect(parts4[1]).toBe('B. 20');
+    expect(parts4[2]).toBe('C. 30');
+    expect(parts4[3]).toBe('D. 40');
+
+    // 2 on 1 line:
+    const line2a = 'A. Phương án một\tB. Phương án hai';
+    const split2a = normalizeInlineOptions(line2a);
+    expect(split2a.split('\n')).toEqual(['A. Phương án một', 'B. Phương án hai']);
+
+    const line2b = 'C. Phương án ba\tD. Phương án bốn';
+    const split2b = normalizeInlineOptions(line2b);
+    expect(split2b.split('\n')).toEqual(['C. Phương án ba', 'D. Phương án bốn']);
+  });
+
+  it('should convert Microsoft Equation OMML XML tags to KaTeX LaTeX strings', () => {
+    // Fraction: <m:f><m:num><m:t>1</m:t></m:num><m:den><m:t>2</m:t></m:den></m:f>
+    const fracXml = '<m:f><m:num><m:t>1</m:t></m:num><m:den><m:t>x+1</m:t></m:den></m:f>';
+    expect(convertOmmlToLatex(fracXml)).toBe('\\frac{1}{x+1}');
+
+    // Superscript: x^2
+    const supXml = '<m:sSup><m:e><m:t>x</m:t></m:e><m:sup><m:t>2</m:t></m:sup></m:sSup>';
+    expect(convertOmmlToLatex(supXml)).toBe('{x}^{2}');
+
+    // Subscript: H_2
+    const subXml = '<m:sSub><m:e><m:t>H</m:t></m:e><m:sub><m:t>2</m:t></m:sub></m:sSub>';
+    expect(convertOmmlToLatex(subXml)).toBe('{H}_{2}');
+
+    // Radical: sqrt(x)
+    const radXml = '<m:rad><m:deg></m:deg><m:e><m:t>x</m:t></m:e></m:rad>';
+    expect(convertOmmlToLatex(radXml)).toBe('\\sqrt{x}');
+  });
+
+  it('should support the 3-part exam format: multiple_choice, true_false_group, and short_answer', () => {
+    const rawExamText = `
+[TITLE]: Đề khảo sát chuẩn Bộ GD&ĐT 2026
+
+PHẦN I. Câu trắc nghiệm nhiều phương án lựa chọn (Thí sinh trả lời từ câu 1 đến câu 1)
+Câu 1: Hàm số nào sau đây nghịch biến trên R?
+A. y = x^3
+B. y = -x^3 + 2
+C. y = x^4
+D. y = 2x - 1
+Đáp án: B
+
+PHẦN II. Câu trắc nghiệm đúng sai (Thí sinh trả lời câu 2)
+Câu 2: Cho hàm số f(x) = x^2 - 4x + 3.
+a) f(0) = 3 (Đúng)
+b) Đạo hàm f'(x) = 2x - 4 (Đúng)
+c) Điểm cực tiểu là x = 3 (Sai)
+d) Giá trị nhỏ nhất bằng -1 (Đúng)
+
+PHẦN III. Câu trắc nghiệm trả lời ngắn (Thí sinh trả lời câu 3)
+Câu 3: Tính diện tích hình vuông có cạnh bằng 5 cm.
+Đáp số: 25
+`;
+
+    const result = tokenizeExamDocument(rawExamText, 'gdpt2026.txt', 'Toán học');
+    expect(result.questions).toHaveLength(3);
+
+    // Part I
+    const q1 = result.questions[0]!;
+    expect(q1.type).toBe('single');
+    expect(q1.options).toHaveLength(4);
+    expect(q1.correctAnswer).toEqual([1]); // B
+
+    // Part II
+    const q2 = result.questions[1]!;
+    expect(q2.type).toBe('true_false_group');
+    expect(q2.subItems).toBeDefined();
+    expect(q2.subItems).toHaveLength(4);
+    expect(q2.subItems?.[0]?.isCorrect).toBe(true);  // a: Đúng
+    expect(q2.subItems?.[1]?.isCorrect).toBe(true);  // b: Đúng
+    expect(q2.subItems?.[2]?.isCorrect).toBe(false); // c: Sai
+    expect(q2.subItems?.[3]?.isCorrect).toBe(true);  // d: Đúng
+
+    // Part III
+    const q3 = result.questions[2]!;
+    expect(q3.type).toBe('short_answer');
+    expect(q3.shortAnswerKey).toBe('25');
+  });
+
+  it('should extract end-of-file answer keys and detailed explanations', () => {
+    const docWithExplanations = `
+Câu 1: Nguyên tử khối của Oxi là:
+A. 12
+B. 14
+C. 16
+D. 32
+
+Câu 2: Công thức hóa học của nước là:
+A. H2O
+B. CO2
+C. NaCl
+D. CH4
+
+BẢNG ĐÁP ÁN:
+1. C
+2. A
+
+HƯỚNG DẪN GIẢI CHI TIẾT:
+Câu 1: Oxi có số hiệu nguyên tử 8, nguyên tử khối trung bình xấp xỉ 16 g/mol.
+Câu 2: Phân tử nước gồm 2 nguyên tử Hidro liên kết với 1 nguyên tử Oxi (H2O).
+`;
+
+    const result = tokenizeExamDocument(docWithExplanations, 'chemistry_exp.txt');
+    expect(result.questions).toHaveLength(2);
+    expect(result.questions[0]!.correctAnswer).toEqual([2]); // C
+    expect(result.questions[1]!.correctAnswer).toEqual([0]); // A
+    expect(result.questions[0]!.explanation).toContain('nguyên tử khối trung bình xấp xỉ 16');
+    expect(result.questions[1]!.explanation).toContain('Phân tử nước gồm 2 nguyên tử Hidro');
   });
 });

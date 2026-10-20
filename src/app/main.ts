@@ -25,6 +25,8 @@ import { errorTracker } from '../shared/telemetry/error-tracker';
 import { downloadScoreCard } from '../features/analytics/score-card-generator';
 import { animeMascot } from '../features/mascot/anime-mascot';
 import { guildCardManager } from '../features/gamification/guild-card';
+import { classroomManager } from '../features/classroom/classroom-manager';
+import { offlineSyncQueue } from '../shared/db/offline-queue';
 
 export class OmniQuizApp {
   private currentExam: Exam | null = null;
@@ -40,6 +42,8 @@ export class OmniQuizApp {
     errorTracker.init();
     themeManager.init();
     animeMascot.init();
+    offlineSyncQueue.init();
+    void guildCardManager.syncWithCloud();
     this.setupNetworkMonitoring();
 
     // 1. Preload Sample Banks into Dexie if empty
@@ -714,6 +718,39 @@ export class OmniQuizApp {
     const modal = document.getElementById('results-modal') || document.getElementById('summary-modal');
     if (!modal) return;
 
+    // Anime Hunter RPG Victory Rank Badge & EXP Notification
+    const rankEl = document.getElementById('modal-anime-rank-badge');
+    const pct = report.scorePercentage;
+    let rankBadge = 'D';
+    let rankColor = '#94a3b8';
+    let rankTitle = '🌱 Học Viên Tập Sự (Rank D)';
+    if (pct >= 90) {
+      rankBadge = 'S';
+      rankColor = '#fbbf24';
+      rankTitle = '👑 Huyền Thoại Tri Thức (S-Rank)';
+    } else if (pct >= 80) {
+      rankBadge = 'A';
+      rankColor = '#a855f7';
+      rankTitle = '⚡ Đại Pháp Sư Luyện Đề (A-Rank)';
+    } else if (pct >= 65) {
+      rankBadge = 'B';
+      rankColor = '#00f0ff';
+      rankTitle = '⚔️ Hiệp Sĩ Khảo Thí (B-Rank)';
+    } else if (pct >= 50) {
+      rankBadge = 'C';
+      rankColor = '#22c55e';
+      rankTitle = '🛡️ Vệ Binh Ôn Thi (C-Rank)';
+    }
+
+    if (rankEl) {
+      rankEl.innerHTML = `
+        <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(15, 23, 42, 0.7); border: 1.5px solid ${rankColor}; padding: 6px 16px; border-radius: 999px; margin-bottom: 8px; box-shadow: 0 0 15px ${rankColor}44;">
+          <span style="background: ${rankColor}; color: #090d16; font-weight: 900; font-size: 0.95rem; width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">${rankBadge}</span>
+          <strong style="color: ${rankColor}; font-size: 0.92rem;">${rankTitle}</strong>
+        </div>
+      `;
+    }
+
     const scoreCircle = document.getElementById('modal-score-num') || document.getElementById('modal-score');
     if (scoreCircle) scoreCircle.textContent = `${report.scorePercentage}`;
 
@@ -996,7 +1033,7 @@ export class OmniQuizApp {
         onExamStarted: (ex) => this.loadExam(ex),
         onLeaderboardUpdate: () => {},
       });
-      alert(`Đã tạo phòng thi trực tuyến! Mã PIN: ${pin}`);
+      this.showRoomShareModal(pin, this.currentExam.title);
     };
     document.getElementById('btn-create-room')?.addEventListener('click', createRoomHandler);
     document.getElementById('btn-tools-host-room')?.addEventListener('click', createRoomHandler);
@@ -1128,6 +1165,84 @@ export class OmniQuizApp {
       },
       { once: true }
     );
+  }
+
+  /**
+   * Display Room PIN and Native Canvas QR Code Share Modal
+   */
+  public showRoomShareModal(pin: string, examTitle: string): void {
+    let modal = document.getElementById('room-share-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'room-share-modal';
+      modal.style.cssText = `
+        position: fixed; inset: 0; z-index: 9996; background: rgba(9, 13, 22, 0.85);
+        backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 16px;
+      `;
+      document.body.appendChild(modal);
+    }
+
+    const shareUrl = `${window.location.origin}${window.location.pathname}?pin=${pin}`;
+
+    modal.innerHTML = `
+      <div style="
+        background: #0f172a; border: 1px solid rgba(0, 240, 255, 0.4); border-radius: 20px;
+        width: 95%; max-width: 480px; text-align: center; padding: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+      ">
+        <h3 style="margin: 0 0 6px; color: #f8fafc; font-size: 1.25rem;">🎉 Đã Tạo Phòng Thi Trực Tuyến</h3>
+        <p style="margin: 0 0 16px; color: #94a3b8; font-size: 0.88rem;">${examTitle}</p>
+
+        <!-- PIN Display -->
+        <div style="background: rgba(0, 240, 255, 0.1); border: 2px dashed #00f0ff; border-radius: 12px; padding: 12px; margin-bottom: 16px;">
+          <span style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; display: block;">Mã PIN vào phòng</span>
+          <strong style="font-size: 2.4rem; color: #00f0ff; letter-spacing: 6px; font-family: monospace;">${pin}</strong>
+        </div>
+
+        <!-- Canvas QR Code -->
+        <div style="display: flex; justify-content: center; margin-bottom: 16px;">
+          <canvas id="share-modal-qr-canvas" width="200" height="200" style="border-radius: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.4);"></canvas>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <button type="button" id="btn-copy-share-link" style="
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #f8fafc;
+            padding: 10px; border-radius: 10px; cursor: pointer; font-size: 0.88rem; font-weight: 600;
+          ">📋 Sao chép đường link phòng thi</button>
+
+          <button type="button" id="btn-open-live-proctor" style="
+            background: linear-gradient(135deg, #00f0ff, #0284c7); border: none; color: #090d16;
+            padding: 11px; border-radius: 10px; cursor: pointer; font-size: 0.92rem; font-weight: 700;
+          ">📡 Mở Bảng Giám Sát Phòng Thi (Live)</button>
+
+          <button type="button" id="btn-close-room-share" style="
+            background: transparent; border: none; color: #94a3b8; padding: 8px; cursor: pointer; font-size: 0.85rem;
+          ">✕ Đóng cửa sổ</button>
+        </div>
+      </div>
+    `;
+
+    modal.style.display = 'flex';
+
+    // Render Canvas QR
+    const qrCanvas = modal.querySelector('#share-modal-qr-canvas') as HTMLCanvasElement | null;
+    if (qrCanvas) {
+      classroomManager.renderQrToCanvas(qrCanvas, shareUrl, 200);
+    }
+
+    modal.querySelector('#btn-copy-share-link')?.addEventListener('click', () => {
+      void navigator.clipboard.writeText(shareUrl);
+      themeManager.showToast('✅ Đã sao chép link phòng thi vào bộ nhớ tạm!');
+    });
+
+    modal.querySelector('#btn-open-live-proctor')?.addEventListener('click', () => {
+      modal!.style.display = 'none';
+      classroomManager.showTeacherDashboardModal(pin);
+    });
+
+    modal.querySelector('#btn-close-room-share')?.addEventListener('click', () => {
+      modal!.style.display = 'none';
+    });
   }
 
   private updateExamHeaderInfo(exam: Exam): void {

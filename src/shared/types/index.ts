@@ -3,7 +3,20 @@
  * Strictly Typed (Zero `any`, Zero Placeholder)
  */
 
-export type QuestionType = 'single' | 'multiple' | 'true_false' | 'fill_in';
+export type QuestionType =
+  | 'single'
+  | 'multiple'
+  | 'true_false'
+  | 'fill_in'
+  | 'multiple_choice'
+  | 'true_false_group'
+  | 'short_answer';
+
+export interface TrueFalseSubItem {
+  id: 'a' | 'b' | 'c' | 'd';
+  text: string;
+  isCorrect: boolean;
+}
 
 export interface Question {
   id: string;
@@ -12,11 +25,14 @@ export interface Question {
   type: QuestionType;
   options: string[];
   correctAnswer: number[];
+  shortAnswerKey?: string;
+  subItems?: TrueFalseSubItem[];
   explanation?: string;
   passage?: string; // Reading comprehension passage for Split View
   subject?: string;
   difficulty?: 'easy' | 'medium' | 'hard';
   imageUrl?: string; // Auto-cropped diagram or vector from document
+  mediaUrl?: string; // Image pasted via Ctrl+V or attached
   codeSnippet?: {
     code: string;
     language: string;

@@ -299,10 +299,11 @@ export class SupabaseSyncService {
   // ==========================================================================
   async submitExamViaRPC(
     examId: string,
-    answers: Record<string | number, number[]>,
+    answers: Record<string | number, unknown>,
     timeSpentSeconds: number,
     tabSwitches: number = 0,
-    candidateName?: string
+    candidateName?: string,
+    candidateSbd?: string
   ): Promise<{
     success: boolean;
     data?: {
@@ -312,10 +313,15 @@ export class SupabaseSyncService {
       score100: number;
       total_questions: number;
       correct_count: number;
+      accuracy: number;
       rank_tier: string;
       exp_earned: number;
+      new_level?: number;
+      new_rank?: string;
+      streak_days?: number;
       time_spent_seconds: number;
       tab_switches: number;
+      review_details?: any[];
     };
     error?: string;
   }> {
@@ -330,6 +336,7 @@ export class SupabaseSyncService {
         p_time_spent: timeSpentSeconds,
         p_tab_switches: tabSwitches,
         p_candidate_name: candidateName || null,
+        p_candidate_sbd: candidateSbd || null,
       });
 
       if (error) {
@@ -340,6 +347,29 @@ export class SupabaseSyncService {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       return { success: false, error: msg };
+    }
+  }
+
+  /**
+   * Upsert question secret keys (Teacher / Creator only)
+   */
+  async saveQuestionSecretKeys(
+    examId: string,
+    keys: Array<{ questionId: string; correctAnswer: unknown; explanation?: string }>
+  ): Promise<boolean> {
+    if (!this.client) return false;
+    try {
+      const rows = keys.map((k) => ({
+        question_id: k.questionId,
+        exam_id: examId,
+        correct_answer: k.correctAnswer,
+        explanation: k.explanation || null,
+      }));
+      const { error } = await this.client.from('question_secret_keys').upsert(rows);
+      return !error;
+    } catch (err) {
+      console.warn('[Supabase saveQuestionSecretKeys error]:', err);
+      return false;
     }
   }
 }
