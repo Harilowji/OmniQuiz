@@ -56,7 +56,32 @@ export interface Exam extends ExamMeta {
   questions: Question[];
 }
 
-export type StudyMode = 'exam' | 'practice' | 'flashcard';
+export type StudyMode = 'exam' | 'practice' | 'flashcard' | 'boss_raid';
+
+export type BossId = 'calculus_demon' | 'quantum_entity' | 'omni_president';
+
+export interface BossConfig {
+  id: BossId;
+  name: string;
+  tier: 'A' | 'S' | 'SS';
+  maxHp: number;
+  expMultiplier: number;
+  avatar: string;
+  description: string;
+  titleAwarded: string;
+}
+
+export interface BossBattleState {
+  boss: BossConfig;
+  bossCurrentHp: number;
+  studentHearts: number;
+  studentMaxHearts: number;
+  combo: number;
+  maxCombo: number;
+  damageDealt: number;
+  isDefeated: boolean;
+  totalQuestions: number;
+}
 
 export type QuestionCardStatus = 'unanswered' | 'answered' | 'flagged' | 'current' | 'eliminated';
 

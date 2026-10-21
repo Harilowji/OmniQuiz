@@ -315,6 +315,16 @@ export class ExamView {
         const qIdx = parseInt(btn.getAttribute('data-q') || '0', 10);
         examStateMachine.toggleFlag(qIdx);
         this.updateQuestionDom(qIdx);
+
+        // 0ms instant counter sync for #flt-flagged and Question Palette
+        const attempt = examStateMachine.getAttempt();
+        const flaggedCount = attempt?.flaggedQuestions.length || 0;
+        const fltFlagged = document.getElementById('flt-flagged');
+        if (fltFlagged) {
+          fltFlagged.textContent = `Cần xem 🚩 (${flaggedCount})`;
+        }
+        const app = (window as unknown as { OmniQuizAppInstance?: { syncQuestionPaletteAndCounters: () => void } }).OmniQuizAppInstance;
+        app?.syncQuestionPaletteAndCounters();
       });
     });
   }

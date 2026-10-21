@@ -35,6 +35,14 @@ export class PracticeView {
       onFlagToggle: (qIdx) => {
         examStateMachine.toggleFlag(qIdx);
         this.render();
+        const attempt = examStateMachine.getAttempt();
+        const flaggedCount = attempt?.flaggedQuestions.length || 0;
+        const fltFlagged = document.getElementById('flt-flagged');
+        if (fltFlagged) {
+          fltFlagged.textContent = `Cần xem 🚩 (${flaggedCount})`;
+        }
+        const app = (window as unknown as { OmniQuizAppInstance?: { syncQuestionPaletteAndCounters: () => void } }).OmniQuizAppInstance;
+        app?.syncQuestionPaletteAndCounters();
       },
       onEliminateToggle: (qIdx, optIdx) => {
         examStateMachine.toggleEliminateOption(qIdx, optIdx);

@@ -5,6 +5,10 @@
  */
 
 import { guildCardManager } from '../gamification/guild-card';
+import { SAMPLE_EXAMS_MAP } from '../../shared/sample-banks';
+import { shareExamLinkService } from '../classroom/share-exam-link';
+import { visionExamImporter } from '../editor/vision-exam-importer';
+import { soundEngine } from '../../shared/audio/sound-engine';
 
 export interface LobbyHandlers {
   onFileSelected: (file: File) => Promise<void> | void;
@@ -115,7 +119,15 @@ export class LobbyView {
       if (dt && dt.files && dt.files.length > 0) {
         const file = dt.files[0];
         if (file) {
-          this.handlers?.onFileSelected(file);
+          if (file.type.startsWith('image/')) {
+            soundEngine.playClick();
+            visionExamImporter.openVisionModal((questions) => {
+              const app = (window as unknown as { OmniQuizAppInstance?: { loadQuestionsToStudio: (q: typeof questions) => void } }).OmniQuizAppInstance;
+              app?.loadQuestionsToStudio(questions);
+            });
+          } else {
+            this.handlers?.onFileSelected(file);
+          }
         }
       }
     });
@@ -250,6 +262,25 @@ export class LobbyView {
           });
 
           badgesRow.appendChild(pinBadge);
+
+          // Phase 6.0: Share Link & QR Button on Sample Exam Cards
+          const shareBtn = document.createElement('span');
+          shareBtn.className = 'gallery-badge-share';
+          shareBtn.style.cssText =
+            'background: rgba(99, 102, 241, 0.15); border: 1px solid #6366f1; color: #818cf8; padding: 2px 8px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: 600; margin-left: 6px; display: inline-flex; align-items: center; gap: 4px;';
+          shareBtn.title = 'Chia sẻ đề thi này bằng Link hoặc mã QR';
+          shareBtn.textContent = '🔗 Chia sẻ';
+
+          shareBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const exam = SAMPLE_EXAMS_MAP[bankKey];
+            if (exam) {
+              soundEngine.playClick();
+              await shareExamLinkService.openShareModal(exam);
+            }
+          });
+
+          badgesRow.appendChild(shareBtn);
         }
       }
     });
@@ -428,8 +459,14 @@ export class LobbyView {
         const sampleBtn = document.getElementById('btn-open-gallery-modal');
         if (sampleBtn) sampleBtn.click();
       } else {
-        const firstDigit = document.getElementById('pin-digit-1');
-        if (firstDigit) (firstDigit as HTMLInputElement).focus();
+        // Open Boss Raid Arena Modal
+        const app = (window as unknown as { OmniQuizAppInstance?: { openBossRaidFlow: () => void } }).OmniQuizAppInstance;
+        if (app?.openBossRaidFlow) {
+          app.openBossRaidFlow();
+        } else {
+          const firstDigit = document.getElementById('pin-digit-1');
+          if (firstDigit) (firstDigit as HTMLInputElement).focus();
+        }
       }
     });
   }

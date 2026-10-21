@@ -7,7 +7,7 @@
 import confetti from 'canvas-confetti';
 import { localDB } from '../shared/db/dexie-db';
 import { getPreloadedSampleExams, findSampleExamByPin } from '../shared/sample-banks';
-import type { Exam, StudyMode, ExamAttempt, ExamAnalyticsReport } from '../shared/types';
+import type { Exam, Question, StudyMode, ExamAttempt, ExamAnalyticsReport } from '../shared/types';
 import { examStateMachine } from '../features/exam-engine/exam-state-machine';
 import { questionNavigator } from '../features/exam-engine/question-navigator';
 import { proctoringService } from '../features/proctoring/proctoring-service';
@@ -29,6 +29,13 @@ import { animeMascot } from '../features/mascot/anime-mascot';
 import { guildCardManager } from '../features/gamification/guild-card';
 import { classroomManager } from '../features/classroom/classroom-manager';
 import { offlineSyncQueue } from '../shared/db/offline-queue';
+import { bossRaidEngine } from '../features/arena/boss-raid-engine';
+import { visionExamImporter } from '../features/editor/vision-exam-importer';
+import { shareExamLinkService } from '../features/classroom/share-exam-link';
+import { analyticsDashboard } from '../features/analytics/analytics-dashboard';
+import { soundEngine } from '../shared/audio/sound-engine';
+import type { BossConfig } from '../shared/types';
+import { getSampleExamByKey } from '../shared/sample-banks';
 
 export class OmniQuizApp {
   private currentExam: Exam | null = null;
@@ -38,6 +45,7 @@ export class OmniQuizApp {
   private setupSelectedDuration: number = 60;
   private lastSubmittedAttempt: ExamAttempt | null = null;
   private isReviewMode: boolean = false;
+  private selectedBoss: BossConfig | null = null;
 
   public async bootstrap(): Promise<void> {
     console.log('🚀 [OmniQuiz PRO 2.5] Initializing Enterprise EdTech Architecture...');
@@ -47,6 +55,7 @@ export class OmniQuizApp {
     themeManager.init();
     animeMascot.init();
     offlineSyncQueue.init();
+    soundEngine.updateSoundUi();
     void guildCardManager.syncWithCloud();
     this.setupNetworkMonitoring();
 
@@ -64,6 +73,53 @@ export class OmniQuizApp {
 
     // 5. Bind UI Global Controls & Events
     this.bindGlobalEventListeners();
+
+    // 6. Check URL Parameters for PIN room or Compressed Share Link (?pin=... / ?share=...)
+    await this.checkUrlShareParams();
+  }
+
+  /**
+   * Auto-detect and handle ?pin=XXXXXX or ?share=... / #share=... URL parameters
+   */
+  private async checkUrlShareParams(): Promise<void> {
+    if (typeof window === 'undefined') return;
+
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const hash = window.location.hash || '';
+
+      // 1. Check ?pin=XXXXXX
+      const pinParam = urlParams.get('pin');
+      if (pinParam && /^\d{6}$/.test(pinParam.trim())) {
+        console.log('[OmniQuiz] Auto-detected PIN from URL:', pinParam);
+        lobbyView.fillPinInputs(pinParam.trim());
+        await this.handleJoinOnlineRoom(pinParam.trim(), 'Học Viên', '12A1');
+        return;
+      }
+
+      // 2. Check ?share=... or #share=...
+      let shareData = urlParams.get('share') || urlParams.get('shareData');
+      if (!shareData && hash.startsWith('#share=')) {
+        shareData = hash.substring(7);
+      }
+
+      if (shareData) {
+        console.log('[OmniQuiz] Auto-detected shared exam in URL, unpacking...');
+        const decoded = await shareExamLinkService.decodeShareableExam(shareData);
+        if (decoded && decoded.questions && decoded.questions.length > 0) {
+          await localDB.saveExam(decoded);
+          soundEngine.playCorrect();
+          animeMascot.speak(
+            `🎉 Đã nhận bộ đề chia sẻ "${decoded.title}" (${decoded.questions.length} câu)! Chuẩn bị làm bài nào Senpai! ✨`,
+            5000,
+            'happy'
+          );
+          this.openExamSetupModal(decoded);
+        }
+      }
+    } catch (err) {
+      console.warn('[OmniQuiz] Failed to decode shared exam from URL:', err);
+    }
   }
 
   /**
@@ -377,6 +433,8 @@ export class OmniQuizApp {
     proctoringService.stopProctoring();
     questionNavigator.destroy();
     examStateMachine.reset();
+    bossRaidEngine.endRaid();
+    this.selectedBoss = null;
     this.currentExam = null;
     this.pendingExam = null;
     this.lastSubmittedAttempt = null;
@@ -538,7 +596,8 @@ export class OmniQuizApp {
     const flashcardDeck = document.getElementById('flashcard-deck-container') || flashcardSection;
 
     if (examContainer) {
-      examContainer.style.display = this.currentMode === 'exam' ? 'block' : 'none';
+      examContainer.style.display =
+        this.currentMode === 'exam' || this.currentMode === 'boss_raid' ? 'block' : 'none';
     }
     if (practiceContainer) {
       practiceContainer.style.display = this.currentMode === 'practice' ? 'block' : 'none';
@@ -558,6 +617,18 @@ export class OmniQuizApp {
         onAnswerChange: (qIdx) => {
           this.updateQuestionPalette(qIdx);
           this.updateHeaderProgress();
+
+          if (this.currentMode === 'boss_raid' && bossRaidEngine.isActive()) {
+            const attempt = examStateMachine.getAttempt();
+            const answers = attempt?.answers[qIdx] || [];
+            const question = this.currentExam?.questions[qIdx];
+            if (question && answers.length > 0) {
+              const correct = question.correctAnswer || [];
+              const isCorrect =
+                answers.length === correct.length && answers.every((a) => correct.includes(a));
+              bossRaidEngine.handleAnswerFeedback(isCorrect);
+            }
+          }
         },
         onAutoSaved: () => this.showAutoSaveIndicator(),
         onExamSubmitted: (attempt) => this.handleExamSubmitted(attempt),
@@ -570,6 +641,12 @@ export class OmniQuizApp {
       const targetId = examContainer ? examContainer.id : 'exam-container';
       examView.init(this.currentExam, targetId);
       this.initProctoring();
+    } else if (this.currentMode === 'boss_raid') {
+      const targetId = examContainer ? examContainer.id : 'exam-container';
+      examView.init(this.currentExam, targetId);
+      proctoringService.stopProctoring();
+      const boss = this.selectedBoss || bossRaidEngine.getBossById('calculus_demon');
+      bossRaidEngine.initRaid(boss, this.currentExam);
     } else if (this.currentMode === 'practice') {
       const targetId = practiceContainer ? practiceContainer.id : 'practice-container';
       practiceView.init(this.currentExam, targetId);
@@ -814,6 +891,7 @@ export class OmniQuizApp {
   private handleExamSubmitted(attempt: ExamAttempt): void {
     proctoringService.stopProctoring();
     this.lastSubmittedAttempt = attempt;
+    soundEngine.playVictory();
 
     if (!this.currentExam) return;
     const report = analyticsService.generateReport(this.currentExam, attempt);
@@ -839,6 +917,44 @@ export class OmniQuizApp {
       setTimeout(() => {
         animeMascot.speak(`🎉 THĂNG CẤP! Chúc mừng Senpai đạt Level ${guildCardManager.getProfile().level}! 🌟`, 6000, 'proud');
       }, 7500);
+    }
+
+    // Boss Raid Arena evaluation
+    if (bossRaidEngine.isActive()) {
+      const raidResult = bossRaidEngine.finalizeRaid(report.scorePercentage);
+      if (raidResult) {
+        const bossSummaryEl = document.getElementById('modal-boss-raid-summary');
+        if (bossSummaryEl) {
+          bossSummaryEl.style.display = 'block';
+          if (raidResult.isVictorious) {
+            bossSummaryEl.innerHTML = `
+              <div style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(168, 85, 247, 0.2)); border: 2px solid #ef4444; border-radius: 12px; padding: 12px 16px; text-align: center; box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);">
+                <div style="font-size: 1.3rem; font-weight: 900; color: #f87171; text-transform: uppercase;">🏆 CHIẾN THẮNG BOSS RAID!</div>
+                <div style="font-size: 0.95rem; margin-top: 4px; color: #ffffff;">Đã hạ gục <strong>${raidResult.boss.name}</strong> (${raidResult.boss.avatar})!</div>
+                <div style="display: flex; justify-content: center; gap: 10px; margin-top: 8px; font-size: 0.88rem; flex-wrap: wrap;">
+                  <span style="background: rgba(239, 68, 68, 0.3); padding: 4px 10px; border-radius: 6px; font-weight: 700; color: #fca5a5;">⚡ Thưởng EXP: +${raidResult.bonusExp} XP (x${raidResult.boss.expMultiplier.toFixed(1)})</span>
+                  <span style="background: rgba(168, 85, 247, 0.3); padding: 4px 10px; border-radius: 6px; font-weight: 700; color: #d8b4fe;">🎖️ Danh hiệu: ${raidResult.titleAwarded}</span>
+                </div>
+              </div>
+            `;
+            guildCardManager.addExp(raidResult.bonusExp);
+          } else {
+            bossSummaryEl.innerHTML = `
+              <div style="background: rgba(15, 23, 42, 0.7); border: 1px dashed #94a3b8; border-radius: 12px; padding: 10px 14px; text-align: center;">
+                <div style="font-size: 1.1rem; font-weight: 700; color: #94a3b8;">⚔️ KẾT QUẢ BOSS RAID</div>
+                <div style="font-size: 0.88rem; margin-top: 4px; color: var(--text-muted);">${raidResult.boss.name} chưa bị hạ gục. Rèn luyện thêm để phục thù nha Senpai!</div>
+              </div>
+            `;
+          }
+        }
+      }
+      bossRaidEngine.endRaid();
+    } else {
+      const bossSummaryEl = document.getElementById('modal-boss-raid-summary');
+      if (bossSummaryEl) {
+        bossSummaryEl.style.display = 'none';
+        bossSummaryEl.innerHTML = '';
+      }
     }
 
     this.showResultsModal(report);
@@ -936,7 +1052,14 @@ export class OmniQuizApp {
 
         const durationSection = document.getElementById('setup-duration-section');
         if (durationSection) {
-          durationSection.style.display = mode === 'exam' ? 'block' : 'none';
+          durationSection.style.display =
+            mode === 'exam' || mode === 'boss_raid' ? 'block' : 'none';
+        }
+
+        if (mode === 'boss_raid' && !this.selectedBoss) {
+          bossRaidEngine.openBossRaidModal((boss) => {
+            this.selectedBoss = boss;
+          });
         }
       });
     });
@@ -966,6 +1089,7 @@ export class OmniQuizApp {
     document.getElementById('btn-start-exam-session')?.addEventListener('click', () => {
       closeSetupModal();
       if (this.pendingExam) {
+        soundEngine.playClick();
         this.currentMode = this.setupSelectedMode;
         this.pendingExam.durationMinutes = this.setupSelectedDuration;
 
@@ -975,7 +1099,15 @@ export class OmniQuizApp {
           (document.getElementById('setup-shuffle-options') as HTMLInputElement | null)?.checked ?? false;
 
         const preparedExam = shuffleExam(this.pendingExam, shuffleQuestions, shuffleOptions);
-        this.loadExam(preparedExam);
+
+        if (this.currentMode === 'boss_raid' && !this.selectedBoss) {
+          bossRaidEngine.openBossRaidModal((boss) => {
+            this.selectedBoss = boss;
+            this.loadExam(preparedExam);
+          });
+        } else {
+          this.loadExam(preparedExam);
+        }
       }
     });
 
@@ -1305,13 +1437,21 @@ export class OmniQuizApp {
     document.getElementById('btn-open-studio-hero')?.addEventListener('click', openQuestionStudioHandler);
     document.getElementById('btn-tools-open-studio')?.addEventListener('click', openQuestionStudioHandler);
 
-    // History Modal
-    document.getElementById('btn-tools-history')?.addEventListener('click', () => {
+    // History & Analytics Dashboard (Weakness Bank & Sổ Tay Câu Sai)
+    const openAnalyticsHandler = (): void => {
       const toolsModal = document.getElementById('tools-modal');
       if (toolsModal) toolsModal.style.display = 'none';
-      const historyModal = document.getElementById('history-modal');
-      if (historyModal) historyModal.style.display = 'flex';
-    });
+      soundEngine.playClick();
+      void analyticsDashboard.openAnalyticsModal(
+        (retryExam) => {
+          this.openExamSetupModal(retryExam);
+        },
+        (attempt) => {
+          void this.renderAttemptReview(attempt);
+        }
+      );
+    };
+    document.getElementById('btn-tools-history')?.addEventListener('click', openAnalyticsHandler);
     document.getElementById('btn-close-history')?.addEventListener('click', () => {
       const historyModal = document.getElementById('history-modal');
       if (historyModal) historyModal.style.display = 'none';
@@ -1333,13 +1473,33 @@ export class OmniQuizApp {
       if (lbModal) lbModal.style.display = 'none';
     });
 
+    // Sound Engine Controls (Header & Tools Center)
+    document.getElementById('btn-sound-toggle')?.addEventListener('click', () => {
+      soundEngine.toggleSound();
+    });
+    document.getElementById('btn-sound-on')?.addEventListener('click', () => {
+      soundEngine.setSoundEnabled(true);
+    });
+    document.getElementById('btn-sound-off')?.addEventListener('click', () => {
+      soundEngine.setSoundEnabled(false);
+    });
+
+    // AI Vision OCR & Camera Scan Trigger
+    const openVisionModalHandler = (): void => {
+      soundEngine.playClick();
+      visionExamImporter.openVisionModal((questions) => {
+        this.loadQuestionsToStudio(questions);
+      });
+    };
+    document.getElementById('btn-hero-ocr')?.addEventListener('click', openVisionModalHandler);
+    document.getElementById('btn-tools-ocr')?.addEventListener('click', openVisionModalHandler);
+
     // AI Sensei Drawer Triggers
     const openAiSenseiHandler = (): void => {
       const currentQIdx = questionNavigator.getCurrentIndex();
       aiSenseiDrawer.open(this.currentExam, currentQIdx);
     };
     document.getElementById('btn-open-ai-tutor')?.addEventListener('click', openAiSenseiHandler);
-    document.getElementById('btn-tools-ocr')?.addEventListener('click', openAiSenseiHandler);
     document.getElementById('btn-tools-ai-key')?.addEventListener('click', openAiSenseiHandler);
 
     // Stop canvas animation loops when tab is hidden to save battery & GPU
@@ -1537,6 +1697,74 @@ export class OmniQuizApp {
         updateNetworkStatus(false);
       }
     }
+  }
+
+  /**
+   * Phase 6.0: Open Boss Raid Mode Flow
+   */
+  public openBossRaidFlow(): void {
+    soundEngine.playClick();
+    bossRaidEngine.openBossRaidModal((boss) => {
+      this.selectedBoss = boss;
+      this.currentMode = 'boss_raid';
+
+      if (this.currentExam) {
+        this.loadExam(this.currentExam);
+      } else if (this.pendingExam) {
+        this.loadExam(this.pendingExam);
+      } else {
+        const sample =
+          boss.id === 'calculus_demon'
+            ? getSampleExamByKey('math_50') || getPreloadedSampleExams()[0]
+            : boss.id === 'quantum_entity'
+              ? getSampleExamByKey('physics_12') || getPreloadedSampleExams()[1]
+              : getSampleExamByKey('quick_5') || getPreloadedSampleExams()[0];
+
+        if (sample) {
+          this.loadExam(sample);
+        }
+      }
+    });
+  }
+
+  /**
+   * Phase 6.0: Loads extracted or generated questions into QuestionStudio
+   */
+  public loadQuestionsToStudio(questions: Question[]): void {
+    questionStudio.open(this.currentExam, (updatedExam) => {
+      this.openExamSetupModal(updatedExam);
+    });
+    questionStudio.appendOrReplaceQuestions(questions);
+  }
+
+  /**
+   * Phase 6.0: Reviews a past attempt from Analytics Dashboard in Review Mode
+   */
+  public async renderAttemptReview(attempt: ExamAttempt): Promise<void> {
+    soundEngine.playClick();
+    let exam = await localDB.getExamById(attempt.examId);
+    if (!exam) {
+      exam = this.currentExam || getPreloadedSampleExams()[0];
+    }
+    if (exam) {
+      this.currentExam = exam;
+      this.lastSubmittedAttempt = attempt;
+      this.isReviewMode = true;
+      examView.init(exam);
+      examView.renderReviewMode(attempt);
+      const examContainer = document.getElementById('exam-container');
+      if (examContainer) examContainer.style.display = 'block';
+      const statsSection = document.getElementById('stats-section');
+      if (statsSection) statsSection.style.display = 'block';
+      const paletteSection = document.getElementById('palette-section');
+      if (paletteSection) paletteSection.style.display = 'block';
+      lobbyView.hide();
+      this.syncQuestionPaletteAndCounters();
+    }
+  }
+
+  public async joinRoomByPin(pin: string, fullName = 'Học Viên', sbd = '12A1'): Promise<void> {
+    await this.handleJoinOnlineRoom(pin, fullName, sbd);
   }
 }
 

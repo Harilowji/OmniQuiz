@@ -200,6 +200,7 @@ export class ExamStateMachine {
     }
 
     this.saveToDexie();
+    this.callbacks?.onAnswerChange(questionIndex, this.currentAttempt.answers[questionIndex] || []);
     return !exists;
   }
 

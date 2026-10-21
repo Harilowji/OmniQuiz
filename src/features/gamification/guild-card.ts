@@ -137,6 +137,22 @@ export class GuildCardManager {
     return { bonusExp, leveledUp };
   }
 
+  /**
+   * Adds custom EXP (e.g. Boss Raid victory, achievements)
+   */
+  public addExp(amount: number): { bonusExp: number; leveledUp: boolean } {
+    const oldLevel = this.profile.level;
+    this.profile.exp += Math.max(0, amount);
+    this.updateLevelAndRank();
+    this.saveProfile();
+    const container = document.getElementById('guild-card-container');
+    if (container) {
+      this.renderTo(container);
+    }
+    const leveledUp = this.profile.level > oldLevel;
+    return { bonusExp: amount, leveledUp };
+  }
+
   private updateLevelAndRank(): void {
     const calculatedLevel = Math.floor(this.profile.exp / EXP_PER_LEVEL) + 1;
     this.profile.level = calculatedLevel;

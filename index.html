@@ -141,6 +141,11 @@
                     <span id="txt-quick-theme-icon">🎨</span>
                 </button>
 
+                <!-- Sound Toggle Pill (Web Audio API Anime SFX) -->
+                <button type="button" class="btn-action" id="btn-sound-toggle" title="Bật/Tắt âm thanh hiệu ứng Anime SFX" aria-label="Bật hoặc tắt âm thanh">
+                    🔊
+                </button>
+
                 <!-- 5. Fullscreen Toggle -->
                 <button class="btn-action" id="btn-fullscreen-toggle" title="Toàn màn hình" aria-label="Bật hoặc tắt toàn màn hình">⛶</button>
             </div>
@@ -395,6 +400,7 @@
             <p id="modal-subtitle" style="font-size: 0.9em; opacity: 0.8;">Kết quả chi tiết bài làm của bạn</p>
             
             <div id="modal-anime-rank-badge" style="text-align: center; margin-top: 10px;"></div>
+            <div id="modal-boss-raid-summary" style="display: none; margin-top: 8px; margin-bottom: 8px;"></div>
 
             <div class="score-circle">
                 <div id="modal-score">0</div>
@@ -503,6 +509,20 @@
                         <div class="mode-card-perks">
                             <span>✓ Lật thẻ tương tác 3D</span>
                             <span>✓ Đánh giá nhớ 0-5 sao</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Boss Raid Anime Mode (Phase 6.0) -->
+                    <div class="setup-mode-card" data-mode="boss_raid">
+                        <div class="mode-card-badge-row">
+                            <span class="mode-card-icon">⚔️</span>
+                            <span class="mode-tag-pill" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #ef4444;">Arena Boss Raid</span>
+                        </div>
+                        <h4 class="mode-card-title">Boss Raid Anime</h4>
+                        <p class="mode-card-desc">Chiến đấu hạ gục Boss Đề Thi, Combo chém sáng Anime và nhân bội x3.0 EXP.</p>
+                        <div class="mode-card-perks">
+                            <span>✓ Thanh máu Boss & Tim</span>
+                            <span>✓ Critical Hit & x3 EXP</span>
                         </div>
                     </div>
                 </div>
@@ -905,9 +925,12 @@
                     </div>
                 </div>
                 <div class="studio-header-actions">
+                    <button type="button" class="btn-action btn-ai-glow" id="btn-studio-vision-ocr" title="Quét đề từ Ảnh chụp hoặc Camera (AI Vision)">📸 Quét ảnh (AI Vision)</button>
+                    <button type="button" class="btn-action btn-ai-glow" id="btn-studio-ai-topic" title="Nhờ AI Sensei soạn đề theo chủ đề mới">✨ AI Soạn đề</button>
                     <button type="button" class="btn-action btn-azota-key" id="btn-studio-quick-key" title="Dán nhanh chuỗi đáp án (VD: 1A 2B 3C...)">⚡ Nhập nhanh đáp án</button>
                     <button type="button" class="btn-action btn-ai-glow" id="btn-studio-ai-solve" title="Dùng AI giải và tự điền đáp án cho các câu còn thiếu">🤖 AI Tự điền</button>
-                    <button type="button" class="btn-action" id="btn-studio-quick-paste" title="Dán nhanh câu hỏi dạng văn bản hoặc OCR"><span id="txt-btn-studio-paste">📸 Dán câu hỏi / OCR</span></button>
+                    <button type="button" class="btn-action" id="btn-studio-share-link" title="Chia sẻ đề thi 1 chạm bằng Link nén & Mã QR">🔗 Chia sẻ Link/QR</button>
+                    <button type="button" class="btn-action" id="btn-studio-quick-paste" title="Dán nhanh câu hỏi dạng văn bản hoặc OCR"><span id="txt-btn-studio-paste">📝 Dán câu hỏi</span></button>
                     <button type="button" class="btn-action" id="btn-studio-export-json" title="Tải về file JSON"><span id="txt-btn-studio-export-json">📥 Xuất JSON</span></button>
                     <button type="button" class="btn-action" id="btn-studio-export-txt" title="Tải về file TXT"><span id="txt-btn-studio-export-txt">📄 Xuất TXT</span></button>
                     <button type="button" class="btn-action btn-ai-glow" id="btn-studio-save-cloud" title="Lưu đề thi này vào Thư viện Máy chủ (CSDL Cloud)"><span id="txt-btn-studio-cloud">☁️ Lưu lên Máy chủ</span></button>

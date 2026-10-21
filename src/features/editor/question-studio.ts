@@ -10,6 +10,10 @@ import { CodeRenderer } from '../../shared/renderers/code';
 import { sanitizeHtml } from '../../shared/security/sanitizer';
 import { localDB } from '../../shared/db/dexie-db';
 import { themeManager } from '../theme/theme-manager';
+import { visionExamImporter } from './vision-exam-importer';
+import { shareExamLinkService } from '../classroom/share-exam-link';
+import { soundEngine } from '../../shared/audio/sound-engine';
+import { animeMascot } from '../mascot/anime-mascot';
 
 export class QuestionStudio {
   private currentExam: Exam | null = null;
@@ -174,6 +178,39 @@ export class QuestionStudio {
     } else if (viewMode === 'source') {
       this.updateSourceView();
     }
+  }
+
+  public appendOrReplaceQuestions(newQuestions: Question[]): void {
+    if (!newQuestions || newQuestions.length === 0) return;
+
+    // If current questions are empty or only contains a single default blank question
+    const firstQ = this.currentQuestions[0];
+    if (
+      this.currentQuestions.length <= 1 &&
+      (!firstQ ||
+        firstQ.text.trim() === 'Nhập nội dung câu hỏi tại đây...' ||
+        !firstQ.text.trim())
+    ) {
+      this.currentQuestions = newQuestions.map((q, idx) => ({ ...q, index: idx + 1 }));
+    } else {
+      const startIdx = this.currentQuestions.length;
+      const mapped = newQuestions.map((q, idx) => ({ ...q, index: startIdx + idx + 1 }));
+      this.currentQuestions.push(...mapped);
+    }
+
+    if (this.currentExam) {
+      this.currentExam.questions = this.currentQuestions;
+      this.currentExam.totalQuestions = this.currentQuestions.length;
+    }
+
+    this.activeQuestionIndex = 0;
+    this.updateHeaderStats();
+    this.renderAnswerMatrix();
+    this.renderQuestionList();
+    this.loadQuestionDetail(0);
+    this.updateSourceView();
+
+    animeMascot.speak(`🎉 Đã nạp thành công ${newQuestions.length} câu hỏi vào Question Studio! ✨`, 4000, 'happy');
   }
 
   public renderAnswerMatrix(filter = this.currentMatrixFilter, searchKeyword = ''): void {
@@ -777,6 +814,31 @@ ${questionsPrompt}`;
 
     // Close studio
     document.getElementById('btn-close-studio')?.addEventListener('click', () => this.close());
+
+    // AI Vision OCR & Camera Scan
+    document.getElementById('btn-studio-vision-ocr')?.addEventListener('click', () => {
+      soundEngine.playClick();
+      visionExamImporter.openVisionModal((newQuestions) => {
+        this.appendOrReplaceQuestions(newQuestions);
+      });
+    });
+
+    // AI Topic Generator
+    document.getElementById('btn-studio-ai-topic')?.addEventListener('click', () => {
+      soundEngine.playClick();
+      visionExamImporter.openTopicGeneratorModal((newQuestions) => {
+        this.appendOrReplaceQuestions(newQuestions);
+      });
+    });
+
+    // Share Link & QR
+    document.getElementById('btn-studio-share-link')?.addEventListener('click', () => {
+      soundEngine.playClick();
+      if (!this.currentExam) return;
+      this.currentExam.questions = this.currentQuestions;
+      this.currentExam.totalQuestions = this.currentQuestions.length;
+      void shareExamLinkService.openShareModal(this.currentExam);
+    });
 
     // Apply & practice
     document.getElementById('btn-studio-apply')?.addEventListener('click', () => this.applyAndStartExam());
