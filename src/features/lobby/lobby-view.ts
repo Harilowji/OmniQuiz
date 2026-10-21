@@ -175,6 +175,7 @@ export class LobbyView {
     const btnClose = document.getElementById('btn-close-gallery-modal');
 
     const openGallery = () => {
+      this.decorateGalleryPinBadges();
       if (modal) modal.style.display = 'flex';
     };
 
@@ -195,9 +196,11 @@ export class LobbyView {
     // Gallery item selection buttons & cards
     const galleryGrid = document.getElementById('gallery-cards-grid');
     if (galleryGrid) {
+      this.decorateGalleryPinBadges();
       galleryGrid.querySelectorAll<HTMLElement>('.gallery-item-card').forEach((card) => {
         card.addEventListener('click', (e) => {
           const target = e.target as HTMLElement;
+          if (target.closest('.gallery-badge-pin')) return;
           const selectBtn = target.closest<HTMLElement>('.btn-select-gallery-exam');
           const bankKey = selectBtn?.getAttribute('data-bank-key') || card.getAttribute('data-bank');
           if (bankKey) {
@@ -207,6 +210,60 @@ export class LobbyView {
         });
       });
     }
+  }
+
+  private decorateGalleryPinBadges(): void {
+    const PIN_MAP: Record<string, string> = {
+      informatics_10: '101201',
+      chem_40_pdf: '102202',
+      math_50: '103203',
+      sat_math: '104204',
+      physics_12: '105205',
+      chem_12: '106206',
+      english_thpt: '107207',
+      social_12: '108208',
+      quick_5: '109209',
+    };
+
+    const galleryGrid = document.getElementById('gallery-cards-grid');
+    if (!galleryGrid) return;
+
+    galleryGrid.querySelectorAll<HTMLElement>('.gallery-item-card').forEach((card) => {
+      const bankKey = card.getAttribute('data-bank');
+      if (bankKey && PIN_MAP[bankKey]) {
+        const pin = PIN_MAP[bankKey];
+        const badgesRow = card.querySelector('.gallery-badges');
+        if (badgesRow && !card.querySelector('.gallery-badge-pin')) {
+          const pinBadge = document.createElement('span');
+          pinBadge.className = 'gallery-badge-pin';
+          pinBadge.style.cssText =
+            'background: rgba(0, 240, 255, 0.12); border: 1px dashed #00f0ff; color: #00f0ff; padding: 2px 8px; border-radius: 6px; font-family: monospace; font-size: 0.8rem; cursor: pointer; font-weight: 700; margin-left: 4px; display: inline-flex; align-items: center; gap: 4px;';
+          pinBadge.title = `Bấm để sao chép mã PIN ${pin} và tự động điền vào ô phòng thi`;
+          pinBadge.textContent = `🔑 PIN: ${pin} 📋`;
+
+          pinBadge.addEventListener('click', (e) => {
+            e.stopPropagation();
+            void navigator.clipboard.writeText(pin);
+            this.fillPinInputs(pin);
+            const modal = document.getElementById('sample-gallery-modal');
+            if (modal) modal.style.display = 'none';
+          });
+
+          badgesRow.appendChild(pinBadge);
+        }
+      }
+    });
+  }
+
+  public fillPinInputs(pin: string): void {
+    const otpInputs = Array.from(document.querySelectorAll<HTMLInputElement>('.otp-digit'));
+    for (let i = 0; i < otpInputs.length; i++) {
+      if (otpInputs[i]) otpInputs[i]!.value = pin.charAt(i) || '';
+    }
+    const legacy = document.getElementById('input-join-pin') as HTMLInputElement | null;
+    if (legacy) legacy.value = pin;
+    const nameInput = document.getElementById('input-join-name') as HTMLInputElement | null;
+    nameInput?.focus();
   }
 
   /**

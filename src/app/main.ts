@@ -6,13 +6,15 @@
 
 import confetti from 'canvas-confetti';
 import { localDB } from '../shared/db/dexie-db';
-import { getPreloadedSampleExams } from '../shared/sample-banks';
+import { getPreloadedSampleExams, findSampleExamByPin } from '../shared/sample-banks';
 import type { Exam, StudyMode, ExamAttempt, ExamAnalyticsReport } from '../shared/types';
 import { examStateMachine } from '../features/exam-engine/exam-state-machine';
 import { questionNavigator } from '../features/exam-engine/question-navigator';
 import { proctoringService } from '../features/proctoring/proctoring-service';
 import { documentParserService } from '../features/parser/document-parser';
 import { smartReviewEditor } from '../features/parser/smart-review-editor';
+import { questionStudio } from '../features/editor/question-studio';
+import { aiSenseiDrawer } from '../features/ai-tutor/ai-sensei-drawer';
 import { lobbyView } from '../features/lobby/lobby-view';
 import { examView } from '../features/study-modes/exam/exam-view';
 import { practiceView } from '../features/study-modes/practice/practice-view';
@@ -34,6 +36,8 @@ export class OmniQuizApp {
   private pendingExam: Exam | null = null;
   private setupSelectedMode: StudyMode = 'exam';
   private setupSelectedDuration: number = 60;
+  private lastSubmittedAttempt: ExamAttempt | null = null;
+  private isReviewMode: boolean = false;
 
   public async bootstrap(): Promise<void> {
     console.log('🚀 [OmniQuiz PRO 2.5] Initializing Enterprise EdTech Architecture...');
@@ -160,10 +164,37 @@ export class OmniQuizApp {
     candidateName: string,
     sbd?: string
   ): Promise<void> {
+    const cleanPin = pin.trim().toUpperCase();
     try {
-      // 1. Verify PIN and check rate limit against backend API
+      // 1. Check local Dexie DB for exam matching roomCode or ID
+      const allExams = await localDB.getAllExams();
+      let matchedExam = allExams.find(
+        (e) => (e.roomCode && e.roomCode.toUpperCase() === cleanPin) || e.id === cleanPin
+      );
+
+      // 2. Check built-in sample banks (9 standard exams: 101201..109209)
+      if (!matchedExam) {
+        matchedExam = findSampleExamByPin(cleanPin);
+      }
+
+      // If found locally or in sample banks, join directly!
+      if (matchedExam) {
+        await localDB.saveExam(matchedExam);
+        themeManager.showToast(`🎉 Đã tìm thấy phòng thi: ${matchedExam.title} (PIN: ${cleanPin})`);
+
+        // Save student candidate details to session / inputs
+        const nameInput = document.getElementById('input-join-name') as HTMLInputElement | null;
+        if (nameInput) nameInput.value = candidateName;
+        const sbdInput = document.getElementById('input-join-sbd') as HTMLInputElement | null;
+        if (sbdInput && sbd) sbdInput.value = sbd;
+
+        this.openExamSetupModal(matchedExam);
+        return;
+      }
+
+      // 3. Verify PIN and check rate limit against backend API
       try {
-        const verifyRes = await fetch(`/api/rooms/${encodeURIComponent(pin)}`);
+        const verifyRes = await fetch(`/api/rooms/${encodeURIComponent(cleanPin)}`);
         if (verifyRes.status === 429) {
           const data = (await verifyRes.json()) as { error?: string; retryAfter?: number };
           const retrySec = data.retryAfter || 60;
@@ -173,26 +204,25 @@ export class OmniQuizApp {
           alert(`⛔ ${errText}`);
           return;
         }
-        if (verifyRes.status === 404) {
-          themeManager.showToast('❌ Phòng thi không tồn tại hoặc mã PIN không đúng!');
-          alert('❌ Phòng thi không tồn tại hoặc mã PIN không đúng!');
-          return;
-        }
       } catch {
         // Backend API unreachable or running offline: proceed with realtime or offline fallback
       }
 
-      // 2. Connect to multiplayer realtime room
+      // 4. Connect to multiplayer realtime room
       const fullName = sbd ? `${candidateName} (SBD: ${sbd})` : candidateName;
-      const ok = await multiplayerRoomService.joinRoom(pin, fullName, {
+      const ok = await multiplayerRoomService.joinRoom(cleanPin, fullName, {
         onParticipantListChange: () => {},
         onExamStarted: (exam) => {
           this.openExamSetupModal(exam);
         },
         onLeaderboardUpdate: () => {},
       });
+
       if (ok) {
-        alert(`Đã tham gia phòng thi PIN: ${pin}! Đang chờ giám thị bắt đầu bài thi...`);
+        alert(`Đã tham gia phòng thi PIN: ${cleanPin}! Đang chờ giám thị bắt đầu bài thi...`);
+      } else {
+        themeManager.showToast('❌ Phòng thi không tồn tại hoặc mã PIN không đúng!');
+        alert('❌ Phòng thi không tồn tại hoặc mã PIN không đúng!\n(Bạn có thể thử mã PIN đề mẫu: 101201, 102202, 103203...)');
       }
     } catch (err) {
       alert(`Không thể tham gia phòng thi: ${err instanceof Error ? err.message : String(err)}`);
@@ -250,6 +280,11 @@ export class OmniQuizApp {
     proctoringService.stopProctoring();
     this.currentExam = null;
     this.pendingExam = null;
+    this.lastSubmittedAttempt = null;
+    this.isReviewMode = false;
+
+    const hideFlt1 = document.getElementById('flt-incorrect');
+    if (hideFlt1) hideFlt1.style.display = 'none';
 
     const examSetupModal = document.getElementById('exam-setup-modal');
     if (examSetupModal) examSetupModal.style.display = 'none';
@@ -344,6 +379,11 @@ export class OmniQuizApp {
     examStateMachine.reset();
     this.currentExam = null;
     this.pendingExam = null;
+    this.lastSubmittedAttempt = null;
+    this.isReviewMode = false;
+
+    const hideFlt2 = document.getElementById('flt-incorrect');
+    if (hideFlt2) hideFlt2.style.display = 'none';
 
     document.body.classList.remove('quiz-active');
   }
@@ -575,18 +615,29 @@ export class OmniQuizApp {
     const paletteGrid = document.getElementById('palette-grid');
     if (!paletteGrid || !this.currentExam) return;
 
-    const attempt = examStateMachine.getAttempt();
+    const attempt = examStateMachine.getAttempt() || this.lastSubmittedAttempt;
     const answers = attempt?.answers || {};
     const flagged = attempt?.flaggedQuestions || [];
 
     paletteGrid.innerHTML = this.currentExam.questions
-      .map((_, idx) => {
+      .map((q, idx) => {
         const isAnswered = answers[idx] && answers[idx].length > 0;
         const isFlagged = flagged.includes(idx);
 
         let stateClass = '';
-        if (isAnswered) stateClass = 'answered-exam';
-        if (isFlagged) stateClass += ' flagged';
+        if (this.isReviewMode && attempt) {
+          const userAns = answers[idx] || [];
+          const corrAns = q.correctAnswer || [];
+          const isCorrect =
+            userAns.length === corrAns.length && userAns.every((a) => corrAns.includes(a));
+          if (isCorrect) stateClass = 'answered-exam correct-exam';
+          else if (userAns.length > 0) stateClass = 'wrong-exam';
+          else stateClass = 'unattempted-exam';
+        } else {
+          if (isAnswered) stateClass = 'answered-exam';
+          if (isFlagged) stateClass += ' flagged';
+        }
+
         if (idx === 0) stateClass += ' active-current';
 
         return `
@@ -605,6 +656,11 @@ export class OmniQuizApp {
         paletteGrid.querySelectorAll('.palette-btn').forEach((b) => b.classList.remove('active-current'));
         btn.classList.add('active-current');
 
+        const qCard = document.getElementById(`q-card-${idx}`);
+        if (qCard) {
+          qCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
         // Auto close mobile drawer upon selection
         if (window.innerWidth <= 960) {
           const paletteDrawer = document.getElementById('palette-section');
@@ -616,42 +672,115 @@ export class OmniQuizApp {
         }
       });
     });
+
+    this.syncQuestionPaletteAndCounters();
   }
 
   private updateQuestionPalette(qIdx: number): void {
     const btn = document.getElementById(`palette-btn-${qIdx}`);
-    if (!btn) return;
-    const attempt = examStateMachine.getAttempt();
-    const ans = attempt?.answers[qIdx] || [];
-    const isFlagged = attempt?.flaggedQuestions.includes(qIdx) || false;
-    btn.classList.toggle('answered-exam', ans.length > 0);
-    btn.classList.toggle('flagged', isFlagged);
+    if (btn) {
+      const attempt = examStateMachine.getAttempt();
+      const ans = attempt?.answers[qIdx] || [];
+      const isFlagged = attempt?.flaggedQuestions.includes(qIdx) || false;
+      btn.classList.toggle('answered-exam', ans.length > 0);
+      btn.classList.toggle('flagged', isFlagged);
+    }
+    this.syncQuestionPaletteAndCounters();
   }
 
-  private updateHeaderProgress(): void {
+  public syncQuestionPaletteAndCounters(): void {
     if (!this.currentExam) return;
-    const attempt = examStateMachine.getAttempt();
+
+    const attempt = examStateMachine.getAttempt() || this.lastSubmittedAttempt;
     const answers = attempt?.answers || {};
-    const answeredCount = Object.keys(answers).filter((k) => (answers[Number(k)]?.length ?? 0) > 0).length;
+    const flagged = attempt?.flaggedQuestions || [];
     const total = this.currentExam.questions.length;
 
+    const answeredCount = Object.keys(answers).filter(
+      (k) => (answers[Number(k)]?.length ?? 0) > 0
+    ).length;
+    const flaggedCount = flagged.length;
+    const unansweredCount = Math.max(0, total - answeredCount);
+    const pct = total > 0 ? Math.round((answeredCount / total) * 100) : 0;
+
+    // Review mode wrong questions count
+    let wrongCount = 0;
+    if (this.isReviewMode && attempt) {
+      this.currentExam.questions.forEach((q, idx) => {
+        const userAns = answers[idx] || [];
+        const corrAns = q.correctAnswer || [];
+        const isCorrect =
+          userAns.length === corrAns.length && userAns.every((a) => corrAns.includes(a));
+        if (!isCorrect) wrongCount++;
+      });
+    }
+
+    // 1. Update Filter Chips
+    const fltAll = document.getElementById('flt-all');
+    if (fltAll) fltAll.textContent = `Tất cả (${total})`;
+
+    const fltAnswered = document.getElementById('flt-answered');
+    if (fltAnswered) fltAnswered.textContent = `Đã làm (${answeredCount})`;
+
+    const fltFlagged = document.getElementById('flt-flagged');
+    if (fltFlagged) fltFlagged.textContent = `Cần xem 🚩 (${flaggedCount})`;
+
+    const fltUnanswered = document.getElementById('flt-unanswered');
+    if (fltUnanswered) fltUnanswered.textContent = `Chưa làm (${unansweredCount})`;
+
+    const fltIncorrect = document.getElementById('flt-incorrect');
+    if (fltIncorrect) {
+      fltIncorrect.textContent = `❌ Câu sai (${wrongCount})`;
+      fltIncorrect.style.display = this.isReviewMode ? 'inline-block' : 'none';
+    }
+
+    // 2. Update Header & Sticky Stats
     const totalAnsweredEl = document.getElementById('total-answered');
     if (totalAnsweredEl) totalAnsweredEl.textContent = `${answeredCount}`;
 
-    const totalQuestionsEl = document.getElementById('total-questions') || document.getElementById('stat-total-q');
+    const totalQuestionsEl =
+      document.getElementById('total-questions') || document.getElementById('stat-total-q');
     if (totalQuestionsEl) totalQuestionsEl.textContent = `${total}`;
 
-    const pct = total > 0 ? Math.round((answeredCount / total) * 100) : 0;
-
     const progressBar = document.getElementById('quiz-progress-bar');
-    if (progressBar) {
-      progressBar.style.width = `${pct}%`;
-    }
+    if (progressBar) progressBar.style.width = `${pct}%`;
 
     const badge = document.getElementById('palette-completion-badge');
-    if (badge) {
-      badge.textContent = `${pct}%`;
+    if (badge) badge.textContent = `${pct}%`;
+
+    const progressCircle = document.getElementById('palette-progress-circle') as SVGCircleElement | null;
+    if (progressCircle) {
+      const offset = 81.68 - (81.68 * pct) / 100;
+      progressCircle.style.strokeDashoffset = `${offset}`;
     }
+
+    // 3. Update Submit Confirmation Modal Matrix (if modal is opened)
+    const mAns = document.getElementById('matrix-count-answered');
+    if (mAns) mAns.textContent = `${answeredCount}`;
+
+    const mPct = document.getElementById('matrix-percent-answered');
+    if (mPct) mPct.textContent = `${pct}%`;
+
+    const mUn = document.getElementById('matrix-count-unanswered');
+    if (mUn) mUn.textContent = `${unansweredCount}`;
+
+    const mFlag = document.getElementById('matrix-count-flagged');
+    if (mFlag) mFlag.textContent = `${flaggedCount}`;
+
+    const unWarn = document.getElementById('confirm-unanswered-warning');
+    const unHighlight = document.getElementById('confirm-unanswered-highlight');
+    if (unWarn && unHighlight) {
+      if (unansweredCount > 0) {
+        unHighlight.textContent = `${unansweredCount}`;
+        unWarn.style.display = 'block';
+      } else {
+        unWarn.style.display = 'none';
+      }
+    }
+  }
+
+  private updateHeaderProgress(): void {
+    this.syncQuestionPaletteAndCounters();
   }
 
   /**
@@ -684,6 +813,7 @@ export class OmniQuizApp {
    */
   private handleExamSubmitted(attempt: ExamAttempt): void {
     proctoringService.stopProctoring();
+    this.lastSubmittedAttempt = attempt;
 
     if (!this.currentExam) return;
     const report = analyticsService.generateReport(this.currentExam, attempt);
@@ -899,16 +1029,105 @@ export class OmniQuizApp {
       });
     }
 
-    // Submit Exam Buttons
-    const submitHandler = (): void => {
-      const confirmSubmit = window.confirm('Bạn có chắc chắn muốn nộp bài thi ngay bây giờ?');
-      if (confirmSubmit) {
-        examStateMachine.submit();
+    // Palette Filter Chips Handling (All, Answered, Flagged, Unanswered, Incorrect)
+    const filterPalette = (filterType: 'all' | 'answered' | 'flagged' | 'unanswered' | 'incorrect') => {
+      document.querySelectorAll('.filter-chip').forEach((c) => c.classList.remove('active'));
+      const activeChip = document.getElementById(`flt-${filterType}`);
+      activeChip?.classList.add('active');
+
+      const attempt = examStateMachine.getAttempt() || this.lastSubmittedAttempt;
+      const answers = attempt?.answers || {};
+      const flagged = attempt?.flaggedQuestions || [];
+
+      document.querySelectorAll<HTMLElement>('.palette-btn').forEach((btn) => {
+        const idx = parseInt(btn.getAttribute('data-idx') || '0', 10);
+        const hasAns = answers[idx] && answers[idx]!.length > 0;
+        const isFlag = flagged.includes(idx);
+
+        let visible = true;
+        if (filterType === 'answered') {
+          visible = Boolean(hasAns);
+        } else if (filterType === 'flagged') {
+          visible = Boolean(isFlag);
+        } else if (filterType === 'unanswered') {
+          visible = !hasAns;
+        } else if (filterType === 'incorrect') {
+          if (this.currentExam && this.currentExam.questions[idx]) {
+            const corrAns = this.currentExam.questions[idx]!.correctAnswer || [];
+            const userAns = answers[idx] || [];
+            const isCorrect = userAns.length === corrAns.length && userAns.every((a) => corrAns.includes(a));
+            visible = !isCorrect;
+          }
+        }
+        btn.style.display = visible ? 'inline-flex' : 'none';
+      });
+    };
+
+    document.getElementById('flt-all')?.addEventListener('click', () => filterPalette('all'));
+    document.getElementById('flt-answered')?.addEventListener('click', () => filterPalette('answered'));
+    document.getElementById('flt-flagged')?.addEventListener('click', () => filterPalette('flagged'));
+    document.getElementById('flt-unanswered')?.addEventListener('click', () => filterPalette('unanswered'));
+    document.getElementById('flt-incorrect')?.addEventListener('click', () => filterPalette('incorrect'));
+
+    // Submit Exam Buttons & Confirmation Modal Flow
+    const showSubmitConfirmationModal = (): void => {
+      this.syncQuestionPaletteAndCounters();
+      const modal = document.getElementById('submit-confirm-modal');
+      if (modal) {
+        modal.style.display = 'flex';
+      } else {
+        const ok = window.confirm('Bạn có chắc chắn muốn nộp bài thi ngay bây giờ?');
+        if (ok) void doSubmitExam();
       }
     };
-    document.getElementById('btn-submit-exam')?.addEventListener('click', submitHandler);
-    document.getElementById('finish-btn')?.addEventListener('click', submitHandler);
-    document.getElementById('txt-btn-submit-aside')?.addEventListener('click', submitHandler);
+
+    const doSubmitExam = async (): Promise<void> => {
+      const confirmModal = document.getElementById('submit-confirm-modal');
+      if (confirmModal) confirmModal.style.display = 'none';
+
+      let attempt = await examStateMachine.submit();
+      if (!attempt) {
+        const existing = examStateMachine.getAttempt();
+        if (existing && this.currentExam) {
+          attempt = existing;
+          attempt.isCompleted = true;
+          attempt.submittedAt = Date.now();
+          await localDB.saveAttempt(attempt);
+          this.handleExamSubmitted(attempt);
+        } else if (this.currentExam) {
+          const newAttempt: ExamAttempt = {
+            id: `attempt_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+            examId: this.currentExam.id,
+            examTitle: this.currentExam.title,
+            mode: this.currentMode,
+            startedAt: Date.now() - 60000,
+            submittedAt: Date.now(),
+            timeRemainingSeconds: 0,
+            totalDurationSeconds: (this.currentExam.durationMinutes || 60) * 60,
+            answers: {},
+            flaggedQuestions: [],
+            eliminatedOptions: {},
+            timeSpentPerQuestion: {},
+            score: 0,
+            accuracy: 0,
+            isCompleted: true,
+            violations: [],
+          };
+          this.handleExamSubmitted(newAttempt);
+        }
+      }
+    };
+
+    document.getElementById('btn-submit-exam')?.addEventListener('click', showSubmitConfirmationModal);
+    document.getElementById('finish-btn')?.addEventListener('click', showSubmitConfirmationModal);
+    document.getElementById('txt-btn-submit-aside')?.addEventListener('click', showSubmitConfirmationModal);
+    document.getElementById('btn-cancel-submit')?.addEventListener('click', () => {
+      const modal = document.getElementById('submit-confirm-modal');
+      if (modal) modal.style.display = 'none';
+    });
+    document.getElementById('btn-proceed-submit')?.addEventListener('click', () => {
+      void doSubmitExam();
+    });
 
     // Reset Button -> Return to pure IDLE state
     document.getElementById('btn-reset')?.addEventListener('click', () => {
@@ -946,7 +1165,40 @@ export class OmniQuizApp {
       const modal = document.getElementById('results-modal') || document.getElementById('summary-modal');
       if (modal) modal.style.display = 'none';
     };
-    document.getElementById('txt-modal-review')?.addEventListener('click', closeModal);
+
+    // Review Exam Detailed Breakdown Handler
+    const reviewExamHandler = (): void => {
+      closeModal();
+      if (!this.lastSubmittedAttempt || !this.currentExam) return;
+
+      this.isReviewMode = true;
+
+      const examContainer = document.getElementById('exam-container');
+      const practiceContainer = document.getElementById('practice-container');
+      const flashcardSection = document.getElementById('flashcard-section');
+
+      if (this.currentMode === 'practice') {
+        if (practiceContainer) practiceContainer.style.display = 'block';
+        if (examContainer) examContainer.style.display = 'none';
+        if (flashcardSection) flashcardSection.style.display = 'none';
+        practiceView.render();
+      } else {
+        if (examContainer) examContainer.style.display = 'block';
+        if (practiceContainer) practiceContainer.style.display = 'none';
+        if (flashcardSection) flashcardSection.style.display = 'none';
+        examView.renderReviewMode(this.lastSubmittedAttempt);
+      }
+
+      this.renderQuestionPalette();
+      this.syncQuestionPaletteAndCounters();
+
+      themeManager.showToast('📖 Đang xem lại bài làm chi tiết (Tô xanh đáp án đúng, tô đỏ đáp án sai)');
+      animeMascot.speak('💡 Sensei đã mở toàn bộ lời giải chi tiết và đáp án cho bạn rồi nhé!', 6000, 'proud');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    document.getElementById('txt-modal-review')?.addEventListener('click', reviewExamHandler);
+
     document.getElementById('btn-modal-close')?.addEventListener('click', closeModal);
     document.getElementById('btn-close-summary-modal')?.addEventListener('click', closeModal);
 
@@ -960,12 +1212,16 @@ export class OmniQuizApp {
       if (e.key === 'Escape') {
         closeModal();
         closePaletteDrawer();
+        const submitModal = document.getElementById('submit-confirm-modal');
+        if (submitModal) submitModal.style.display = 'none';
         const setupModal = document.getElementById('exam-setup-modal');
         if (setupModal) setupModal.style.display = 'none';
         const galleryModal = document.getElementById('sample-gallery-modal');
         if (galleryModal) galleryModal.style.display = 'none';
         const toolsModal = document.getElementById('tools-modal');
         if (toolsModal) toolsModal.style.display = 'none';
+        aiSenseiDrawer.close();
+        questionStudio.close();
       }
     });
 
@@ -987,7 +1243,7 @@ export class OmniQuizApp {
     // Export PDF Buttons
     const exportPdfHandler = (): void => {
       if (this.currentExam) {
-        const attempt = examStateMachine.getAttempt();
+        const attempt = examStateMachine.getAttempt() || this.lastSubmittedAttempt;
         const report = attempt ? analyticsService.generateReport(this.currentExam, attempt) : undefined;
         analyticsService.exportExamToPDF(this.currentExam, report);
       }
@@ -998,7 +1254,7 @@ export class OmniQuizApp {
     // Export CSV Gradebook
     document.getElementById('btn-export-csv')?.addEventListener('click', () => {
       if (this.currentExam) {
-        const attempt = examStateMachine.getAttempt();
+        const attempt = examStateMachine.getAttempt() || this.lastSubmittedAttempt;
         if (attempt) {
           const report = analyticsService.generateReport(this.currentExam, attempt);
           analyticsService.exportCSVGradebook(report);
@@ -1009,7 +1265,7 @@ export class OmniQuizApp {
     // Viral Score Card Certificate Generator (OG 1200x630)
     document.getElementById('btn-export-scorecard')?.addEventListener('click', async () => {
       if (this.currentExam) {
-        const attempt = examStateMachine.getAttempt();
+        const attempt = examStateMachine.getAttempt() || this.lastSubmittedAttempt;
         if (attempt) {
           const report = analyticsService.generateReport(this.currentExam, attempt);
           const candidateName =
@@ -1038,17 +1294,16 @@ export class OmniQuizApp {
     document.getElementById('btn-create-room')?.addEventListener('click', createRoomHandler);
     document.getElementById('btn-tools-host-room')?.addEventListener('click', createRoomHandler);
 
-    // Question Studio Modal
-    document.getElementById('btn-tools-open-studio')?.addEventListener('click', () => {
+    // Question Studio Triggers (Hero Button & Tools Modal)
+    const openQuestionStudioHandler = (): void => {
       const toolsModal = document.getElementById('tools-modal');
       if (toolsModal) toolsModal.style.display = 'none';
-      const studioModal = document.getElementById('question-studio-modal');
-      if (studioModal) studioModal.style.display = 'flex';
-    });
-    document.getElementById('btn-close-studio')?.addEventListener('click', () => {
-      const studioModal = document.getElementById('question-studio-modal');
-      if (studioModal) studioModal.style.display = 'none';
-    });
+      questionStudio.open(this.currentExam, (updatedExam) => {
+        this.openExamSetupModal(updatedExam);
+      });
+    };
+    document.getElementById('btn-open-studio-hero')?.addEventListener('click', openQuestionStudioHandler);
+    document.getElementById('btn-tools-open-studio')?.addEventListener('click', openQuestionStudioHandler);
 
     // History Modal
     document.getElementById('btn-tools-history')?.addEventListener('click', () => {
@@ -1078,21 +1333,14 @@ export class OmniQuizApp {
       if (lbModal) lbModal.style.display = 'none';
     });
 
-    // AI & OCR Triggers
-    const aiTutorHandler = () => {
-      const key = localStorage.getItem('omniquiz_gemini_api_key') || '';
-      const promptVal = prompt(
-        'Nhập Google Gemini API Key để kích hoạt Trợ lý Gia sư AI và OCR quét đề:\n(Để trống nếu muốn cấu hình sau)',
-        key
-      );
-      if (promptVal !== null) {
-        localStorage.setItem('omniquiz_gemini_api_key', promptVal.trim());
-        themeManager.showToast('🤖 Đã lưu cấu hình AI Assistant');
-      }
+    // AI Sensei Drawer Triggers
+    const openAiSenseiHandler = (): void => {
+      const currentQIdx = questionNavigator.getCurrentIndex();
+      aiSenseiDrawer.open(this.currentExam, currentQIdx);
     };
-    document.getElementById('btn-open-ai-tutor')?.addEventListener('click', aiTutorHandler);
-    document.getElementById('btn-tools-ocr')?.addEventListener('click', aiTutorHandler);
-    document.getElementById('btn-tools-ai-key')?.addEventListener('click', aiTutorHandler);
+    document.getElementById('btn-open-ai-tutor')?.addEventListener('click', openAiSenseiHandler);
+    document.getElementById('btn-tools-ocr')?.addEventListener('click', openAiSenseiHandler);
+    document.getElementById('btn-tools-ai-key')?.addEventListener('click', openAiSenseiHandler);
 
     // Stop canvas animation loops when tab is hidden to save battery & GPU
     document.addEventListener('visibilitychange', () => {

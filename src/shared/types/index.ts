@@ -49,6 +49,7 @@ export interface ExamMeta {
   subject: string;
   createdAt: string;
   updatedAt: string;
+  roomCode?: string;
 }
 
 export interface Exam extends ExamMeta {

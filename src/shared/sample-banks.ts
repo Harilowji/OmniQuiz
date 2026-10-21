@@ -56,7 +56,19 @@ function parseQuestionType(typeStr: string): QuestionType {
   }
 }
 
-function transformFixtureToExam(raw: RawFixtureExam): Exam {
+export const SAMPLE_PIN_MAP: Record<string, string> = {
+  informatics_10: '101201',
+  chem_40_pdf: '102202',
+  math_50: '103203',
+  sat_math: '104204',
+  physics_12: '105205',
+  chem_12: '106206',
+  english_thpt: '107207',
+  social_12: '108208',
+  quick_5: '109209',
+};
+
+function transformFixtureToExam(raw: RawFixtureExam, customPin?: string): Exam {
   const questions: Question[] = raw.questions.map((q) => ({
     id: q.id,
     index: q.index,
@@ -75,6 +87,8 @@ function transformFixtureToExam(raw: RawFixtureExam): Exam {
       : undefined,
   }));
 
+  const pin = customPin || SAMPLE_PIN_MAP[raw.id] || '100000';
+
   return {
     id: raw.id,
     title: raw.title,
@@ -84,20 +98,21 @@ function transformFixtureToExam(raw: RawFixtureExam): Exam {
     totalQuestions: questions.length,
     createdAt: raw.createdAt,
     updatedAt: raw.updatedAt,
+    roomCode: pin,
     questions,
   };
 }
 
 export const SAMPLE_EXAMS_MAP: Record<string, Exam> = {
-  informatics_10: transformFixtureToExam(informatics10Json),
-  chem_40_pdf: transformFixtureToExam(chem40Json),
-  math_50: transformFixtureToExam(math50Json),
-  sat_math: transformFixtureToExam(satMathJson),
-  physics_12: transformFixtureToExam(physics12Json),
-  chem_12: transformFixtureToExam(chem12Json),
-  english_thpt: transformFixtureToExam(englishThptJson),
-  social_12: transformFixtureToExam(social12Json),
-  quick_5: transformFixtureToExam(quick5Json),
+  informatics_10: transformFixtureToExam(informatics10Json, '101201'),
+  chem_40_pdf: transformFixtureToExam(chem40Json, '102202'),
+  math_50: transformFixtureToExam(math50Json, '103203'),
+  sat_math: transformFixtureToExam(satMathJson, '104204'),
+  physics_12: transformFixtureToExam(physics12Json, '105205'),
+  chem_12: transformFixtureToExam(chem12Json, '106206'),
+  english_thpt: transformFixtureToExam(englishThptJson, '107207'),
+  social_12: transformFixtureToExam(social12Json, '108208'),
+  quick_5: transformFixtureToExam(quick5Json, '109209'),
 };
 
 /**
@@ -112,4 +127,12 @@ export function getPreloadedSampleExams(): Exam[] {
  */
 export function getSampleExamByKey(key: string): Exam | undefined {
   return SAMPLE_EXAMS_MAP[key];
+}
+
+/**
+ * Find a sample exam by its 6-digit room PIN code
+ */
+export function findSampleExamByPin(pin: string): Exam | undefined {
+  const cleanPin = pin.trim().toUpperCase();
+  return Object.values(SAMPLE_EXAMS_MAP).find((e) => e.roomCode === cleanPin);
 }
